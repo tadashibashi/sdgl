@@ -4,13 +4,14 @@ namespace sdgl::ecs {
     /**
      * System for a component
      */
-    template <typename TWorld>
     class IComponentSystem {
     public:
         virtual ~IComponentSystem() = default;
-        virtual bool init(TWorld &ecs) = 0;
+        virtual bool init() = 0;
         virtual void shutdown() = 0;
-        virtual int initPriority() { return 0; }
+        /** Higher occurs earlier, lower occurs later */
+        [[nodiscard]]
+        virtual int initPriority() const { return 0; }
     };
 
     class IFrameSystem {
@@ -19,13 +20,16 @@ namespace sdgl::ecs {
         virtual void startFrame() = 0;
         virtual void endFrame() = 0;
         /** Higher occurs earlier, lower occurs later */
-        virtual int framePriority() { return 0; }
+        [[nodiscard]]
+        virtual int framePriority() const { return 0; }
     };
 
     class IRenderSystem {
     public:
         virtual ~IRenderSystem() = default;
         virtual void render() = 0;
-        virtual int renderPriority() { return 0; }
+        /** Higher occurs earlier, lower occurs later */
+        [[nodiscard]]
+        virtual int renderPriority() const { return 0; }
     };
 }

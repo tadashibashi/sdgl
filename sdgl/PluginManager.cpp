@@ -159,21 +159,21 @@ namespace sdgl {
 
     void PluginManager::startFrame()
     {
-        for (auto framePlug : m_framePlugs)
+        for (const auto framePlug : m_framePlugs)
             framePlug->startFrame();
     }
 
     void PluginManager::endFrame()
     {
         // fires in reverse order
-        for (auto &framePlug : std::ranges::reverse_view(m_framePlugs))
+        for (const auto framePlug : std::ranges::reverse_view(m_framePlugs))
             framePlug->endFrame();
     }
 
     void PluginManager::shutdown()
     {
         // fires in reverse order from init
-        for (auto plug : std::ranges::reverse_view(m_plugs))
+        for (const auto plug : std::ranges::reverse_view(m_plugs))
         {
             plug->shutdown();
             delete plug;
@@ -182,6 +182,7 @@ namespace sdgl {
         m_framePlugs.clear();
         m_renderPlugs.clear();
         m_plugs.clear();
+        m_eventPlugs.clear();
         m_wasInit = false;
     }
 
