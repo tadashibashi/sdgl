@@ -26,7 +26,7 @@ add_library(sdgl STATIC
         Vector2.h
 )
 
-target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm imgui spdlog::spdlog stb)
+target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm imgui spdlog::spdlog stb EnTT::EnTT)
 target_include_directories(sdgl PUBLIC ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/vendored/angle/include)
 target_precompile_headers(sdgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/sdgl.pch)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" SDGL_BUILD_TYPE)

@@ -44,3 +44,5 @@ endif()
 add_subdirectory(spdlog)
 
 include(stb.cmake)
+
+add_subdirectory(entt)
