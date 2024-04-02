@@ -107,7 +107,7 @@ namespace sdgl {
         [[nodiscard]]
         float length() const
         {
-            return math::distance(0, 0, x, y);
+            return mathf::distance(0, 0, x, y);
         }
 
         /**
@@ -125,7 +125,7 @@ namespace sdgl {
         [[nodiscard]]
         float angleTo(Vector2_<U> other) const
         {
-            return math::pointAngle(other.x - x, other.y - y);
+            return mathf::pointAngle(other.x - x, other.y - y);
         }
 
         /**
@@ -134,7 +134,7 @@ namespace sdgl {
         [[nodiscard]]
         float angle() const
         {
-            return math::pointAngle(x, y);
+            return mathf::pointAngle(x, y);
         }
 
         template <Arithmetic U>
