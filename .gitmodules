@@ -1,0 +1,24 @@
+[submodule "vendored/glfw"]
+	path = vendored/glfw
+	url = https://github.com/glfw/glfw
+[submodule "vendored/glm"]
+	path = vendored/glm
+	url = https://github.com/g-truc/glm
+[submodule "vendored/imgui"]
+	path = vendored/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "vendored/Catch2"]
+	path = vendored/Catch2
+	url = https://github.com/catchorg/Catch2
+[submodule "vendored/SDL"]
+	path = vendored/SDL
+	url = https://github.com/libsdl-org/SDL
+[submodule "vendored/spdlog"]
+	path = vendored/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "vendored/stb"]
+	path = vendored/stb
+	url = https://github.com/nothings/stb
+[submodule "vendored/glaze"]
+	path = vendored/glaze
+	url = https://github.com/stephenberry/glaze

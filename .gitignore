@@ -1,0 +1,15 @@
+# Build directories
+cmake-build*/
+build*/
+
+# OS hidden files
+.DS_Store
+thumbs.db
+
+
+# IDE files
+.idea/
+.vs/
+.vscode/
+*.sublime-workspace
+
