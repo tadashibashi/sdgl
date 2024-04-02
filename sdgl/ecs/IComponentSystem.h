@@ -4,10 +4,11 @@ namespace sdgl::ecs {
     /**
      * System for a component
      */
+    template <typename TWorld>
     class IComponentSystem {
     public:
         virtual ~IComponentSystem() = default;
-        virtual bool init() = 0;
+        virtual bool init(TWorld &ecs) = 0;
         virtual void shutdown() = 0;
         virtual int initPriority() { return 0; }
     };
