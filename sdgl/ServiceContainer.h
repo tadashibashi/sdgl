@@ -22,7 +22,11 @@ namespace sdgl {
             return static_cast<T *>(getService(std::type_index(typeid(T))));
         }
 
+        [[nodiscard]]
+        auto size() const { return m_container.size(); }
 
+        [[nodiscard]]
+        auto empty() const { return m_container.empty(); }
     private:
         [[nodiscard]]
         void *getService(std::type_index typeIndex) const;
