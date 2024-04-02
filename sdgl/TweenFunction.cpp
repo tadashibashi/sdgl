@@ -120,24 +120,24 @@ namespace sdgl::tweenf {
 
     float easeInBack(const float x)
     {
-        static constexpr float c1 = 1.70158f;
-        static constexpr float c3 = c1 + 1.f;
+        static const float c1 = 1.70158f;
+        static const float c3 = c1 + 1.f;
 
         return c3 * x * x * x - c1 * x * x;
     }
 
     float easeOutBack(const float x)
     {
-        static constexpr float c1 = 1.70158f;
-        static constexpr float c3 = c1 + 1.f;
+        static const float c1 = 1.70158f;
+        static const float c3 = c1 + 1.f;
 
         return 1.f + c3 * std::pow(x - 1.f, 3.f) + c1 * std::pow(x - 1.f, 2.f);
     }
 
     float easeInOutBack(const float x)
     {
-        static constexpr float c1 = 1.70158f;
-        static constexpr float c2 = c1 * 1.525f;
+        static const float c1 = 1.70158f;
+        static const float c2 = c1 * 1.525f;
 
         return x < 0.5f
           ? (std::pow(2.f * x, 2.f) * ((c2 + 1.f) * 2.f * x - c2)) * .5f
@@ -146,7 +146,7 @@ namespace sdgl::tweenf {
 
     float easeInElastic(const float x)
     {
-        static constexpr float c4 = (2.f * mathf::Pi) / 3.f;
+        static const float c4 = (2.f * mathf::Pi) / 3.f;
 
         return x == 0
           ? 0
@@ -157,7 +157,7 @@ namespace sdgl::tweenf {
 
     float easeOutElastic(const float x)
     {
-        static constexpr float c4 = (2.f * mathf::Pi) / 3.f;
+        static const float c4 = (2.f * mathf::Pi) / 3.f;
 
         return x == 0
           ? 0
@@ -168,7 +168,7 @@ namespace sdgl::tweenf {
 
     float easeInOutElastic(const float x)
     {
-        static constexpr float c5 = (2.f * mathf::Pi) / 4.5f;
+        static const float c5 = (2.f * mathf::Pi) / 4.5f;
 
         return x == 0
           ? 0
@@ -186,8 +186,8 @@ namespace sdgl::tweenf {
 
     float easeOutBounce(float x)
     {
-        static constexpr float n1 = 7.5625f;
-        static constexpr float d1 = 2.75f;
+        static const float n1 = 7.5625f;
+        static const float d1 = 2.75f;
 
         if (x < 1.f / d1) {
             return n1 * x * x;

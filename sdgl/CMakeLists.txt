@@ -21,9 +21,13 @@ add_library(sdgl STATIC
         io/io.h
         App.cpp
         Gamepad.h
-        mathf/mathf.cpp
+        mathf.cpp
         sdgl_traits.h
         Vector2.h
+        Tween.h
+        Tween.cpp
+        TweenFunction.h
+        TweenFunction.cpp
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm imgui spdlog::spdlog stb EnTT::EnTT)
