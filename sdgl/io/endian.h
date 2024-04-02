@@ -1,6 +1,6 @@
 #pragma once
 
-#include <../sdglib.h>
+#include <sdgl/sdglib.h>
 #include <bit>
 
 namespace sdgl::io::endian {
