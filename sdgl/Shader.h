@@ -8,6 +8,8 @@ namespace sdgl {
     class Shader {
     public:
         Shader();
+        Shader(Shader &&other) noexcept;
+        Shader(const Shader &other) = delete;
         ~Shader();
 
         /**

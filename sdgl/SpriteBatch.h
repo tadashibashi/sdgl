@@ -1,0 +1,69 @@
+#pragma once
+#include "Color.h"
+#include "Texture2D.h"
+#include "math/Rectangle.h"
+#include "math/Vector2.h"
+
+namespace sdgl {
+    class Shader;
+
+    struct SortOrder {
+        enum Enum
+        {
+            None,
+            FrontToBack,
+            BackToFront,
+            Texture
+        };
+    };
+
+    class SpriteBatch {
+        struct Vertex
+        {
+            Vertex() : position{}, color{}, uv{} { }
+            Vertex(const Vector2 position, const Color color, const Vector2 uv) : position{position}, color{color}, uv{uv} {}
+
+            Vector2  position;
+            Color    color;
+            Vector2  uv;
+        };
+
+        struct Glyph
+        {
+            Vertex topleft, bottomleft, topright, bottomright;
+            Texture2D texture{};
+            float depth{};
+        };
+
+        struct RenderBatch
+        {
+            RenderBatch(const uint offset, const uint vertexCount, const uint texture)
+                    : offset(offset), vertexCount(vertexCount), texture(texture)
+            {}
+            uint offset;
+            uint vertexCount;
+            uint texture;
+        };
+    public:
+        SpriteBatch();
+        ~SpriteBatch() = default;
+
+        void drawTexture(Texture2D texture, Rectangle source, Vector2 position, Color color, Vector2 scale, Vector2 anchor, float rotation, float depth);
+        void begin(const float *transformMatrix, SortOrder::Enum sortOrder);
+        void end();
+
+    private:
+        vector<Glyph> m_glyphs;
+        vector<RenderBatch> m_batches;
+        Vector2 m_scale;
+
+        Shader *m_shader;
+        SortOrder m_sortOrder;
+        uint m_vbo, m_vao;
+
+        void createBatches();
+        void sortGlyphs();
+        void createVertexArray();
+        void disableVertexArray();
+    };
+}

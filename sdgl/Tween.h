@@ -1,6 +1,6 @@
 #pragma once
 #include <sdgl/sdglib.h>
-#include "TweenFunction.h"
+#include "math/TweenFunction.h"
 
 namespace sdgl
 {

@@ -35,8 +35,6 @@
 #include <string_view>
 #include <vector>
 #include <map>
-//#include <glm/glm.hpp>
-
 
 namespace sdgl {
         using byte = int8_t;
@@ -46,7 +44,6 @@ namespace sdgl {
         using uint64 = uint64_t;
         using int64 = int64_t;
         using size = size_t;
-        //using vec2 = glm::vec2;
 
         // stl
         using string = std::string;

@@ -1,42 +1,35 @@
 #pragma once
-#include "IComponentSystem.h"
+#include "ISystem.h"
 #include <sdgl/sdglib.h>
 #include <ranges>
 
-namespace sdgl::ecs {
-    class ComponentSystemMgr : public IComponentSystem, public IFrameSystem, public IRenderSystem  {
+namespace sdgl {
+    class ComponentSystemMgr {
     public:
-        explicit ComponentSystemMgr(const int initPriority = 0, const int framePriority = 0, const int renderPriority = 0) :
-            m_systems(), m_frameSystems(), m_renderSystems(),
-            m_initPriority(initPriority), m_framePriority(framePriority), m_renderPriority(renderPriority),
-            m_wasInit(false)
+        explicit ComponentSystemMgr() :
+            m_systems(), m_frameSystems(), m_renderSystems(), m_wasInit(false)
         { }
 
-        bool init() override;
-        void startFrame() override;
-        void endFrame() override;
-        void render() override;
-        void shutdown() override;
+        bool init();
+        void startFrame();
+        void endFrame();
+        void render();
+        void shutdown();
 
-        bool addSystem(IComponentSystem *system);
-        bool addSystems(const vector<IComponentSystem *> &systems);
+        bool addSystem(ISystem *system);
+        bool addSystems(const vector<ISystem *> &systems);
 
-        template <typename U> requires std::is_base_of_v<IComponentSystem, U>
+        template <typename U> requires std::is_base_of_v<ISystem, U>
         bool removeSystem();
-        bool removeSystem(IComponentSystem *system) { return eraseSystems(std::ranges::find(m_systems, system)); }
+        bool removeSystem(ISystem *system) { return eraseSystems(std::ranges::find(m_systems, system)); }
 
         [[nodiscard]]
         auto size() const { return m_systems.size(); }
         [[nodiscard]]
         auto empty() const { return m_systems.empty(); }
-
-        [[nodiscard]]
-        int renderPriority() const override { return m_renderPriority; }
-        [[nodiscard]]
-        int initPriority() const override { return m_initPriority; }
     private:
-        bool eraseSystems(vector<IComponentSystem *>::iterator begin);
-        vector<IComponentSystem *> m_systems;
+        bool eraseSystems(vector<ISystem *>::iterator begin);
+        vector<ISystem *> m_systems;
         vector<IFrameSystem *> m_frameSystems;
         vector<IRenderSystem *> m_renderSystems;
 
@@ -44,10 +37,10 @@ namespace sdgl::ecs {
         bool m_wasInit;
     };
 
-    template<typename U> requires std::is_base_of_v<IComponentSystem, U>
+    template<typename U> requires std::is_base_of_v<ISystem, U>
     bool ComponentSystemMgr::removeSystem()
     {
-        return eraseSystems(std::ranges::remove_if(m_systems, [](IComponentSystem *system) {
+        return eraseSystems(std::ranges::remove_if(m_systems, [](ISystem *system) {
             return dynamic_cast<U *>(system);
         }));
     }

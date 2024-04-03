@@ -1,12 +1,12 @@
 #pragma once
 
-namespace sdgl::ecs {
+namespace sdgl {
     /**
      * System for a component
      */
-    class IComponentSystem {
+    class ISystem {
     public:
-        virtual ~IComponentSystem() = default;
+        virtual ~ISystem() = default;
         virtual bool init() = 0;
         virtual void shutdown() = 0;
         /** Higher occurs earlier, lower occurs later */

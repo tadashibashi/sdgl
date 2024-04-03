@@ -21,17 +21,32 @@ add_library(sdgl STATIC
         io/io.h
         App.cpp
         Gamepad.h
-        mathf.cpp
+        math/mathf.cpp
         sdgl_traits.h
-        Vector2.h
+        math/Vector2.h
         Tween.h
         Tween.cpp
-        TweenFunction.h
-        TweenFunction.cpp
+        math/TweenFunction.h
+        math/TweenFunction.cpp
+        ecs/SystemManager.cpp
+        ecs/SystemManager.h
+        Camera2D.cpp
+        Camera2D.h
+        defaultShader.cpp
+        defaultShader.h
+        SpriteBatch.cpp
+        SpriteBatch.h
+        Color.h
+        Color.cpp
+        Texture2D.h
+        Texture2D.cpp
+        io/stb_image_impl.cpp
 )
 
-target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm imgui spdlog::spdlog stb EnTT::EnTT)
-target_include_directories(sdgl PUBLIC ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/vendored/angle/include)
+target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)
+target_include_directories(sdgl PUBLIC ${CMAKE_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/vendored/angle/include
+)
 target_precompile_headers(sdgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/sdgl.pch)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" SDGL_BUILD_TYPE)
 if ("${SDGL_BUILD_TYPE}" MATCHES "DEBUG")

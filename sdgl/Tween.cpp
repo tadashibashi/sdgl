@@ -1,7 +1,7 @@
 #include "Tween.h"
 
-#include "logging.h"
-#include "mathf.h"
+#include <sdgl/logging.h>
+#include <sdgl/math/mathf.h>
 
 namespace sdgl {
     Tween::Tween(const float duration, const TweenFunc func) :

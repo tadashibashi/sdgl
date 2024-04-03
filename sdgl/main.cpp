@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "App.h"
+#include "Texture2D.h"
 
 
 using namespace sdgl;
@@ -20,12 +21,19 @@ public:
 protected:
     void init() override
     {
-
+        m_texture.loadFile("RPG_interior.png");
     }
 
     void update() override
     {
         ImGui::ShowDemoWindow();
+
+        if (ImGui::Begin("Test window"))
+        {
+            ImGui::Image((ImTextureID)m_texture.id(), {(float)m_texture.size().x * 2, (float)m_texture.size().y * 2});
+
+        }
+        ImGui::End();
 
         const auto window = getWindow();
 
@@ -82,8 +90,11 @@ protected:
 
     void shutdown() override
     {
-
+        m_texture.free();
     }
+
+private:
+    Texture2D m_texture;
 };
 
 int main()

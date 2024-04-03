@@ -78,4 +78,19 @@ namespace sdgl::mathf {
         if (y)
             *y = std::cosf(angle) * distance;
     }
+
+    void rotate(const float x, const float y, const float angle, float *resultX, float *resultY)
+    {
+        const auto sinAngle = std::sin(angle);
+        const auto cosAngle = std::cos(angle);
+        if (resultX)
+        {
+            *resultX = x * cosAngle - y * sinAngle;
+        }
+
+        if (resultY)
+        {
+            *resultY = x * sinAngle + y * cosAngle;
+        }
+    }
 }

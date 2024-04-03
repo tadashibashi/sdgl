@@ -4,6 +4,7 @@ add_executable(sdgl_utests
         ServiceContainer.test.cpp
         Tween.test.cpp
         main.cpp
+        PriorityList.test.cpp
 )
 
 target_link_libraries(sdgl_utests PRIVATE Catch2::Catch2 sdgl)

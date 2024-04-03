@@ -2,7 +2,7 @@
 
 #include "sdgl/logging.h"
 
-namespace sdgl::ecs {
+namespace sdgl {
     bool ComponentSystemMgr::init()
     {
         if (m_wasInit)
@@ -56,7 +56,7 @@ namespace sdgl::ecs {
 
 
 
-    bool ComponentSystemMgr::addSystem(IComponentSystem *system)
+    bool ComponentSystemMgr::addSystem(ISystem *system)
     {
         if (!system)
         {
@@ -141,7 +141,7 @@ namespace sdgl::ecs {
         }
     }
 
-    bool ComponentSystemMgr::addSystems(const vector<IComponentSystem *> &systems)
+    bool ComponentSystemMgr::addSystems(const vector<ISystem *> &systems)
     {
 
         for (const auto sys : systems)
@@ -153,7 +153,7 @@ namespace sdgl::ecs {
         return true;
     }
 
-    bool ComponentSystemMgr::eraseSystems(const vector<IComponentSystem *>::iterator begin)
+    bool ComponentSystemMgr::eraseSystems(const vector<ISystem *>::iterator begin)
     {
         if (begin == m_systems.end()) return false;
 

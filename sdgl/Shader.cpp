@@ -6,6 +6,11 @@
 namespace sdgl {
     Shader::Shader() : m_program(), m_attribCounter() { }
 
+    Shader::Shader(Shader &&other) noexcept : m_program(other.m_program), m_attribCounter(other.m_attribCounter)
+    {
+
+    }
+
     Shader::~Shader()
     {
         if (m_program)

@@ -1,6 +1,6 @@
 #pragma once
-#include "mathf.h"
-#include "sdgl_traits.h"
+#include <sdgl/math/mathf.h>
+#include <sdgl/sdgl_traits.h>
 
 namespace sdgl {
 

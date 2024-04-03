@@ -3,7 +3,7 @@
  */
 #include "TweenFunction.h"
 
-#include "mathf.h"
+#include <sdgl/math/mathf.h>
 
 #include <cmath>
 

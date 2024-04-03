@@ -46,4 +46,14 @@ namespace sdgl::mathf
      * Get the trajected x and y coordinates for traveling `distance` at `angle` (in radians) (from {0, 0})
      */
     void trajectory(float angle, float distance, float *x, float *y);
+
+    /**
+     * Get the result of a rotation of a vector about {0, 0}
+     * @param x - x position to rotate
+     * @param y - y position to rotate
+     * @param angle - angle in radians clockwise
+     * @param resultX - resulting x value
+     * @param resultY - resulting y vaue
+     */
+    void rotate(float x, float y, float angle, float *resultX, float *resultY);
 }
