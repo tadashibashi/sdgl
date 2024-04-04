@@ -1,37 +1,36 @@
 #include "Camera2D.h"
 #include <glm/glm.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-
 
 namespace sdgl {
     struct Camera2D::Impl
     {
-        Impl() : scale(1, 1), position(0, 0), origin(.5f, .5f), rotation(0),
+        Impl() : scale(1, 1), position(0, 0), origin(.5f, .5f), rotation(0), ortho(),
             matrix(), invertedMatrix(), worldBounds(), isDirty()  { }
 
         Vector2 scale, position, origin;
         float rotation;
 
+        glm::mat4 ortho;
         glm::mat4 matrix;
         glm::mat4 invertedMatrix;
         std::optional<FRectangle> worldBounds;
-        std::shared_ptr<Rectangle> viewport;
+        Rectangle viewport;
 
         bool isDirty;
 
         void updateMatrix()
         {
             if (!isDirty) return;
-            auto temp = glm::mat4x4(1.0f);
-            temp = glm::translate(temp, {-position.x, -position.y, 0});
-            temp = glm::scale(temp, {scale.x, scale.y, 1.f});
-            temp = glm::rotate(temp, mathf::toRadians(rotation), {0, 0, 1.f});
+            matrix =
+                glm::ortho<float>((float)viewport.x, (float)viewport.w, (float)viewport.h, (float)viewport.y) *
+                glm::translate(glm::mat4(1.f), {origin.x * (float)viewport.w, origin.y * (float)viewport.h, 0}) *
+                glm::rotate(glm::mat4(1.f), mathf::toRadians(rotation), {0.f, 0.f, 1.f}) *
+                glm::scale(glm::mat4(1.f), {scale.x, scale.y, 1.f}) *
+                glm::translate(glm::mat4(1.f), {-position.x, -position.y, 0});
 
-            if (viewport)
-                temp = glm::translate(temp, {origin.x * (float)viewport->w, origin.y * (float)viewport->h, 0});
-
-            matrix = temp;
-            invertedMatrix = glm::inverse(temp);
+            invertedMatrix = glm::inverse(matrix);
 
             isDirty = false;
             worldBounds.reset();
@@ -46,10 +45,10 @@ namespace sdgl {
 
     Rectangle Camera2D::getViewport() const
     {
-        return m->viewport ? *m->viewport : Rectangle(); // return a "null" rectangle, if no viewport attached
+        return m->viewport;
     }
 
-    Camera2D & Camera2D::setViewport(const std::shared_ptr<Rectangle> &value)
+    Camera2D & Camera2D::setViewport(Rectangle value)
     {
         if (value != m->viewport)
         {
@@ -112,7 +111,7 @@ namespace sdgl {
         if (!m->worldBounds)
         {
             auto worldPos = viewToWorld(Vector2::Zero);
-            auto worldSize = m->viewport ? viewToWorld({(float)m->viewport->w, (float)m->viewport->h}) : Vector2::Zero;
+            auto worldSize = viewToWorld({(float)m->viewport.w, (float)m->viewport.h});;
             m->worldBounds = FRectangle(worldPos.x, worldPos.y, worldSize.x, worldSize.y);
         }
 

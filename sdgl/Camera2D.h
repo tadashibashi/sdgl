@@ -12,11 +12,11 @@ namespace sdgl {
         Rectangle getViewport() const;
 
         /**
-         * @param value - shared pointer to a viewport rectangle, useful for storing viewport in another class,
-         *                yet keeping this camera up to date
-         * @return reference to this camera for convient chaining
+         * Update the viewport once
+         * @param value rectangle to set
+         * @return reference to this camera for convenient chaining
          */
-        Camera2D &setViewport(const std::shared_ptr<Rectangle> &value);
+        Camera2D &setViewport(Rectangle value);
 
         /**
          * @return normalized origin position where {0, 0} is the top-left, and {1, 1} is the bottom right

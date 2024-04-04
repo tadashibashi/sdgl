@@ -12,6 +12,9 @@ namespace sdgl {
         };
     };
 
+    /**
+     * Note: loads images with uv coords where {0, 0} is on the top-left corner
+     */
     class Texture2D
     {
     public:

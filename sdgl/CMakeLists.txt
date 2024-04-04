@@ -41,6 +41,9 @@ add_library(sdgl STATIC
         Texture2D.h
         Texture2D.cpp
         io/stb_image_impl.cpp
+        platform/emscripten.h
+        platform/emscripten.cpp
+        Delegate.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)
@@ -52,13 +55,8 @@ string(TOUPPER "${CMAKE_BUILD_TYPE}" SDGL_BUILD_TYPE)
 if ("${SDGL_BUILD_TYPE}" MATCHES "DEBUG")
     target_compile_definitions(sdgl PUBLIC -DSDGL_DEBUG=1)
 endif()
-
 if (EMSCRIPTEN)
-    set(CMAKE_EXECUTABLE_SUFFIX .html)
+    target_link_options(sdgl PUBLIC --preload-file ${CMAKE_SOURCE_DIR}/assets@/)
 endif()
-project(sdgl_sandbox)
-add_executable(sdgl_sandbox main.cpp)
-target_link_libraries(sdgl_sandbox PRIVATE sdgl)
-if (NOT EMSCRIPTEN)
-    angle_copy_libs()
-endif()
+
+

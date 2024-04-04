@@ -1,8 +1,6 @@
 #pragma once
 
-#if defined(__APPLE__)
-
-#if __clang_major__ >= 15
+#if (defined(__APPLE__) && __clang_major__ >= 15) || !defined(__APPLE__) && __cplusplus >= 202002L
 #include <format>
 
 namespace sdgl {
@@ -14,7 +12,7 @@ namespace sdgl {
     }
 }
 #else
-#include <spdlog/fmt/fmt.h>
+#include <spdlog/fmt/bundled/format.h>
 namespace sdgl {
     template <typename... T>
     FMT_NODISCARD FMT_INLINE auto format(const fmt::format_string<T...> &format,
@@ -24,4 +22,3 @@ namespace sdgl {
 }
 #endif
 
-#endif

@@ -9,9 +9,11 @@
 namespace sdgl {
     static const auto defaultVertexShader =
 R"(#version 300 es
-in vec2 vertex_position;
-in vec4 vertex_color;
-in vec2 vertex_uv;
+precision highp float;
+
+layout (location = 0) in vec2 vertex_position;
+layout (location = 1) in vec4 vertex_color;
+layout (location = 2) in vec2 vertex_uv;
 
 out vec2 fragment_position;
 out vec4 fragment_color;
@@ -33,14 +35,13 @@ void main() {
 
 	static const auto defaultFragmentShader =
 R"(#version 300 es
-
-#ifdef GL_ES
 precision mediump float;
-#endif
 
 in vec2 fragment_position;
 in vec4 fragment_color;
 in vec2 fragment_uv;
+
+layout (location = 0) out vec4 fragColor;
 
 uniform sampler2D u_texture;
 uniform ivec2 u_size;
@@ -54,7 +55,7 @@ float sharpen(float pix_coord) {
 
 void main() {
     vec2 vres = vec2(u_size.x, u_size.y);
-    gl_FragColor = texture2D(u_texture, vec2(
+    fragColor = texture(u_texture, vec2(
         sharpen(fragment_uv.x * vres.x) / vres.x,
         sharpen(fragment_uv.y * vres.y) / vres.y
     )) * fragment_color;

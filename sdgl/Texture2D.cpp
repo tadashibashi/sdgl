@@ -16,15 +16,17 @@ namespace sdgl {
 
     bool Texture2D::load(const string &buffer, TextureFilter::Enum filter)
     {
+        //stbi_set_flip_vertically_on_load(true);
+
         int width, height, bytesPerPixel;
-        auto data = stbi_load_from_memory(
+        const auto data = stbi_load_from_memory(
             reinterpret_cast<const stbi_uc *>(buffer.data()),
             static_cast<int>(buffer.size()),
             &width, &height, &bytesPerPixel, 0);
 
         if (!data)
         {
-            SDGL_ERROR("Stb Image failed to load image: {}", stbi_failure_reason());
+            SDGL_ERROR("stb_image failed to load image: {}", stbi_failure_reason());
             return false;
         }
 

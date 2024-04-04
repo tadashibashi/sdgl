@@ -21,7 +21,8 @@ namespace sdgl {
         struct Vertex
         {
             Vertex() : position{}, color{}, uv{} { }
-            Vertex(const Vector2 position, const Color color, const Vector2 uv) : position{position}, color{color}, uv{uv} {}
+            Vertex(const Vector2 position, const Color color, const Vector2 uv) :
+                position{position}, color{color}, uv{uv} {}
 
             Vector2  position;
             Color    color;
@@ -45,20 +46,20 @@ namespace sdgl {
             uint texture;
         };
     public:
-        SpriteBatch();
+        SpriteBatch() : m_glyphs{}, m_batches{}, m_shader{}, m_sortOrder{SortOrder::BackToFront},
+            m_vbo{}, m_vao{} { }
         ~SpriteBatch() = default;
 
-        void drawTexture(Texture2D texture, Rectangle source, Vector2 position, Color color, Vector2 scale, Vector2 anchor, float rotation, float depth);
+        void drawTexture(Texture2D texture, Rectangle source, Vector2 position, Color color, Vector2 scale, Vector2 anchor, float angle, float depth);
         void begin(const float *transformMatrix, SortOrder::Enum sortOrder);
         void end();
 
     private:
         vector<Glyph> m_glyphs;
         vector<RenderBatch> m_batches;
-        Vector2 m_scale;
 
         Shader *m_shader;
-        SortOrder m_sortOrder;
+        SortOrder::Enum m_sortOrder;
         uint m_vbo, m_vao;
 
         void createBatches();
