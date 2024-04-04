@@ -13,3 +13,4 @@ thumbs.db
 .vscode/
 *.sublime-workspace
 
+.cache
