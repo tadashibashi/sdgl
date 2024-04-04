@@ -15,6 +15,7 @@ namespace sdgl::logging::detail {
         {
             s_clientLogger = spdlog::stdout_color_mt("debug");
             s_clientLogger->set_level(spdlog::level::trace);
+            s_clientLogger->set_pattern("(%T) [%^%n%$]: %v");
         }
 
         return s_clientLogger.get();
@@ -29,6 +30,8 @@ namespace sdgl::logging::detail {
         {
             s_coreLogger = spdlog::stdout_color_mt("sdgl");
             s_coreLogger->set_level(spdlog::level::trace);
+            s_coreLogger->set_pattern("(%T) [%^%n%$]: %v");
+
         }
 
         return s_coreLogger.get();
