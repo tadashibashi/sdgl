@@ -1,5 +1,5 @@
 #pragma once
-#include <sdgl/backends/Backend.h>
+#include <sdgl/Window.h>
 
 namespace sdgl {
     /**
@@ -25,9 +25,6 @@ namespace sdgl {
         virtual void shutdown() = 0;
     private:
         void runOneFrame();
-#ifdef SDGL_PLATFORM_EMSCRIPTEN
-        static void emMainLoop(void *arg);
-#endif
         struct Impl;
         Impl *m;
     };

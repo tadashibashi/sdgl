@@ -1,12 +1,10 @@
 #include "App.h"
 
-#include "logging.h"
-#include "backends/Backend.h"
-#include "gl.h"
+#include <sdgl/backends/Backend.h>
+#include <sdgl/logging.h>
+#include <sdgl/platform.h>
 
-#if defined(SDGL_PLATFORM_EMSCRIPTEN)
-#include <emscripten/emscripten.h>
-#endif
+#include <sdgl/gl.h>
 
 namespace sdgl {
     struct App::Impl {
@@ -37,13 +35,6 @@ namespace sdgl {
         delete m;
     }
 
-#ifdef SDGL_PLATFORM_EMSCRIPTEN
-    void App::emMainLoop(void *arg)
-    {
-        const auto app = static_cast<App *>(arg);
-        app->runOneFrame();
-    }
-#endif
     void App::run()
     {
         const auto be = m->backend;
@@ -66,13 +57,17 @@ namespace sdgl {
 
         init();
 #ifdef SDGL_PLATFORM_EMSCRIPTEN
-        emscripten_set_main_loop_arg(emMainLoop, this, -1, 1);
+        SDGL_EMSCRIPTEN_MAINLOOP_BEGIN
 #else
         while (!window->shouldClose())
+#endif
         {
             runOneFrame();
         }
+#ifdef SDGL_PLATFORM_EMSCRIPTEN
+    SDGL_EMSCRIPTEN_MAINLOOP_END
 #endif
+
         shutdown();
 
         be->destroyWindow(window);
