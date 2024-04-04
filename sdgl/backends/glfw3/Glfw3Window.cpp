@@ -23,6 +23,11 @@ namespace sdgl::backends::glfw3 {
         glfwGetWindowSize(m_window, x, y);
     }
 
+    void Glfw3Window::getFrameBufferSize(int *x, int *y)
+    {
+        glfwGetFramebufferSize(m_window, x, y);
+    }
+
     Window &Glfw3Window::setPosition(const int x, const int y)
     {
         glfwSetWindowPos(m_window, x, y);

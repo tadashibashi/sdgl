@@ -36,6 +36,8 @@ namespace sdgl {
         virtual Window &setSize(int x, int y) = 0;
         virtual void getSize(int *x, int *y) const = 0;
 
+        virtual void getFrameBufferSize(int *x, int *y) = 0;
+
         virtual Window &setPosition(int x, int y) = 0;
         virtual void getPosition(int *x, int *y) = 0;
 

@@ -23,6 +23,8 @@ namespace sdgl::backends::glfw3 {
         Window &setSize(int width, int height) override;
         void getSize(int *x, int *y) const override;
 
+        void getFrameBufferSize(int *x, int *y) override;
+
         Window &setPosition(int x, int y) override;
         void getPosition(int *x, int *y) override;
 

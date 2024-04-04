@@ -1,13 +1,10 @@
-#include "backends/Backend.h"
-
 #include <sdgl/gl.h>
 
 #include <imgui.h>
-#include <iostream>
 
-#include "App.h"
-#include "Texture2D.h"
-
+#include <sdgl/App.h>
+#include <sdgl/logging.h>
+#include <sdgl/Texture2D.h>
 
 using namespace sdgl;
 
@@ -30,8 +27,11 @@ protected:
 
         if (ImGui::Begin("Test window"))
         {
-            ImGui::Image((ImTextureID)m_texture.id(), {(float)m_texture.size().x * 2, (float)m_texture.size().y * 2});
-
+            ImGui::Image(reinterpret_cast<ImTextureID>(m_texture.id()),
+                {
+                    static_cast<float>(m_texture.size().x) * 2,
+                    static_cast<float>(m_texture.size().y) * 2
+                });
         }
         ImGui::End();
 
@@ -39,41 +39,41 @@ protected:
 
         if (window->isPressed(Key::A))
         {
-            std::cout << "I pressed A!\n";
+            DEBUG_LOG("I pressed A!");
         }
 
         if (window->isPressed(MouseBtn::Left))
         {
-            std::cout << "Pressed left button\n";
+            DEBUG_LOG("Pressed left button\n");
         }
 
         if (window->isDown(MouseBtn::Right))
         {
             double x, y;
             window->getMousePosition(&x, &y);
-            std::cout << "Right button is down at: " << x << ", " << y << '\n';
+            DEBUG_LOG("Right button is down at: {}, {}", x, y);
         }
 
         if (window->isReleased(Key::H))
         {
-            std::cout << (window->isHovered() ? "Mouse hovering window" : "Not hovering") << '\n';
+            DEBUG_LOG(window->isHovered() ? "Mouse hovering window" : "Not hovering");
         }
 
         if (window->isPressed(0, GamepadBtn::A))
         {
-            std::cout << "A was pressed\n";
+            DEBUG_LOG("A was pressed");
         }
 
         const auto scrollY = window->getAxis(MouseAxis::ScrollY);
         if (scrollY != 0)
         {
-            std::cout << "ScrollY: " << scrollY;
+            DEBUG_LOG("ScrollY: {}", scrollY);
         }
 
         if (const auto axisLeft = window->getAxis(0, GamepadAxis::LeftX);
             abs(axisLeft) > .1f)
         {
-            std::cout << "Left X axis stick: " << axisLeft << '\n';
+            DEBUG_LOG("Left X axis stick: {}", axisLeft);
         }
 
         if (window->isPressed(Key::Escape))

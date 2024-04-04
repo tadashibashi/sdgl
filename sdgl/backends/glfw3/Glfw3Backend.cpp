@@ -114,7 +114,7 @@ namespace sdgl::backends::glfw3 {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // set window viewport
-        glfwGetWindowSize(window, &width, &height);
+        glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
 
         // add plugins to window
