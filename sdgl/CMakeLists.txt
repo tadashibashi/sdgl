@@ -44,6 +44,10 @@ add_library(sdgl STATIC
         platform/emscripten.h
         platform/emscripten.cpp
         Delegate.h
+        ShaderAttribs.cpp
+        ShaderAttribs.h
+        graphics/RenderProgram.cpp
+        graphics/RenderProgram.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)

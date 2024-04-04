@@ -9,29 +9,19 @@
 namespace sdgl {
     static const auto defaultVertexShader =
 R"(#version 300 es
-precision highp float;
 
-layout (location = 0) in vec2 vertex_position;
-layout (location = 1) in vec4 vertex_color;
-layout (location = 2) in vec2 vertex_uv;
+layout (location = 0) in vec2 Position;
+layout (location = 1) in vec2 TextureUV;
 
-out vec2 fragment_position;
-out vec4 fragment_color;
-out vec2 fragment_uv;
+out vec2 frag_TextureUV;
 
-uniform mat4 P;
+uniform mat4 u_ProjMtx;
 
-void main() {
-	gl_Position.xy = (P * vec4(vertex_position, 0.0, 1.0)).xy;
-	gl_Position.z = 0.0;
-	gl_Position.w = 1.0;
-
-	fragment_position = vertex_position;
-	fragment_color = vertex_color;
-
-	fragment_uv = vec2(vertex_uv.x, 1.0 - vertex_uv.y);
-}
-)";
+void main()
+{
+    gl_Position = u_ProjMtx * vec4(Position, 0, 1);
+    frag_TextureUV = TextureUV;
+})";
 
 	static const auto defaultFragmentShader =
 R"(#version 300 es
@@ -71,10 +61,6 @@ void main() {
             {
                 throw std::runtime_error("Failed to load default shader");
             }
-
-            s_defaultShader.addAttribute("vertex_position");
-            s_defaultShader.addAttribute("vertex_color");
-            s_defaultShader.addAttribute("vertex_uv");
         }
 
         return &s_defaultShader;

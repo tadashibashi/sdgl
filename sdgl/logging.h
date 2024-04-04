@@ -1,5 +1,6 @@
 #pragma once
 #include <sdgl/sdglib.h>
+#include <sdgl/format.h>
 
 namespace sdgl::logging::detail {
     void setLastErrorMessage(const string &message);
@@ -15,7 +16,7 @@ namespace sdgl {
 
 #if !defined(SDGL_LOGGING_SILENT_MODE) || !defined(SDGL_CLIENT_LOGGING_SILENT_MODE)
 #include <spdlog/logger.h>
-#include <sdgl/format.h>
+
 #endif
 
 #include <cassert>

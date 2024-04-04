@@ -10,8 +10,8 @@ namespace sdgl {
          * Default color is white
          */
         Color() : r(1.f), g(1.f), b(1.f), a(1.f) { }
-        Color(float r, float g, float b, float a = 1.f) : r(r), g(g), b(b), a(a) { }
-        explicit Color(float gray, float alpha = 1.f) : r(gray), g(gray), b(gray), a(alpha) { }
+        Color(const float r, const float g, const float b, const float a = 1.f) : r(r), g(g), b(b), a(a) { }
+        explicit Color(const float gray, const float alpha = 1.f) : r(gray), g(gray), b(gray), a(alpha) { }
 
         float r, g, b, a;
 

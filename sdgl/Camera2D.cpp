@@ -144,7 +144,7 @@ namespace sdgl {
     {
         if (value != m->rotation)
         {
-            m->rotation = value;
+            m->rotation = mathf::wrap(value, 0, 360.f);
             m->isDirty = true;
         }
 

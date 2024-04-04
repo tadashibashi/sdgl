@@ -16,7 +16,7 @@ namespace sdgl {
         using uint = uint32_t;
         using uint64 = uint64_t;
         using int64 = int64_t;
-        using size = size_t;
+        using size_t = size_t;
 
         // stl
         using string = std::string;

@@ -69,7 +69,7 @@ namespace sdgl {
 
 
         [[nodiscard]]
-        size size() const { return m_plugs.size(); }
+        size_t size() const { return m_plugs.size(); }
         [[nodiscard]]
         bool empty() const { return m_plugs.empty(); }
     private:

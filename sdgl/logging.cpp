@@ -3,9 +3,6 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace sdgl::logging::detail {
-    static string s_lastCoreError;
-    void setLastErrorMessage(const string &message) { s_lastCoreError = message; }
-    const string &getLastErrorMessage() { return s_lastCoreError; }
 
 #if !defined(SDGL_CLIENT_LOGGING_SILENT_MODE)
     spdlog::logger *getClientLogger()
@@ -40,3 +37,9 @@ namespace sdgl::logging::detail {
 }
 
 #endif
+
+namespace sdgl::logging::detail {
+    static string s_lastCoreError;
+    void setLastErrorMessage(const string &message) { s_lastCoreError = message; }
+    const string &getLastErrorMessage() { return s_lastCoreError; }
+}
