@@ -51,7 +51,7 @@ namespace sdgl {
         }
 
         // clean up pre-existing shader
-        clear();
+        dispose();
 
         m_program = program;
         return true;
@@ -76,7 +76,7 @@ namespace sdgl {
         }
 
         // clean up pre-existing shader
-        clear();
+        dispose();
 
         m_program = program;
         return true;
@@ -220,6 +220,13 @@ namespace sdgl {
         return *this;
     }
 
+    Shader & Shader::setUniform(int location, const Vector2 &value)
+    {
+        glUseProgram(m_program); GL_ERR_CHECK();
+        glUniform2f(location, value.x, value.y); GL_ERR_CHECK();
+        return *this;
+    }
+
     Shader &Shader::setUniform(const int location, const int value)
     {
         glUseProgram(m_program);
@@ -307,7 +314,7 @@ namespace sdgl {
         glUseProgram(0); GL_ERR_CHECK();
     }
 
-    void Shader::clear()
+    void Shader::dispose()
     {
         if (m_program)
         {

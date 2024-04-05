@@ -44,10 +44,10 @@ namespace sdgl {
         const float *getMatrix() const;
 
         [[nodiscard]]
-        Vector2 viewToWorld(Vector2 viewPosition) const;
+        Vector2 viewToWorld(Vector2 viewCoords) const;
 
         [[nodiscard]]
-        Vector2 worldToView(Vector2 worldPosition) const;
+        Vector2 worldToView(Vector2 worldCoords) const;
 
         [[nodiscard]]
         FRectangle getWorldBounds() const;

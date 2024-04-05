@@ -1,5 +1,5 @@
 #pragma once
-#include "../sdgl_traits.h"
+#include <sdgl/sdgl_traits.h>
 #include "Vector2.h"
 
 namespace sdgl {
@@ -78,8 +78,36 @@ namespace sdgl {
         {
             return !operator==(other);
         }
+
+
+        template <Arithmetic U>
+        [[nodiscard]] explicit
+        operator Rectangle_<U>() const
+        {
+            return Rectangle_<U>(
+                static_cast<U>(x),
+                static_cast<U>(y),
+                static_cast<U>(w),
+                static_cast<U>(h)
+            );
+        }
     };
 
     using Rectangle = Rectangle_<int>;
     using FRectangle = Rectangle_<float>;
 }
+
+#include <sdgl/format.h>
+template <typename T>
+struct formatter<sdgl::Rectangle_<T>>
+{
+    template <class FormatContext>
+    constexpr auto parse(FormatContext& ctx) {
+        return ctx.begin();
+    }
+
+    template <class FormatContext>
+    auto format(const sdgl::Rectangle_<T>& obj, FormatContext& ctx) const {
+        return std::format_to(ctx.out(), "({}, {}, {}, {})", obj.x, obj.y, obj.w, obj.h);
+    }
+};

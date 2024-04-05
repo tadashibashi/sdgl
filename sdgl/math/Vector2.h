@@ -1,4 +1,5 @@
 #pragma once
+
 #include <sdgl/math/mathf.h>
 #include <sdgl/sdgl_traits.h>
 
@@ -26,7 +27,7 @@ namespace sdgl {
         template <Arithmetic U>
         Vector2_ operator+(Vector2_<U> other) const
         {
-            return _Vector2<T>(x + other.x, y + other.y);
+            return Vector2_<T>(x + other.x, y + other.y);
         }
 
         template <Arithmetic U>
@@ -39,7 +40,7 @@ namespace sdgl {
         template <Arithmetic U>
         Vector2_ operator-(Vector2_<U> other) const
         {
-            return _Vector2<T>(x - other.x, y - other.y);
+            return Vector2_<T>(x - other.x, y - other.y);
         }
 
         template <Arithmetic U>
@@ -52,7 +53,7 @@ namespace sdgl {
         template <Arithmetic U>
         Vector2_ operator*(Vector2_<U> other) const
         {
-            return _Vector2<T>(x * other.x, y * other.y);
+            return Vector2_<T>(x * other.x, y * other.y);
         }
 
         template <Arithmetic U>
@@ -65,7 +66,7 @@ namespace sdgl {
         template <Arithmetic U>
         Vector2_ operator/(Vector2_<U> other) const
         {
-            return _Vector2<T>(x / other.x, y / other.y);
+            return Vector2_<T>(x / other.x, y / other.y);
         }
 
         template <Arithmetic U>
@@ -78,7 +79,7 @@ namespace sdgl {
         template <Arithmetic U>
         Vector2_ operator*(U scalar) const
         {
-            return _Vector2<T>(x * scalar, y * scalar);
+            return Vector2_<T>(x * scalar, y * scalar);
         }
 
         template <Arithmetic U>
@@ -91,7 +92,7 @@ namespace sdgl {
         template <Arithmetic U>
         Vector2_ operator/(U scalar) const
         {
-            return _Vector2<T>(x / scalar, y / scalar);
+            return Vector2_<T>(x / scalar, y / scalar);
         }
 
         template <Arithmetic U>
@@ -99,6 +100,16 @@ namespace sdgl {
         {
             x /= scalar; y /= scalar;
             return *this;
+        }
+
+        Vector2_ operator -()
+        {
+            return Vector2_(-x, -y);
+        }
+
+        Vector2_ operator +()
+        {
+            return Vector2_(x, y);
         }
 
         /**
@@ -118,7 +129,7 @@ namespace sdgl {
         Vector2_ normal() const
         {
             auto l = length();
-            return (l == 0) ?  Zero : _Vector2(x / l, y / l);
+            return (l == 0) ?  Zero : Vector2_(x / l, y / l);
         }
 
         template <Arithmetic U>
@@ -153,4 +164,21 @@ namespace sdgl {
 
     using Point = Vector2_<int>;
     using Vector2 = Vector2_<float>;
+
+
 }
+
+#include <sdgl/format.h>
+template <typename T>
+struct formatter<sdgl::Vector2_<T>>
+{
+    template <class FormatContext>
+    constexpr auto parse(FormatContext& ctx) {
+        return ctx.begin();
+    }
+
+    template <class FormatContext>
+    auto format(const sdgl::Vector2_<T>& obj, FormatContext& ctx) const {
+        return std::format_to(ctx.out(), "({}, {})", obj.x, obj.y);
+    }
+};

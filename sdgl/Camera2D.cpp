@@ -23,8 +23,9 @@ namespace sdgl {
         void updateMatrix()
         {
             if (!isDirty) return;
+
             matrix =
-                glm::ortho<float>((float)viewport.x, (float)viewport.w, (float)viewport.h, (float)viewport.y) *
+                ortho *
                 glm::translate(glm::mat4(1.f), {origin.x * (float)viewport.w, origin.y * (float)viewport.h, 0}) *
                 glm::rotate(glm::mat4(1.f), mathf::toRadians(rotation), {0.f, 0.f, 1.f}) *
                 glm::scale(glm::mat4(1.f), {scale.x, scale.y, 1.f}) *
@@ -53,6 +54,7 @@ namespace sdgl {
         if (value != m->viewport)
         {
             m->viewport = value;
+            m->ortho = glm::ortho<float>((float)value.x, (float)value.w, (float)value.h, (float)value.y);
             m->isDirty = true;
         }
 
@@ -92,18 +94,27 @@ namespace sdgl {
         return &m->matrix[0][0];
     }
 
-    Vector2 Camera2D::viewToWorld(const Vector2 viewPosition) const
+    Vector2 Camera2D::viewToWorld(const Vector2 viewCoords) const
     {
         m->updateMatrix();
-        auto v = glm::vec4{viewPosition.x, viewPosition.y, 0, 1} * m->matrix;
-        return {v.x, v.y};
+        const auto screenCoords = Vector2{
+            (viewCoords.x + (float)m->viewport.x) / (float)m->viewport.w * 2.f - 1.f,
+            (1.f - (viewCoords.y + (float)m->viewport.y) / (float)m->viewport.h) * 2.f - 1.f,
+        };
+
+        auto worldCoords = m->invertedMatrix * glm::vec4{screenCoords.x, screenCoords.y, 0, 1};
+        return {worldCoords.x, worldCoords.y};
     }
 
-    Vector2 Camera2D::worldToView(const Vector2 worldPosition) const
+    Vector2 Camera2D::worldToView(const Vector2 worldCoords) const
     {
         m->updateMatrix();
-        auto v = glm::vec4{worldPosition.x, worldPosition.y, 0, 1} * m->invertedMatrix;
-        return {v.x, v.y};
+        auto screenCoords = m->matrix * glm::vec4{worldCoords.x, worldCoords.y, 0, 1};
+
+        return { // view coordinates
+            (screenCoords.x + 1.f) * .5f * (float)m->viewport.w - (float)m->viewport.x,
+            (1.f - (screenCoords.y + 1.f) * .5f) * (float)m->viewport.h - (float)m->viewport.y
+        };
     }
 
     FRectangle Camera2D::getWorldBounds() const
@@ -112,7 +123,7 @@ namespace sdgl {
         {
             auto worldPos = viewToWorld(Vector2::Zero);
             auto worldSize = viewToWorld({(float)m->viewport.w, (float)m->viewport.h});;
-            m->worldBounds = FRectangle(worldPos.x, worldPos.y, worldSize.x, worldSize.y);
+            m->worldBounds = FRectangle(worldPos.x, worldPos.y, worldSize.x - worldPos.x, worldSize.y - worldPos.y);
         }
 
         return m->worldBounds.value();

@@ -36,17 +36,31 @@ namespace sdgl::graphics {
 
         explicit RenderProgram(Config config);
         RenderProgram();
+        RenderProgram(RenderProgram &&other) noexcept;
+        RenderProgram &operator=(RenderProgram &&other) noexcept;
+        RenderProgram(const RenderProgram &other) = delete;
 
-        /// Initialize the program, this must be called before `render`
+        ~RenderProgram();
+
+        /// Initialize the program with the currently loaded config, this must be called before `render`
         /// @returns whether initialization succeeded
         bool init();
 
+        /// Initialize the program with a new config - this must be called before `render`
+        /// @param config configuration object, if one was already passed in the ctor,
+        ///               just call `init()`
+        /// @returns whether initialization succeeded
+        bool init(Config config);
+
+        /// Check if the program has been initialized successfully
         [[nodiscard]]
         bool isLoaded() const;
 
+        /// Get the shader - use this reference to set/get uniforms
         [[nodiscard]]
         Shader *shader();
 
+        /// Get the shader - use this reference to get uniforms
         [[nodiscard]]
         const Shader *shader() const;
 
@@ -73,9 +87,12 @@ namespace sdgl::graphics {
         void clearIndices();
 
         /// Draw the program
-        void render(PrimitiveType::Enum primitiveType = PrimitiveType::Triangles) const;
+        /// @param primitiveType type of primitives to render vertices with - corresponds to OpenGL mode
+        /// @param offset number of vertices or indices (if setIndices was called) to begin drawing from
+        /// @param count number of vertices or indices (if setIndices was called) to draw, by default all are drawn
+        void render(PrimitiveType::Enum primitiveType = PrimitiveType::Triangles, int offset = 0, int count = INT_MAX) const;
 
-        /// Clean up, call init again to reinitialize
+        /// Clean up - all calls to render after calling `dispose` will fail until `init` is called again
         void dispose();
 
     private:

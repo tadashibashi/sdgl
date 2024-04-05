@@ -78,6 +78,7 @@ namespace sdgl {
         Shader &setUniform(int location, const glm::vec4 &value);
         Shader &setUniform(int location, const glm::vec3 &value);
         Shader &setUniform(int location, const glm::vec2 &value);
+        Shader &setUniform(int location, const Vector2 &value);
         Shader &setUniform(int location, int value);
         Shader &setUniform(int location, uint value);
         Shader &setUniform(int location, const Texture2D &texture, int slot = 0);
@@ -110,7 +111,7 @@ namespace sdgl {
         /**
          * Delete loaded shader program
          */
-        void clear();
+        void dispose();
     private:
         static uint compileFile(const string &filepath, int type);
         static uint compileString(const char *source, int type);

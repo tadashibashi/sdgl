@@ -9,6 +9,8 @@ namespace sdgl {
             Y,
             BumperLeft,
             BumperRight,
+            StickLeft,
+            StickRight,
             Back,
             Start,
             Guide,

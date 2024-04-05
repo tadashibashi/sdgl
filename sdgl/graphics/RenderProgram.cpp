@@ -6,17 +6,60 @@
 
 namespace sdgl::graphics {
     RenderProgram::RenderProgram(Config config) :
-        m_vao(0), m_vbo(0), m_ebo(0), m_config(std::move(config)), m_indexCount(0), m_vertexCount(0)
+      m_vao(0), m_vbo(0), m_ebo(0), m_shader(), m_config(std::move(config)), m_indexCount(0), m_vertexCount(0)
     {
     }
 
     RenderProgram::RenderProgram() :
-        m_vao(0), m_vbo(0), m_ebo(0), m_config(), m_indexCount(0), m_vertexCount(0)
+      m_vao(0), m_vbo(0), m_ebo(0), m_shader(), m_config(), m_indexCount(0), m_vertexCount(0)
     {
+    }
+
+    RenderProgram::RenderProgram(RenderProgram &&other) noexcept :
+      m_vao(other.m_vao), m_vbo(other.m_vbo), m_ebo(other.m_ebo),
+      m_shader(std::move(other.m_shader)),
+      m_config(std::move(other.m_config)),
+      m_indexCount(other.m_indexCount), m_vertexCount(other.m_vertexCount)
+    {
+        // Invalidate other
+        other.m_vertexCount = 0;
+        other.m_indexCount = 0;
+        other.m_vao = 0;
+        other.m_vbo = 0;
+        other.m_ebo = 0;
+    }
+
+    RenderProgram &RenderProgram::operator=(RenderProgram &&other) noexcept
+    {
+        m_vao = other.m_vao;
+        m_vbo = other.m_vbo;
+        m_ebo = other.m_ebo;
+        m_shader = std::move(other.m_shader);
+        m_config = std::move(other.m_config);
+        m_indexCount = other.m_indexCount;
+        m_vertexCount = other.m_vertexCount;
+
+        // Invalidate other
+        other.m_vertexCount = 0;
+        other.m_indexCount = 0;
+        other.m_vao = 0;
+        other.m_vbo = 0;
+        other.m_ebo = 0;
+
+        return *this;
+    }
+
+    RenderProgram::~RenderProgram()
+    {
+        dispose();
     }
 
     bool RenderProgram::init()
     {
+        SDGL_ASSERT(!m_config.vertShader.empty()); // must have vertex shader data
+        SDGL_ASSERT(!m_config.fragShader.empty()); // must have fragment shader data
+        SDGL_ASSERT(!m_config.attributes.empty()); // must be at least one vertex type in there
+
         // Load shader
         Shader shader;
         if (m_config.openFiles)
@@ -76,6 +119,12 @@ namespace sdgl::graphics {
         m_ebo = ebo;
 
         return true;
+    }
+
+    bool RenderProgram::init(Config config)
+    {
+        m_config = std::move(config);
+        return init();
     }
 
     bool RenderProgram::isLoaded() const
@@ -145,7 +194,7 @@ namespace sdgl::graphics {
         GL_TRIANGLE_FAN,
     };
 
-    void RenderProgram::render(PrimitiveType::Enum primitiveType) const
+    void RenderProgram::render(PrimitiveType::Enum primitiveType, int offset, int count) const
     {
         SDGL_ASSERT(m_shader.isLoaded());
         SDGL_ASSERT(m_vao);
@@ -159,14 +208,22 @@ namespace sdgl::graphics {
         auto glPrimitiveType = s_primitiveTypes[primitiveType];
         if (m_indexCount > 0) // render by index
         {
+            // constrain indices for best performance of glDrawRangeElements
+            offset = mathf::clampi(offset, 0, m_indexCount);
+            auto maxIndex =  mathf::clampi(offset + count, offset, m_indexCount);
+            count = mathf::clampi(count, 0, m_indexCount - offset + 1);
+
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo); GL_ERR_CHECK();
-            glDrawElements(glPrimitiveType, m_indexCount, GL_UNSIGNED_INT, nullptr); GL_ERR_CHECK();
+            glDrawRangeElements(glPrimitiveType, offset, maxIndex, count, GL_UNSIGNED_INT, nullptr); GL_ERR_CHECK();
             glBindVertexArray(0); GL_ERR_CHECK();
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); GL_ERR_CHECK();
         }
         else                  // render vertices directly
         {
-            glDrawArrays(glPrimitiveType, 0, m_vertexCount); GL_ERR_CHECK();
+            offset = mathf::clampi(offset, 0, m_vertexCount);
+            count = mathf::clampi(count, 0, m_vertexCount - offset + 1);
+
+            glDrawArrays(glPrimitiveType, offset, count); GL_ERR_CHECK();
             glBindVertexArray(0); GL_ERR_CHECK();
         }
 
@@ -193,6 +250,6 @@ namespace sdgl::graphics {
             m_vao = 0;
         }
 
-        m_shader.clear();
+        m_shader.dispose();
     }
 }

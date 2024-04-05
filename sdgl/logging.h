@@ -38,7 +38,7 @@ namespace sdgl::logging::detail {
     spdlog::logger *getCoreLogger();
 }
 #   define SDGL_ERROR(...) do { \
-    auto message = sdgl::format(__VA_ARGS__); \
+    auto message = format(__VA_ARGS__); \
     sdgl::logging::detail::setLastErrorMessage(message); \
     sdgl::logging::detail::getCoreLogger()->error(message); \
 } while(0)
@@ -70,7 +70,7 @@ namespace sdgl::logging::detail {
 #if defined(_MSC_VER)
 #   define SDGL_LOG(...) __noop
 #   define SDGL_WARN(...) __noop
-#   define SDGL_ERROR(...) sdgl::logging::detail::setLastErrorMessage(sdgl::format(__VA_ARGS__))
+#   define SDGL_ERROR(...) sdgl::logging::detail::setLastErrorMessage(format(__VA_ARGS__))
 #   define SDGL_GET_ERROR() sdgl::logging::detail::getLastErrorMessage()
 #   define SDGL_ASSERT(condition) __noop
 #   define DEBUG_LOG(...) __noop

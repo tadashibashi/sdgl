@@ -34,8 +34,8 @@ add_library(sdgl STATIC
         Camera2D.h
         defaultShader.cpp
         defaultShader.h
-        SpriteBatch.cpp
-        SpriteBatch.h
+        graphics/SpriteBatch2D.cpp
+        graphics/SpriteBatch2D.h
         Color.h
         Color.cpp
         Texture2D.h
@@ -48,6 +48,14 @@ add_library(sdgl STATIC
         ShaderAttribs.h
         graphics/RenderProgram.cpp
         graphics/RenderProgram.h
+        graphics/TextureCache.cpp
+        graphics/TextureCache.h
+        graphics/detail/spriteBatch2DShader.inl
+        math/random.cpp
+        math/random.h
+        graphics/BitmapFont.cpp
+        graphics/BitmapFont.h
+        math/math_formats.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)
