@@ -28,6 +28,8 @@ namespace sdgl::graphics {
         };
     };
 
+    /// Basic sprite batch for rendering texture quads.
+    /// Intended for use with a texture atlas for efficient rendering.
     class SpriteBatch2D {
         struct Vertex
         {
@@ -50,11 +52,11 @@ namespace sdgl::graphics {
         struct RenderBatch
         {
             RenderBatch(const uint offset, const uint vertexCount, const Texture2D &texture)
-                    : offset(offset), objCount(vertexCount), texture(texture)
+                    : offset(offset), count(vertexCount), texture(texture)
             {}
-            uint offset;
-            uint objCount;
-            Texture2D texture;
+            uint offset;        ///< starting index in the vertex array
+            uint count;         ///< number of objects in this batch
+            Texture2D texture;  ///< texture to render for this batch
         };
     public:
         SpriteBatch2D();

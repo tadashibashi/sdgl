@@ -1,6 +1,6 @@
 #pragma once
-#include <sdgl/Shader.h>
-#include <sdgl/ShaderAttribs.h>
+#include <sdgl/graphics/Shader.h>
+#include <sdgl/graphics/ShaderAttribs.h>
 
 namespace sdgl::graphics {
     struct PrimitiveType

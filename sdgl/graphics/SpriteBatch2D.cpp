@@ -3,13 +3,15 @@
 #include "detail/spriteBatch2DShader.inl"
 #include <sdgl/gl.h>
 #include <glm/gtc/type_ptr.hpp>
+
 namespace sdgl::graphics {
+    static constexpr int VertsPerQuad = 6;
+
     SpriteBatch2D::SpriteBatch2D(): m_glyphs{}, m_batches{},
         m_sortOrder{SortOrder::BackToFront}, m_program{}, m_matrix{},
         u_texture(), u_projMtx(), u_texSize()
     {
     }
-
 
     void SpriteBatch2D::init()
     {
@@ -20,24 +22,26 @@ namespace sdgl::graphics {
             .attributes = ShaderAttribs()
                 .attrib(&Vertex::position, GLType::Float, 2)
                 .attrib(&Vertex::texcoord, GLType::Float, 2)
-                .attrib(&Vertex::color, GLType::Float, 4),
+                .attrib(&Vertex::color, GLType::Ubyte, 4, true),
             .openFiles = false,
         });
 
+        // locate shader uniforms
         u_texture = m_program.shader()->locateUniform("u_Texture");
         u_projMtx = m_program.shader()->locateUniform("u_ProjMtx");
         u_texSize = m_program.shader()->locateUniform("u_TexSize");
     }
 
     void SpriteBatch2D::drawTexture(
-        const Texture2D &texture,
+        const Texture2D &texture, ///< texture to render
         Rectangle source,
         Vector2 position,
         Color color,
-        Vector2 scale,            /// texture scale
-        Vector2 anchor,           /// anchor offset in local pixels
-        float angle,              /// in radians
-        float depth)
+        Vector2 scale,            ///< texture scale
+        Vector2 anchor,           ///< anchor offset in local pixels
+        float angle,              ///< in radians
+        float depth               ///< depth sorting value
+    )
     {
         // Texture checks
         SDGL_ASSERT(texture.id());
@@ -108,13 +112,13 @@ namespace sdgl::graphics {
             return;
 
         // FUTURE: Some research should be done to see when index vs vertex rendering is optimal.
-        if (m_glyphs.size() > 10000u) // ----- Index Mode -----
+        if (m_glyphs.size() > 10000u) // ----- Index Mode: draw using vertex indices -----
         {
             vector<uint> indices;
             vector<Vertex> vertices;
             vector<RenderBatch> batches;
             vertices.reserve(m_glyphs.size() * 4);
-            indices.reserve(m_glyphs.size() * 6);
+            indices.reserve(m_glyphs.size() * VertsPerQuad);
 
             for (uint indexOffset = 0, lastTexId = UINT32_MAX;
                 const auto &[topleft, bottomleft,topright, bottomright, texture, depth] : m_glyphs)
@@ -123,64 +127,70 @@ namespace sdgl::graphics {
                 if (const auto texId = texture.id();
                     lastTexId != texId)
                 {
-                    batches.emplace_back(indexOffset, 6, texture);
+                    batches.emplace_back(indexOffset, VertsPerQuad, texture);
                     lastTexId = texId;
                 }
                 else
                 {
                     // same texture - stay on same batch - add num indices for this glyph
-                    batches.back().objCount += 6;
+                    batches.back().count += VertsPerQuad;
                 }
 
-                auto vertIndex = vertices.size();
+                auto vertIndex = vertices.size(); // first vertex index for this quad
 
+                // add quad vertices (only 4 needed, since we're pointing to them via indices)
                 vertices.emplace_back(topleft);
                 vertices.emplace_back(bottomleft);
                 vertices.emplace_back(bottomright);
                 vertices.emplace_back(topright);
 
+                // add quad vertex indices
                 indices.emplace_back(vertIndex);
                 indices.emplace_back(vertIndex + 1);
                 indices.emplace_back(vertIndex + 2);
                 indices.emplace_back(vertIndex + 2);
                 indices.emplace_back(vertIndex + 3);
                 indices.emplace_back(vertIndex);
-                indexOffset += 6;
+                indexOffset += VertsPerQuad;
             }
 
+            // send vertices to the graphics card
             m_program.setVertices(vertices);
             m_program.setIndices(indices);
+
+            // done, commit batches
             m_batches.swap(batches);
         }
-        else                         // ----- Vertex Mode -----
+        else                         // ----- Vertex Mode: draw individual vertices -----
         {
             vector<Vertex> vertices;
             vector<RenderBatch> batches;
-            vertices.reserve(m_glyphs.size() * 6);
+            vertices.reserve(m_glyphs.size() * VertsPerQuad);
 
             for (uint offset = 0, lastTexId = UINT32_MAX;
                 const auto &[topleft, bottomleft, topright, bottomright, texture, depth] : m_glyphs)
             {
                 // Each texture swap requires a new batch
-                if (const auto texId = texture.id();
-                    lastTexId != texId)
+                if (const auto texId = texture.id(); lastTexId != texId)
                 {
-                    batches.emplace_back(offset, 6, texture);
+                    batches.emplace_back(offset, VertsPerQuad, texture);
                     lastTexId = texId;
                 }
                 else
                 {
                     // same texture - stay on same batch - add num vertices to batch for this glyph
-                    batches.back().objCount += 6;
+                    batches.back().count += VertsPerQuad;
                 }
 
+                // add vertices for this quad
                 vertices.emplace_back(topleft);
                 vertices.emplace_back(bottomleft);
                 vertices.emplace_back(bottomright);
                 vertices.emplace_back(bottomright);
                 vertices.emplace_back(topright);
                 vertices.emplace_back(topleft);
-                offset += 6;
+
+                offset += VertsPerQuad;
             }
 
             // send vertices to graphics card
@@ -237,7 +247,7 @@ namespace sdgl::graphics {
             // Draw batch
             m_program.render(PrimitiveType::Triangles,
               static_cast<GLint>(batch.offset),
-              static_cast<GLint>(batch.objCount));
+              static_cast<GLint>(batch.count));
         }
     }
 }

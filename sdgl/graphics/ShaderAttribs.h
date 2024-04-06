@@ -96,8 +96,13 @@ namespace sdgl {
         {
             if (!m_vertexTypeHash)
                 m_vertexTypeHash = typeid(T).hash_code();
+
             if (m_attribs.empty())
                 m_sizeofVertex = sizeof(T);
+            else
+            {
+                SDGL_ASSERT(m_sizeofVertex == sizeof(T));
+            }
             return attrib(type, count, normalized, sizeof(T), offset(member));
         }
 

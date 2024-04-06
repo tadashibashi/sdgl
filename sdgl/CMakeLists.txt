@@ -2,8 +2,8 @@ add_subdirectory(backends)
 
 add_library(sdgl STATIC
         sdglib.h
-        Shader.h
-        Shader.cpp
+        graphics/Shader.h
+        graphics/Shader.cpp
         backends/Backend.h
         Key.h
         Key.cpp
@@ -44,8 +44,8 @@ add_library(sdgl STATIC
         platform/emscripten.h
         platform/emscripten.cpp
         Delegate.h
-        ShaderAttribs.cpp
-        ShaderAttribs.h
+        graphics/ShaderAttribs.cpp
+        graphics/ShaderAttribs.h
         graphics/RenderProgram.cpp
         graphics/RenderProgram.h
         graphics/TextureCache.cpp
@@ -55,7 +55,6 @@ add_library(sdgl STATIC
         math/random.h
         graphics/BitmapFont.cpp
         graphics/BitmapFont.h
-        math/math_formats.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)

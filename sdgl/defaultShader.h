@@ -1,5 +1,5 @@
 #pragma once
-#include "Shader.h"
+#include "graphics/Shader.h"
 
 namespace sdgl {
     /**

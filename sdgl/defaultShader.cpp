@@ -4,7 +4,7 @@
 
 #include "defaultShader.h"
 
-#include "Shader.h"
+#include "graphics/Shader.h"
 
 namespace sdgl {
     static const auto defaultVertexShader =

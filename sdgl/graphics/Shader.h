@@ -1,9 +1,8 @@
 #pragma once
 #include <glm/fwd.hpp>
 
-#include "sdglib.h"
-#include "ShaderAttribs.h"
-#include "Texture2D.h"
+#include <sdgl/sdglib.h>
+#include <sdgl/Texture2D.h>
 
 namespace sdgl {
     /**

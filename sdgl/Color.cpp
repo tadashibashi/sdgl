@@ -3,72 +3,71 @@
 #include "math/mathf.h"
 
 namespace sdgl {
-    Color & Color::set(float r, float g, float b, float a)
+    Color & Color::set(ubyte red, ubyte green, ubyte blue, ubyte alpha)
     {
-        this->r = mathf::clamp(r, 0, 1.f);
-        this->g = mathf::clamp(g, 0, 1.f);
-        this->b = mathf::clamp(b, 0, 1.f);
-        this->a = mathf::clamp(a, 0, 1.f);
+        this->r = red;
+        this->g = green;
+        this->b = blue;
+        this->a = alpha;
 
         return *this;
     }
 
-    Color &Color::setR(const float value)
+    Color & Color::setGrayScale(ubyte gray, ubyte alpha)
     {
-        r = mathf::clamp(value, 0.f, 1.f);
+        r = gray;
+        g = gray;
+        b = gray;
+        a = alpha;
         return *this;
     }
 
-    Color &Color::setG(const float value)
+    Color &Color::setR(const ubyte value)
     {
-        g = mathf::clamp(value, 0.f, 1.f);
+        r = value;
         return *this;
     }
 
-    Color &Color::setB(const float value)
+    Color &Color::setG(const ubyte value)
     {
-        b = mathf::clamp(value, 0.f, 1.f);
+        g = value;
         return *this;
     }
 
-    Color &Color::setA(const float value)
+    Color &Color::setB(const ubyte value)
     {
-        a = mathf::clamp(value, 0.f, 1.f);
+        b = value;
         return *this;
     }
 
-    Color Color::fromRGBA(const ubyte r, const ubyte g, const ubyte b, const ubyte a)
+    Color &Color::setA(const ubyte value)
     {
-        return {
-            static_cast<float>(r) / 255.f,
-            static_cast<float>(g) / 255.f,
-            static_cast<float>(b) / 255.f,
-            static_cast<float>(a) / 255.f
-        };
+        a = value;
+        return *this;
     }
 
     Color Color::fromRGBA(uint rgba)
     {
-        const auto a = static_cast<float>(rgba % 0xFF) / 255.f;
+        const ubyte a = rgba % 0xFF;
         rgba >>= 8;
-        const auto b = static_cast<float>(rgba % 0xFF) / 255.f;
+        const ubyte b = rgba % 0xFF;
         rgba >>= 8;
-        const auto g = static_cast<float>(rgba % 0xFF) / 255.f;
+        const ubyte g = rgba % 0xFF;
         rgba >>= 8;
-        const auto r = static_cast<float>(rgba % 0xFF) / 255.f;
+        const ubyte r = rgba % 0xFF;
 
         return {r, g, b, a};
     }
 
     Color Color::fromARGB(uint argb)
     {
-        const auto b = static_cast<float>(argb % 0xFF) / 255.f;
+        const ubyte b = argb % 0xFF;
         argb >>= 8;
-        const auto g = static_cast<float>(argb % 0xFF) / 255.f;
+        const ubyte g = argb % 0xFF;
         argb >>= 8;
-        const auto r = static_cast<float>(argb % 0xFF) / 255.f;
+        const ubyte r = argb % 0xFF;
         argb >>= 8;
-        const auto a = static_cast<float>(argb % 0xFF) / 255.f;
+        const ubyte a = argb % 0xFF;
 
         return {r, g, b, a};
     }
@@ -85,32 +84,32 @@ namespace sdgl {
     uint Color::toARGB() const
     {
         return
-            static_cast<uint>(std::round(a * 255.f)) << 24 |
-            static_cast<uint>(std::round(r * 255.f)) << 16 |
-            static_cast<uint>(std::round(g * 255.f)) << 8  |
-            static_cast<uint>(std::round(b * 255.f));
+            a << 24 |
+            r << 16 |
+            g << 8  |
+            b;
     }
 
     // ----- grays ------
-    const Color Color::White = Color(1.0f, 1.0f, 1.0f);
-    const Color Color::Gray = Color(.5f, .5f, .5f);
+    const Color Color::White = Color(255, 255, 255);
+    const Color Color::Gray = Color(128, 128, 128);
     const Color Color::Black = Color(0, 0, 0);
 
     // ----- primary colors -----
-    const Color Color::Red = Color(1.f, 0, 0);
-    const Color Color::Green = Color(0, 1.f, 0);
-    const Color Color::Blue = Color(0, 0, 1.f);
+    const Color Color::Red = Color(255, 0, 0);
+    const Color Color::Green = Color(0, 255, 0);
+    const Color Color::Blue = Color(0, 0, 255);
 
     // ----- secondary colors -----
-    const Color Color::Cyan = Color(0, 1.f, 1.f);
-    const Color Color::Magenta = Color(1.f, 0, 1.f);
-    const Color Color::Yellow = Color(1.f, 1.f, 0);
+    const Color Color::Cyan = Color(0, 255, 255);
+    const Color Color::Magenta = Color(255, 0, 255);
+    const Color Color::Yellow = Color(255, 255, 0);
 
     // ----- tertiary colors -----
-    const Color Color::Orange = Color(1.f, .5f, 0);
-    const Color Color::Chartreuse = Color(.5f, 1.f, 0);
-    const Color Color::SpringGreen = Color(0, 1.f, .5f);
-    const Color Color::Azure = Color(0, .5f, 1.f);
-    const Color Color::Violet = Color(.5f, 0, 1.f);
-    const Color Color::Rose = Color(1.f, 0, .5f);
+    const Color Color::Orange = Color(255, 128, 0);
+    const Color Color::Chartreuse = Color(128, 255, 0);
+    const Color Color::SpringGreen = Color(0, 255, 128);
+    const Color Color::Azure = Color(0, 128, 255);
+    const Color Color::Violet = Color(128, 0, 255);
+    const Color Color::Rose = Color(255, 0, 128);
 }
