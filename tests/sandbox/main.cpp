@@ -47,7 +47,7 @@ private:
     vector<Sprite> m_sprites{};
 
 protected:
-    void init() override
+    bool init() override
     {
         m_texture.loadFile("RPG_interior.png");
 
@@ -76,6 +76,8 @@ protected:
             .texture = m_texture,
             .rotationSpeed = 0
         });
+
+        return true;
     }
 
     void update() override
@@ -208,9 +210,7 @@ protected:
 
 };
 
-int main()
+int main(int argc, char *argv[])
 {
-    TestApp().run();
-
-    return 0;
+    return TestApp().run(argc, argv);
 }

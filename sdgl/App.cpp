@@ -15,6 +15,7 @@ namespace sdgl {
         WindowFlags::Enum flags;
         PluginConfig plugins;
         Window *window;
+        vector<string> args;
     };
 
     App::App(const string &title, const int width, const int height,
@@ -35,27 +36,37 @@ namespace sdgl {
         delete m;
     }
 
-    void App::run()
+    int App::run(int argc, char *argv[])
     {
         const auto be = m->backend;
         if (!be->init())
-            return;
+            return ErrorCode::BackendInitError;
 
         const auto window = be->createWindow(m->title, m->width, m->height, m->flags, m->plugins);
         if (!window)
         {
             be->shutdown();
-            return;
+            return ErrorCode::CreateWindowFailed;
         }
 
         m->window = window;
+        m->args = vector<string>(argv, argv + argc);
+
+        for (int i = 0; auto &arg : m->args)
+            SDGL_LOG("ARG {}: {}", i++, arg);
 
         // debug display vendor information
         SDGL_LOG("OpenGL Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
         SDGL_LOG("OpenGL Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
         SDGL_LOG("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
-        init();
+        if (!init())
+        {
+            be->destroyWindow(window);
+            be->shutdown();
+            return ErrorCode::AppInitError;
+        }
+
 #ifdef SDGL_PLATFORM_EMSCRIPTEN
         SDGL_EMSCRIPTEN_MAINLOOP_BEGIN
 #else
@@ -72,6 +83,8 @@ namespace sdgl {
 
         be->destroyWindow(window);
         be->shutdown();
+
+        return ErrorCode::Ok;
     }
 
     void App::runOneFrame()

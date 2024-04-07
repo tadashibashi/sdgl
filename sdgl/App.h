@@ -12,14 +12,25 @@ namespace sdgl {
             const PluginConfig &plugins = {.imgui=true});
         virtual ~App();
 
-        void run();
+        int run(int argc, char *argv[]);
 
         void quit();
 
         [[nodiscard]]
         Window *getWindow() const;
+
+        struct ErrorCode
+        {
+            enum Enum : int
+            {
+                Ok = 0,
+                BackendInitError,
+                CreateWindowFailed,
+                AppInitError,
+            };
+        };
     protected:
-        virtual void init() = 0;
+        virtual bool init() = 0;
         virtual void update() = 0;
         virtual void render() = 0;
         virtual void shutdown() = 0;
