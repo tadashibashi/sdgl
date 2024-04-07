@@ -38,14 +38,14 @@ namespace sdgl::io {
         /// @param buffer c string with memory to view
         /// @param endianness expected endianness of numeric data types (strings are always handled in little-endian order)
         explicit BufferView(const char *buffer, const Endian::Enum endianness = Endian::Little) :
-            m_buf((const ubyte *)buffer), m_pos(0), m_size(std::strlen(buffer) + 1), m_endian(endianness)
+            m_buf((const ubyte *)buffer), m_pos(0), m_size(std::strlen(buffer)), m_endian(endianness)
         {}
 
         /// Create BufferView from string of byte data
         /// @param buffer string containing memory to view
         /// @param endianness expected endianness of numeric data types (string are always handled in little-endian order)
         explicit BufferView(const string &buffer, const Endian::Enum endianness = Endian::Little) :
-            m_buf((const ubyte *)buffer.data()), m_pos(0), m_size(buffer.length() + 1), m_endian(endianness)
+            m_buf((const ubyte *)buffer.data()), m_pos(0), m_size(buffer.length()), m_endian(endianness)
         {}
 
         /// Create BufferView from vector of ubyte
@@ -109,9 +109,10 @@ namespace sdgl::io {
         ///          Note: this number may differ from string length + 1 if `maxSize` clipped the out value.
         uint read(string &outString, size_t maxSize = SIZE_T_MAX);
 
-        // FIXME: implementation this convenience function
         /// Read a string with an expected length
-        //bool readFixedString(string &outString, size_t targetLength, size_t maxSize = SIZE_T_MAX);
+        /// @param outString [out] string to receive the data
+        /// @param length          length of the string in bytes (not including null terminator)
+        uint readFixedString(string &outString, size_t length);
 
         /// Read a null-terminated string from the buffer
         /// @param outBuffer [out] pointer to a string buffer to receive the data
@@ -125,6 +126,12 @@ namespace sdgl::io {
         ///          Note: this number may differ from string length + 1 if `maxSize` clipped the out value.
         uint read(char *outBuffer, size_t maxSize);
 
+        /// Peek relative to the current location. In debug mode, an assertion is made to check bounds.
+        /// @param offset - offset bytes, may be negative
+        ///
+        /// @returns value of byte at location
+        [[nodiscard]]
+        ubyte peek(int offset = 0) const;
 
         /// Move the view's position back to 0
         void reset()

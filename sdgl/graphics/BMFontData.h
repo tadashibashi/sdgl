@@ -69,23 +69,24 @@ namespace sdgl::graphics {
             ubyte blueChnl;
         } common;
 
-
         /// Block type 3
         struct Page
         {
-            uint id;           ///< page identifier, should be the same as index
+            uint id;           ///< page identifier, same as index in pages vector
             string file;       ///< texture file name
         };
+        vector<Page> pages;
 
         /// Block type 4
         struct Char
         {
             uint id;
-            ushort x, y, width, height;
-            short xoffset, yoffset, xadvance;
-            uint page;
+            uint16 x, y, width, height;
+            int16 xoffset, yoffset, xadvance;
+            ubyte page;
             ubyte chnl;
         };
+        map<ubyte, Char> chars;
 
         /// Block type 5
         struct KerningPair
@@ -94,22 +95,14 @@ namespace sdgl::graphics {
             uint second;
             int16 amount;
         };
+        map<std::pair<uint, uint>, KerningPair> kernings;
 
         /// Read bmfont data into the object. Only supports the text file version.
         /// @param filepath path to the bmfont file to open
         /// @returns whether operation succeeded
         static bool fromFile(const string &filepath, BMFontData *data);
 
-        static bool fromBuffer(const string &buffer, BMFontData *data);
+        static bool fromBuffer(const string &buffer, BMFontData *outData);
 
-
-        string name;
-
-        ushort m_lineHeight, m_base, m_scaleW, m_scaleH;
-
-        map<uint, Char> m_chars;
-        map<std::pair<uint, uint>, short> m_kernings;
-
-        vector<Page> m_pages;
     };
 }

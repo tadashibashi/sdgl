@@ -3,7 +3,12 @@
 namespace sdgl::io {
     uint BufferView::read(string &outString, const size_t maxSize)
     {
-        if (m_pos >= m_size) return 0;
+        // Current position already finished reading?
+        if (m_pos >= m_size)
+        {
+            SDGL_ERROR("Cannot read string from buffer because BufferView is done reading");
+            return 0;
+        }
 
         try
         {
@@ -39,9 +44,27 @@ namespace sdgl::io {
         }
     }
 
+    uint BufferView::readFixedString(string &outString, size_t length)
+    {
+        if (m_pos + length > m_size)
+        {
+            SDGL_ERROR("Size of read exceeds buffer size");
+            return 0;
+        }
+
+        outString = string(m_buf + m_pos, m_buf + m_pos + length);
+        m_pos += length + 1; // +1 to move one past null terminator
+        return length + 1;
+    }
+
     uint BufferView::read(char *outBuffer, const size_t maxSize)
     {
-        if (m_pos >= m_size) return 0;
+        // Current position already finished reading?
+        if (m_pos >= m_size)
+        {
+            SDGL_ERROR("Cannot read string from buffer because BufferView is done reading");
+            return 0;
+        }
 
         try
         {
@@ -77,5 +100,14 @@ namespace sdgl::io {
             SDGL_ERROR("Failed to read string from buffer: unknown error");
             throw;
         }
+    }
+
+    ubyte BufferView::peek(const int offset) const
+    {
+        const int index = static_cast<int>(m_pos) + offset;
+
+        SDGL_ASSERT(index >= 0 && index < m_size);
+
+        return m_buf[index];
     }
 }
