@@ -1,6 +1,6 @@
 #pragma once
-#include "sdglib.h"
-#include "math/Vector2.h"
+#include "../sdglib.h"
+#include "../math/Vector2.h"
 
 namespace sdgl {
     struct TextureFilter

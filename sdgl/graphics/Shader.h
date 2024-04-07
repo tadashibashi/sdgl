@@ -2,7 +2,7 @@
 #include <glm/fwd.hpp>
 
 #include <sdgl/sdglib.h>
-#include <sdgl/Texture2D.h>
+#include <sdgl/graphics/Texture2D.h>
 
 namespace sdgl {
     /**

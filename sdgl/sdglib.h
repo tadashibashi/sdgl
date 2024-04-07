@@ -12,6 +12,8 @@
 namespace sdgl {
         using byte = int8_t;
         using ubyte = uint8_t;
+        using int16 = int16_t;
+        using uint16 = uint16_t;
         using ushort = uint16_t;
         using uint = uint32_t;
         using uint64 = uint64_t;

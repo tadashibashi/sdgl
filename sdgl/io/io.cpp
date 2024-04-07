@@ -17,7 +17,7 @@ namespace sdgl::io {
         file.seekg(0, std::ios::end);
         uint fileSize = file.tellg();
         file.seekg(0, std::ios::beg);
-        fileSize -= file.tellg(); // disregard file header metadata
+        //fileSize -= file.tellg(); // disregard file header metadata
 
         // Read file into out buffer
         string temp(fileSize, ' ');

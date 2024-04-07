@@ -17,9 +17,9 @@ namespace sdgl::io {
         };
     };
 
-    bool writeFile(const string &filepath, const string& data, WriteMode::Enum mode = WriteMode::Truncate);
-    bool writeFile(const string &filepath, const vector<byte>& data, WriteMode::Enum mode = WriteMode::Truncate);
-    bool writeFile(const string &filepath, const vector<ubyte>& data, WriteMode::Enum mode = WriteMode::Truncate);
+    // bool writeFile(const string &filepath, const string& data, WriteMode::Enum mode = WriteMode::Truncate);
+    // bool writeFile(const string &filepath, const vector<byte>& data, WriteMode::Enum mode = WriteMode::Truncate);
+    // bool writeFile(const string &filepath, const vector<ubyte>& data, WriteMode::Enum mode = WriteMode::Truncate);
 
     /**
      * Load image file into a gpu texture

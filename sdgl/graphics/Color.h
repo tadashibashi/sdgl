@@ -1,5 +1,5 @@
 #pragma once
-#include "sdglib.h"
+#include "../sdglib.h"
 
 namespace sdgl {
 #pragma pack(push, 1)
@@ -68,4 +68,7 @@ namespace sdgl {
         uint toARGB() const;
     };
 #pragma pack(pop)
+
+    /// for British programmers
+    using Colour = Color;
 }

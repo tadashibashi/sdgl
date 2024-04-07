@@ -79,7 +79,7 @@ namespace sdgl::logging::detail {
 #else
 #   define SDGL_LOG(...)
 #   define SDGL_WARN(...)
-#   define SDGL_ERROR(...) sdgl::logging::detail::setLastErrorMessage(sdgl::format(__VA_ARGS__))
+#   define SDGL_ERROR(...) sdgl::logging::detail::setLastErrorMessage(format(__VA_ARGS__))
 #   define SDGL_GET_ERROR() sdgl::logging::detail::getLastErrorMessage()
 #   define SDGL_ASSERT(condition)
 #   define DEBUG_LOG(...)

@@ -1,3 +1,5 @@
+set (CMAKE_CXX_STANDARD_REQUIRED 20)
+
 project(sdgl_utests)
 
 add_executable(sdgl_utests
@@ -5,6 +7,7 @@ add_executable(sdgl_utests
         Tween.test.cpp
         main.cpp
         PriorityList.test.cpp
+        BufferView.test.cpp
 )
 
 target_link_libraries(sdgl_utests PRIVATE Catch2::Catch2 sdgl)

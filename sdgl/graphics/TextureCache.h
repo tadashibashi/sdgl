@@ -1,5 +1,5 @@
 #pragma once
-#include <sdgl/Texture2D.h>
+#include <sdgl/graphics/Texture2D.h>
 
 namespace sdgl {
     class TextureCache {

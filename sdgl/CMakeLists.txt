@@ -36,10 +36,10 @@ add_library(sdgl STATIC
         defaultShader.h
         graphics/SpriteBatch2D.cpp
         graphics/SpriteBatch2D.h
-        Color.h
-        Color.cpp
-        Texture2D.h
-        Texture2D.cpp
+        graphics/Color.h
+        graphics/Color.cpp
+        graphics/Texture2D.h
+        graphics/Texture2D.cpp
         io/stb_image_impl.cpp
         platform/emscripten.h
         platform/emscripten.cpp
@@ -53,8 +53,10 @@ add_library(sdgl STATIC
         graphics/detail/spriteBatch2DShader.inl
         math/random.cpp
         math/random.h
-        graphics/BitmapFont.cpp
-        graphics/BitmapFont.h
+        graphics/BMFontData.cpp
+        graphics/BMFontData.h
+        io/BufferView.cpp
+        io/BufferView.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)

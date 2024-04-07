@@ -1,6 +1,6 @@
 #include "Color.h"
 
-#include "math/mathf.h"
+#include "../math/mathf.h"
 
 namespace sdgl {
     Color & Color::set(ubyte red, ubyte green, ubyte blue, ubyte alpha)

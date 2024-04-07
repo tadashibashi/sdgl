@@ -1,6 +1,6 @@
 #include "Texture2D.h"
 
-#include "io/io.h"
+#include <sdgl/io/io.h>
 #include <stb_image.h>
 #include <sdgl/gl.h>
 

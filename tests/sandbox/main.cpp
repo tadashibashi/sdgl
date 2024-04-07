@@ -7,12 +7,12 @@
 #include <sdgl/Camera2D.h>
 #include <sdgl/graphics/SpriteBatch2D.h>
 
-#include "sdgl/Color.h"
+#include "../../sdgl/graphics/Color.h"
 
 #include "sdgl/math/geometry.h"
 #include "sdgl/math/random.h"
 #include <sdgl/math/Rectangle.h>
-#include <sdgl/Texture2D.h>
+#include <../../sdgl/graphics/Texture2D.h>
 #include <sdgl/logging.h>
 
 using namespace sdgl;

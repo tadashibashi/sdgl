@@ -7,11 +7,12 @@
 namespace sdgl::graphics {
     static constexpr int VertsPerQuad = 6;
 
-    SpriteBatch2D::SpriteBatch2D(): m_glyphs{}, m_batches{},
-        m_sortOrder{SortOrder::BackToFront}, m_program{}, m_matrix{},
-        u_texture(), u_projMtx(), u_texSize()
-    {
-    }
+    SpriteBatch2D::SpriteBatch2D() :
+        m_glyphs(), m_batches(),
+        m_sortOrder(SortOrder::BackToFront),
+        m_program(), m_batchStarted(false), u_texture(),
+        u_projMtx(), u_texSize(), m_matrix()
+    { }
 
     void SpriteBatch2D::init()
     {
@@ -33,22 +34,21 @@ namespace sdgl::graphics {
     }
 
     void SpriteBatch2D::drawTexture(
-        const Texture2D &texture, ///< texture to render
+        const Texture2D &texture,
         Rectangle source,
         Vector2 position,
         Color color,
-        Vector2 scale,            ///< texture scale
-        Vector2 anchor,           ///< anchor offset in local pixels
-        float angle,              ///< in radians
-        float depth               ///< depth sorting value
+        Vector2 scale,
+        Vector2 anchor,
+        float angle,
+        float depth
     )
     {
         // Texture checks
         SDGL_ASSERT(texture.id());
         SDGL_ASSERT(texture.size().x > 0 && texture.size().y > 0);
 
-        const auto texSize = Vector2(texture.size());
-        const FRectangle texCoords = static_cast<FRectangle>(source);
+        const auto texCoords = static_cast<FRectangle>(source);
 
         // Scale anchor point
         anchor *= scale;
@@ -57,8 +57,8 @@ namespace sdgl::graphics {
         FRectangle dest = {
             std::round(position.x),
             std::round(position.y),
-            std::round(static_cast<float>(source.w) * scale.x), // width
-            std::round(static_cast<float>(source.h) * scale.y)  // height
+            std::round(texCoords.w * scale.x), // width
+            std::round(texCoords.h * scale.y)  // height
         };
 
         // Calculate destination offset from rotation & anchor point (get zero-ed point, rotate it, then reapply
@@ -67,6 +67,7 @@ namespace sdgl::graphics {
         auto offsetTopRight    = mathf::rotate(Vector2(dest.w - anchor.x, -anchor.y), angle);
         auto offsetBottomRight = mathf::rotate(Vector2(dest.w - anchor.x, dest.h - anchor.y), angle);
 
+        // Create and append glyph/quad image
         Glyph glyph;
         glyph.texture = texture;
         glyph.depth = depth;
