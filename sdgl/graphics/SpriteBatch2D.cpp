@@ -128,16 +128,18 @@ namespace sdgl::graphics {
             return;
 
         // FUTURE: Some research should be done to see when index vs vertex rendering is optimal.
-        if (m_glyphs.size() > 10000u) // ----- Index Mode: draw using vertex indices -----
+        if (false) // ----- Index Mode: draw using vertex indices -----
         {
             vector<uint> indices;
             vector<Vertex> vertices;
-            vector<RenderBatch> batches;
+            auto &batches = m_batches;
+            batches.clear();
+
             vertices.reserve(m_glyphs.size() * 4);
             indices.reserve(m_glyphs.size() * VertsPerQuad);
 
-            for (uint indexOffset = 0, lastTexId = UINT32_MAX;
-                const auto &[topleft, bottomleft,topright, bottomright, texture, depth] : m_glyphs)
+            for (uint indexOffset = 0, vertOffset = 0, lastTexId = UINT32_MAX;
+                const auto &[topleft, bottomleft, topright, bottomright, texture, depth] : m_glyphs)
             {
                 // Each texture swap requires a new batch
                 if (const auto texId = texture.id();
@@ -152,35 +154,34 @@ namespace sdgl::graphics {
                     batches.back().count += VertsPerQuad;
                 }
 
-                auto vertIndex = vertices.size(); // first vertex index for this quad
-
                 // add quad vertices (only 4 needed, since we're pointing to them via indices)
                 vertices.emplace_back(topleft);
                 vertices.emplace_back(bottomleft);
                 vertices.emplace_back(bottomright);
                 vertices.emplace_back(topright);
 
+
                 // add quad vertex indices
-                indices.emplace_back(vertIndex);
-                indices.emplace_back(vertIndex + 1);
-                indices.emplace_back(vertIndex + 2);
-                indices.emplace_back(vertIndex + 2);
-                indices.emplace_back(vertIndex + 3);
-                indices.emplace_back(vertIndex);
+                indices.emplace_back(vertOffset);
+                indices.emplace_back(vertOffset + 1);
+                indices.emplace_back(vertOffset + 2);
+                indices.emplace_back(vertOffset + 2);
+                indices.emplace_back(vertOffset + 3);
+                indices.emplace_back(vertOffset);
                 indexOffset += VertsPerQuad;
+                vertOffset += 4;
             }
 
             // send vertices to the graphics card
-            m_program.setVertices(vertices);
-            m_program.setIndices(indices);
-
-            // done, commit batches
-            m_batches.swap(batches);
+            m_program.setIndices(indices, true);
+            m_program.setVertices(vertices, true);
         }
         else                         // ----- Vertex Mode: draw individual vertices -----
         {
             vector<Vertex> vertices;
-            vector<RenderBatch> batches;
+            auto &batches = m_batches;
+            batches.clear();
+
             vertices.reserve(m_glyphs.size() * VertsPerQuad);
 
             for (uint offset = 0, lastTexId = UINT32_MAX;
@@ -212,9 +213,6 @@ namespace sdgl::graphics {
             // send vertices to graphics card
             m_program.setVertices(vertices, true);
             m_program.clearIndices(); // turn off index mode, in case it was on previously
-
-            // done, commit batches
-            m_batches.swap(batches);
         }
     }
 

@@ -161,7 +161,6 @@ namespace sdgl::graphics {
     RenderProgram &RenderProgram::setVertices(const void *vertices, int count, bool dynamic)
     {
         SDGL_ASSERT(m_vbo);
-
         glBindBuffer(GL_ARRAY_BUFFER, m_vbo); GL_ERR_CHECK();
 
         const auto size = static_cast<GLsizeiptr>(m_config.attributes.sizeofVertex() * count);
@@ -178,10 +177,7 @@ namespace sdgl::graphics {
 
     void RenderProgram::clearIndices()
     {
-        if (m_ebo && m_indexCount)
-        {
-            m_indexCount = 0;
-        }
+        m_indexCount = 0;
     }
 
     static int s_primitiveTypes[] = {
@@ -210,13 +206,11 @@ namespace sdgl::graphics {
         {
             // constrain indices for best performance of glDrawRangeElements
             offset = mathf::clampi(offset, 0, m_indexCount);
-            auto maxIndex =  mathf::clampi(offset + count, offset, m_indexCount);
+            auto maxIndex =  mathf::clampi(offset + count - 1, offset, m_indexCount);
             count = mathf::clampi(count, 0, m_indexCount - offset + 1);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo); GL_ERR_CHECK();
-            glDrawRangeElements(glPrimitiveType, offset, maxIndex, count, GL_UNSIGNED_INT, nullptr); GL_ERR_CHECK();
+            glDrawRangeElements(glPrimitiveType, offset, maxIndex, count, GL_UNSIGNED_INT, (void *)(sizeof(uint) * offset) ) ; GL_ERR_CHECK();
             glBindVertexArray(0); GL_ERR_CHECK();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); GL_ERR_CHECK();
         }
         else                  // render vertices directly
         {

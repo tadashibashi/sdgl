@@ -283,14 +283,11 @@ namespace sdgl {
     Shader &Shader::setUniform(int location, const Texture2D &texture, int slot)
     {
         SDGL_ASSERT(slot >= 0 && slot < 32);
-        glUseProgram(m_program);
-        GL_ERR_CHECK();
-        glActiveTexture(s_textureSlots[slot]);
-        GL_ERR_CHECK();
-        glBindTexture(GL_TEXTURE_2D, texture.id());
-        GL_ERR_CHECK();
-        glUniform1i(location, slot);
-        GL_ERR_CHECK();
+
+        glActiveTexture(s_textureSlots[slot]); GL_ERR_CHECK();
+        glBindTexture(GL_TEXTURE_2D, texture.id()); GL_ERR_CHECK();
+        glUseProgram(m_program); GL_ERR_CHECK();
+        glUniform1i(location, slot); GL_ERR_CHECK();
         return *this;
     }
 

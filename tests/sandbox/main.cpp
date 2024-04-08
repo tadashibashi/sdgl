@@ -17,6 +17,8 @@
 #include <sdgl/graphics/font/BitmapFont.h>
 #include <sdgl/graphics/font/FontText.h>
 
+#include <thread>
+
 using namespace sdgl;
 
 struct Sprite
@@ -63,16 +65,16 @@ protected:
 
         m_batch.init();
 
-        // for (int i = 0; i < 1000; ++i)
-        // {
-        //     m_sprites.emplace_back(Sprite{
-        //         .position = {mathf::rand(wWidth), mathf::rand(wHeight)},
-        //         .rotation = mathf::rand(360.f),
-        //         .speed = {mathf::rand(2.f), mathf::rand(2.f)},
-        //         .texture = m_texture,
-        //         .rotationSpeed = mathf::rand(2.f) - 1.f
-        //     });
-        // }
+        for (int i = 0; i < 50000; ++i)
+        {
+            m_sprites.emplace_back(Sprite{
+                .position = {mathf::rand(wWidth), mathf::rand(wHeight)},
+                .rotation = mathf::rand(360.f),
+                .speed = {mathf::rand(2.f), mathf::rand(2.f)},
+                .texture = m_texture,
+                .rotationSpeed = mathf::rand(2.f) - 1.f
+            });
+        }
         m_sprites.emplace_back(Sprite{
             .position = {0, 0},
             .rotation = 0,
@@ -84,7 +86,6 @@ protected:
         SDGL_ASSERT(m_font.loadBMFont("assets/bmfont/font.fnt"), "Font should load without problems");
         m_text = graphics::FontText(&m_font, "Hello world!\nA line broken world...\nA really really really really long "
             "striiiiinnnngggggggggggggg", 180, true, 0, 0);
-        DEBUG_LOG(m_text.getText().length());
 
         return true;
     }
@@ -110,6 +111,13 @@ protected:
         if (ImGui::Begin("Test window"))
         {
             ImGui::Text(format("{}", m_camera.getWorldBounds()).c_str());
+
+            double mouseX, mouseY;
+            getWindow()->getMousePosition(&mouseX, &mouseY);
+
+            ImGui::Text(format("{}", m_camera.worldToView( {} )).c_str());
+
+            ImGui::Image((ImTextureID)m_texture.id(), ImVec2(m_texture.size().x, m_texture.size().y));
         }
         ImGui::End();
 
@@ -193,17 +201,23 @@ protected:
         window->getFrameBufferSize(&x, &y);
         glViewport(0, 0, x, y);
 
+        int winWidth, winHeight;
+        getWindow()->getSize(&winWidth, &winHeight);
+        m_camera.setViewport({0, 0, winWidth, winHeight});
+
         lastFrameTime = curTime;
+
     }
 
     void render() override
     {
-        getWindow()->makeCurrent();
         glClearColor(.5, .5, .9, .9);
         glClear(GL_COLOR_BUFFER_BIT);
 
         m_batch.begin(m_camera.getMatrix());
         auto worldBounds = m_camera.getWorldBounds();
+
+
 
         for (const auto &sprite : m_sprites)
         {
@@ -224,13 +238,15 @@ protected:
                 sprite.rotation, 0);
         }
 
+        m_batch.drawTexture(m_text.glyphs()[0].texture, {
+            0, 0, m_text.glyphs()[0].texture.size().x, m_text.glyphs()[0].texture.size().y},
+            {0, 0}, Color::White, {1.f, 1.f}, {0, 0}, 0, 0);
+
         int winWidth, winHeight;
         getWindow()->getSize(&winWidth, &winHeight);
         m_batch.drawText(m_text, {(float)winWidth / 2.f, (float)winHeight / 2.f});
 
-        // m_batch.drawTexture(m_text.glyphs()[0].texture, {
-        //     0, 0, m_text.glyphs()[0].texture.size().x, m_text.glyphs()[0].texture.size().y},
-        //     {0, 0}, Color::White, {1.f, 1.f}, {0, 0}, 0, 0);
+
         m_batch.end();
     }
 
