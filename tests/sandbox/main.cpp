@@ -14,8 +14,8 @@
 #include <sdgl/math/Rectangle.h>
 #include <sdgl/graphics/Texture2D.h>
 #include <sdgl/logging.h>
-#include <sdgl/graphics/BitmapFont.h>
-#include <sdgl/graphics/FontText.h>
+#include <sdgl/graphics/font/BitmapFont.h>
+#include <sdgl/graphics/font/FontText.h>
 
 using namespace sdgl;
 

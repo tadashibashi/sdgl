@@ -53,15 +53,19 @@ add_library(sdgl STATIC
         graphics/detail/spriteBatch2DShader.inl
         math/random.cpp
         math/random.h
-        graphics/BMFontData.cpp
-        graphics/BMFontData.h
+        graphics/font/BMFontData.cpp
+        graphics/font/BMFontData.h
         io/BufferView.cpp
         io/BufferView.h
-        graphics/BitmapFont.cpp
-        graphics/BitmapFont.h
-        graphics/Glyph.h
-        graphics/FontText.cpp
-        graphics/FontText.h
+        graphics/font/BitmapFont.cpp
+        graphics/font/BitmapFont.h
+        graphics/font/Glyph.h
+        graphics/font/FontText.cpp
+        graphics/font/FontText.h
+        graphics/atlas/TextureAtlas.cpp
+        graphics/atlas/TextureAtlas.h
+        graphics/atlas/CrunchAtlasData.cpp
+        graphics/atlas/CrunchAtlasData.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)

@@ -3,8 +3,9 @@
 #include "detail/spriteBatch2DShader.inl"
 #include <sdgl/gl.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "Glyph.h"
-#include "FontText.h"
+
+#include <sdgl/graphics/font/Glyph.h>
+#include <sdgl/graphics/font/FontText.h>
 
 namespace sdgl::graphics {
     static constexpr int VertsPerQuad = 6;
