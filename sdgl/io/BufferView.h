@@ -71,30 +71,14 @@ namespace sdgl::io {
         template <BufferReadable T>
         uint read(T &outVal)
         {
-            constexpr auto size = sizeof(T);
-            if (m_pos + size > m_size)
-            {
-                SDGL_ERROR("Size of read exceeds buffer size");
-                return 0;
-            }
-
-            std::memcpy((void *)&outVal, m_buf + m_pos, size);
-
-            if (size > 1 && SystemEndian != m_endian) // swap needed
-            {
-                outVal = endian::swap(outVal);
-            }
-
-            m_pos += size;
-            return size;
+            return readImpl(&outVal, sizeof(T));
         }
 
         template <BufferReadable T>
-        T read()
+        T tryRead(T defaultVal = T())
         {
-            T t;
-            SDGL_ASSERT(read(t));
-            return t;
+            SDGL_ASSERT(read(defaultVal));
+            return defaultVal;
         }
 
         /// Read a null-terminated string from the buffer
@@ -104,14 +88,17 @@ namespace sdgl::io {
         ///                        not be added to `outString`.
         ///
         /// @returns the number of bytes read (including null terminator) -
-        ///          if > 0 `outString` will contain data, otherwise `outString` will be unmodified.
-        ///          Check sdgl::getError() for more information on 0.
+        ///          if > 0 `outString` will contain data, otherwise `outString` will remain unmodified.
+        ///          Check sdgl::getError() for more information when 0 is returned.
         ///          Note: this number may differ from string length + 1 if `maxSize` clipped the out value.
         uint read(string &outString, size_t maxSize = SIZE_T_MAX);
 
         /// Read a string with an expected length
         /// @param outString [out] string to receive the data
         /// @param length          length of the string in bytes (not including null terminator)
+        /// @returns the number of bytes read (including null terminator) -
+        ///          if > 0 `outString` will contain data, otherwise `outString` will remain unmodified.
+        ///          Check sdgl::getError() for more information when 0 is returned.
         uint readFixedString(string &outString, size_t length);
 
         /// Read a null-terminated string from the buffer
@@ -121,8 +108,8 @@ namespace sdgl::io {
         ///                        to `outBuffer`.
         ///
         /// @returns the number of bytes read (including null terminator) -
-        ///          if > 0 `outBuffer` will contain data, otherwise `outBuffer` will be unmodified.
-        ///          Check sdgl::getError for more info on 0.
+        ///          if > 0 `outBuffer` will contain data, otherwise `outBuffer` will remain unmodified.
+        ///          Check sdgl::getError for more info when 0 is returned.
         ///          Note: this number may differ from string length + 1 if `maxSize` clipped the out value.
         uint read(char *outBuffer, size_t maxSize);
 
@@ -164,6 +151,8 @@ namespace sdgl::io {
             m_pos = offset;
         }
     private:
+        uint readImpl(void *buffer, size_t size);
+
         const ubyte *m_buf;
         size_t m_pos;
         size_t m_size;

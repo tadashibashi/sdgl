@@ -3,6 +3,8 @@
 #include "detail/spriteBatch2DShader.inl"
 #include <sdgl/gl.h>
 #include <glm/gtc/type_ptr.hpp>
+#include "Glyph.h"
+#include "FontText.h"
 
 namespace sdgl::graphics {
     static constexpr int VertsPerQuad = 6;
@@ -89,6 +91,18 @@ namespace sdgl::graphics {
         glyph.topright.texcoord = texCoords.topright();
 
         m_glyphs.emplace_back(glyph);
+    }
+
+    void SpriteBatch2D::drawText(const FontText &text, const Vector2 position, const Color color, float depth)
+    {
+        for (size_t i = 0; const auto &glyph : text.glyphs())
+        {
+            if (i > text.textProgress())
+                break;
+
+            drawTexture(glyph.texture, (Rectangle)glyph.frame, position + glyph.destination, color, {1.f, 1.f}, {0, 0}, 0, depth);
+            ++i;
+        }
     }
 
     void SpriteBatch2D::begin(const float *transformMatrix, const SortOrder::Enum sortOrder)

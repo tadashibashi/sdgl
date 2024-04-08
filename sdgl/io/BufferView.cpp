@@ -110,4 +110,32 @@ namespace sdgl::io {
 
         return m_buf[index];
     }
+
+    uint BufferView::readImpl(void *buffer, const size_t size)
+    {
+        if (m_pos + size > m_size)
+        {
+            SDGL_ERROR("Size of read exceeds buffer size");
+            return 0;
+        }
+
+        if (size > 1 && SystemEndian != m_endian) // endianness is opposite
+        {
+            // Copy bytes in reverse order
+            auto dest = (ubyte *)buffer;
+            auto source = (ubyte *)(m_buf + m_pos + size - 1);
+            while (source >= m_buf + m_pos)
+            {
+                *dest++ = *source--;
+            }
+        }
+        else
+        {
+            // Copy bytes in normal order
+            std::memcpy(buffer, m_buf + m_pos, size);
+        }
+
+        m_pos += size;
+        return size;
+    }
 }

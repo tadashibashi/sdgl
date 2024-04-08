@@ -22,7 +22,12 @@ namespace sdgl {
 #include <cassert>
 
 #define SDGL_GET_ERROR() sdgl::logging::getLastDebugMessage()
-#define SDGL_ASSERT(condition) (assert(condition))
+
+#define IMPL_SDGL_ASSERT_1(condition) (assert(condition))
+#define IMPL_SDGL_ASSERT_2(condition, comment) (assert((condition) && comment))
+
+#define IMPL_SDGL_GET_ASSERT_MACRO(_1, _2, NAME, ...) NAME
+#define SDGL_ASSERT(...) IMPL_SDGL_GET_ASSERT_MACRO(__VA_ARGS__, IMPL_SDGL_ASSERT_2, IMPL_SDGL_ASSERT_1)(__VA_ARGS__)
 
 #ifdef SDGL_LOGGING_SILENT_MODE // turn off core logger even when in debug mode, only allow error cache to be written to
 #   define SDGL_ERROR(...) sdgl::logging::setLastErrorMessage(format(__VA_ARGS__))

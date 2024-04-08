@@ -19,6 +19,9 @@ namespace sdgl {
         [[nodiscard]]
         Window *getWindow() const;
 
+        [[nodiscard]]
+        float getTime() const;
+
         struct ErrorCode
         {
             enum Enum : int

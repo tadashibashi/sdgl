@@ -115,10 +115,8 @@ namespace sdgl::backends::glfw3 {
         float getAxis(int index, GamepadAxis::Enum axis) const override;
         [[nodiscard]]
         float getAxisLast(int index, GamepadAxis::Enum axis) const override;
-        /**
-         *
-         * @return pointer to the backend window object
-         */
+
+        /// @return pointer to the backend window object
         [[nodiscard]]
         void *getHandle() const override;
 

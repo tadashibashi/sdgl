@@ -21,7 +21,7 @@ namespace sdgl::backends {
          * @return Time in seconds since the app started. Should be finer than milliseconds.
          */
         [[nodiscard]]
-        virtual double getAppTime() const = 0;
+        virtual float getAppTime() const = 0;
 
         [[nodiscard]]
         virtual string_view name() const = 0;

@@ -66,9 +66,9 @@ namespace sdgl::backends::glfw3 {
         return glfwInit();
     }
 
-    double Glfw3Backend::getAppTime() const
+    float Glfw3Backend::getAppTime() const
     {
-        return glfwGetTime();
+        return static_cast<float>(glfwGetTime());
     }
 
     Window *Glfw3Backend::createWindow(const string &title, int width, int height,

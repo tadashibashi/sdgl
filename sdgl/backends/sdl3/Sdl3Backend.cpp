@@ -38,9 +38,9 @@ namespace sdgl::backends::sdl3 {
         return true;
     }
 
-    double Sdl3Backend::getAppTime() const
+    float Sdl3Backend::getAppTime() const
     {
-        return SDL_GetTicksNS() * 0.000000001L;
+        return static_cast<float>(SDL_GetTicksNS() * 0.000000001L);
     }
 
     Window * Sdl3Backend::createWindow(const string &title, int width, int height, WindowFlags::Enum flags, const PluginConfig &plugins)

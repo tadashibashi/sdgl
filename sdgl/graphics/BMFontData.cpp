@@ -2,7 +2,8 @@
 #include <sdgl/io/io.h>
 #include <sdgl/io/BufferView.h>
 
-
+/// Helper to read a field from a BufferView for BMFont read functions. Invokes a `return
+/// false` on error, so it should be called in a function with a bool return type.
 #define BMFONT_READ(view, field) do { if ((view).read(field) != sizeof(field)) { \
     SDGL_ERROR("Failed to read {}", #field); \
     return false; \
@@ -83,7 +84,7 @@ namespace sdgl::graphics {
         BMFontData bmfont;
 
         // Info: block 1
-        if (const auto blockId = view.read<ubyte>(); blockId != 1)
+        if (const auto blockId = view.tryRead<ubyte>(); blockId != 1)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 1, but got {}", blockId);
             return false;
@@ -109,7 +110,7 @@ namespace sdgl::graphics {
         view.read(bmfont.info.fontName);
 
         // Common: block 2
-        if (const auto blockId = view.read<ubyte>(); blockId != 2)
+        if (const auto blockId = view.tryRead<ubyte>(); blockId != 2)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 2, but got {}", blockId);
             return false;
@@ -132,7 +133,7 @@ namespace sdgl::graphics {
         BMFONT_READ(view, bmfont.common.blueChnl);
 
         // Pages: block 3
-        if (const auto blockId = view.read<ubyte>(); blockId != 3)
+        if (const auto blockId = view.tryRead<ubyte>(); blockId != 3)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 3, but got {}", blockId);
             return false;
@@ -176,8 +177,8 @@ namespace sdgl::graphics {
         // Ensure pages block is evenly divisible by the page string length we just got
         if (pagesBlockSize % pageStrLen != 0)
         {
-            SDGL_ERROR("Invalid BMFont v3 page filename length, each must be the same length and divide the block size "
-                "evenly, but got: block size: {}, string length: {}", pagesBlockSize, pageStrLen);
+            SDGL_ERROR("Invalid BMFont v3 page filepath string length, block must be evenly divisible by this number,"
+                " but got: block size {} with string length {}", pagesBlockSize, pageStrLen);
             return false;
         }
 
@@ -194,7 +195,7 @@ namespace sdgl::graphics {
         }
 
         // Chars: block 4
-        if (const auto blockId = view.read<ubyte>(); blockId != 4)
+        if (const auto blockId = view.tryRead<ubyte>(); blockId != 4)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 4, but got {}", blockId);
             return false;
@@ -221,13 +222,15 @@ namespace sdgl::graphics {
             BMFONT_READ(view, curChar.page);
             BMFONT_READ(view, curChar.chnl);
 
-            bmfont.chars.try_emplace(curChar.id, curChar);
+            SDGL_ASSERT(curChar.chnl == 15, "sdgl only supports full-channel rendering of fonts");
+
+            bmfont.chars.emplace_back(curChar);
         }
 
         // Kerning Pairs: block 5 (only available if there are any kerning pairs with `amount` differing from 0)
         if (view.position() < view.size())
         {
-            if (const auto blockId = view.read<ubyte>(); blockId != 5)
+            if (const auto blockId = view.tryRead<ubyte>(); blockId != 5)
             {
                 SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 5, but got {}", blockId);
                 return false;
@@ -247,6 +250,8 @@ namespace sdgl::graphics {
                 BMFONT_READ(view, kerning.first);
                 BMFONT_READ(view, kerning.second);
                 BMFONT_READ(view, kerning.amount);
+
+                bmfont.kernings.emplace_back(kerning);
             }
         }
 

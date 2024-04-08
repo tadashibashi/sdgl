@@ -7,13 +7,15 @@
 #include <sdgl/Camera2D.h>
 #include <sdgl/graphics/SpriteBatch2D.h>
 
-#include "../../sdgl/graphics/Color.h"
+#include <sdgl/graphics/Color.h>
 
-#include "sdgl/math/geometry.h"
-#include "sdgl/math/random.h"
+#include <sdgl/math/geometry.h>
+#include <sdgl/math/random.h>
 #include <sdgl/math/Rectangle.h>
-#include <../../sdgl/graphics/Texture2D.h>
+#include <sdgl/graphics/Texture2D.h>
 #include <sdgl/logging.h>
+#include <sdgl/graphics/BitmapFont.h>
+#include <sdgl/graphics/FontText.h>
 
 using namespace sdgl;
 
@@ -46,6 +48,8 @@ private:
     Camera2D m_camera{};
     vector<Sprite> m_sprites{};
 
+    graphics::BitmapFont m_font{};
+    graphics::FontText m_text{};
 protected:
     bool init() override
     {
@@ -77,11 +81,29 @@ protected:
             .rotationSpeed = 0
         });
 
+        SDGL_ASSERT(m_font.loadBMFont("assets/bmfont/font.fnt"), "Font should load without problems");
+        m_text = graphics::FontText(&m_font, "Hello world!\nAnother World", 0, true, 0, 0);
+        DEBUG_LOG(m_text.getText().length());
+
         return true;
     }
 
+    const float textTimerMax = .05f;
+    float textTimer = textTimerMax;
+    float lastFrameTime = 0;
+
     void update() override
     {
+        const auto curTime = getTime();
+        auto deltaTime = curTime - lastFrameTime;
+
+        textTimer -= deltaTime;
+        if (textTimer <= 0)
+        {
+            textTimer += textTimerMax;
+            m_text.textProgress((m_text.textProgress() + 1) % m_text.glyphs().size());
+        }
+
         ImGui::ShowDemoWindow();
 
         if (ImGui::Begin("Test window"))
@@ -169,6 +191,8 @@ protected:
         int x, y;
         window->getFrameBufferSize(&x, &y);
         glViewport(0, 0, x, y);
+
+        lastFrameTime = curTime;
     }
 
     void render() override
@@ -199,12 +223,20 @@ protected:
                 sprite.rotation, 0);
         }
 
+        int winWidth, winHeight;
+        getWindow()->getSize(&winWidth, &winHeight);
+        m_batch.drawText(m_text, {(float)winWidth / 2.f, (float)winHeight / 2.f});
+
+        // m_batch.drawTexture(m_text.glyphs()[0].texture, {
+        //     0, 0, m_text.glyphs()[0].texture.size().x, m_text.glyphs()[0].texture.size().y},
+        //     {0, 0}, Color::White, {1.f, 1.f}, {0, 0}, 0, 0);
         m_batch.end();
     }
 
     void shutdown() override
     {
         m_texture.free();
+        m_font.free();
     }
 
 

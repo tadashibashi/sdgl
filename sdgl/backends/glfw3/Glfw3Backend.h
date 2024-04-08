@@ -11,7 +11,7 @@ namespace sdgl::backends::glfw3 {
         bool init() override;
 
         [[nodiscard]]
-        double getAppTime() const override;
+        float getAppTime() const override;
 
         [[nodiscard]]
         string_view name() const override { return "GLFW3"; }

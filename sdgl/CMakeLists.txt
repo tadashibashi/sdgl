@@ -57,6 +57,11 @@ add_library(sdgl STATIC
         graphics/BMFontData.h
         io/BufferView.cpp
         io/BufferView.h
+        graphics/BitmapFont.cpp
+        graphics/BitmapFont.h
+        graphics/Glyph.h
+        graphics/FontText.cpp
+        graphics/FontText.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)

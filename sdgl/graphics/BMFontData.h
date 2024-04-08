@@ -86,7 +86,7 @@ namespace sdgl::graphics {
             ubyte page;
             ubyte chnl;
         };
-        map<ubyte, Char> chars;
+        vector<Char> chars;
 
         /// Block type 5
         struct KerningPair
@@ -95,7 +95,7 @@ namespace sdgl::graphics {
             uint second;
             int16 amount;
         };
-        map<std::pair<uint, uint>, KerningPair> kernings;
+        vector<KerningPair> kernings;
 
         /// Read bmfont data into the object. Only supports the text file version.
         /// @param filepath path to the bmfont file to open

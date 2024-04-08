@@ -9,3 +9,5 @@ if (EMSCRIPTEN)
 else()
     angle_copy_libs()
 endif()
+
+copy_assets(${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets)

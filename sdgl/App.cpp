@@ -113,5 +113,10 @@ namespace sdgl {
     {
         return m->window;
     }
+
+    float App::getTime() const
+    {
+        return m->backend->getAppTime();
+    }
 }
 

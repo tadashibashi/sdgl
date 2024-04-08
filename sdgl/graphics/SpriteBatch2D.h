@@ -17,6 +17,7 @@ namespace sdgl {
 }
 
 namespace sdgl::graphics {
+    class FontText;
 
     struct SortOrder {
         enum Enum
@@ -75,6 +76,10 @@ namespace sdgl::graphics {
             float angle,              ///< rotation in radians
             float depth               ///< depth sorting value (set sortOrder in `SpriteBatch::begin` to set behavior)
         );
+
+        /// FIXME: perhaps cache rendered texture inside of FontText component? This would allow for ease of
+        /// transformations using drawTexture
+        void drawText(const FontText &text, Vector2 position, Color color = Color::White, float depth = 0);
 
         void begin(const float *transformMatrix, SortOrder::Enum sortOrder = SortOrder::FrontToBack);
 
