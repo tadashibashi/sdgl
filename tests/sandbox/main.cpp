@@ -59,7 +59,7 @@ protected:
         getWindow()->getSize(&wWidth, &wHeight);
         m_camera
             .setViewport({0, 0, wWidth, wHeight})
-            .setOrigin({.0, .0});
+            .setOrigin({0, 0});
 
         m_batch.init();
 
@@ -82,7 +82,8 @@ protected:
         });
 
         SDGL_ASSERT(m_font.loadBMFont("assets/bmfont/font.fnt"), "Font should load without problems");
-        m_text = graphics::FontText(&m_font, "Hello world!\nAnother World", 0, true, 0, 0);
+        m_text = graphics::FontText(&m_font, "Hello world!\nA line broken world...\nA really really really really long "
+            "striiiiinnnngggggggggggggg", 180, true, 0, 0);
         DEBUG_LOG(m_text.getText().length());
 
         return true;

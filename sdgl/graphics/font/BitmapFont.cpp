@@ -18,8 +18,8 @@ namespace sdgl::graphics {
     struct BitmapFont::Impl
     {
         string fontName;
-        uint16 fontSize; ///< original size from generation
-        uint16 base = 0;                               ///< Distance from top line to the glyph baseline == cursorY
+        uint16 fontSize;            ///< original size from generation
+        uint16 base = 0;            ///< Distance from top line to the glyph baseline == cursorY
         uint16 lineHeight = 0;
         vector<Texture2D> pages;
         map<uint, Char> chars;
@@ -136,7 +136,7 @@ namespace sdgl::graphics {
 
         // Get cursor starting point
         const auto &firstChar = m->chars.at(text[0]);
-        auto cursor = Point(firstChar.offset.x, base);
+        auto cursor = Point(-firstChar.offset.x, base);
 
         const auto &spaceChar = m->chars.at(' '); // FIXME: could possibly cache this?
 
@@ -151,7 +151,7 @@ namespace sdgl::graphics {
                 // Explicit line break
                 if (charIdx + 1 < size)
                 {
-                    cursor.x = m->chars.at(text[charIdx + 1]).offset.x;
+                    cursor.x = -m->chars.at(text[charIdx + 1]).offset.x;
                     cursor.y += m->lineHeight + lineHeightOffset;
                 }
                 ++charIdx;
@@ -173,23 +173,31 @@ namespace sdgl::graphics {
                     }
                 }
 
-                // Check if we need to drop down a line
-                if (maxWidth != 0 && cursor.x + spaceChar.xadvance + horSpaceOffset - spaceChar.offset.x > maxWidth)
-                {
-                    // drop down one line
-                    cursor.x = spaceChar.offset.x;
-                    cursor.y += m->lineHeight + lineHeightOffset;
+                // push glyph
+                glyphs.emplace_back(
+                    spaceChar.frame,
+                    Point(cursor.x + (int)spaceChar.offset.x, cursor.y - (int)base + (int)spaceChar.offset.y),
+                    spaceChar.texture
+                );
 
-                    // push glyph
-                    glyphs.emplace_back(
-                        spaceChar.frame,
-                        Point(cursor.x + spaceChar.offset.x, cursor.y - base + spaceChar.offset.y),
-                        spaceChar.texture
-                    );
+                // Advance cursor
+
+                // Rows should not start with spaces, so we won't indent for any space glyph exceeding maxWidth
+                // (Leave code here in case that behavior might be useful at some time...)
+
+                // Check if we need a line break
+                // if (charIdx + 1 < size && maxWidth != 0 && cursor.x + spaceChar.xadvance + horSpaceOffset + spaceChar.offset.x > maxWidth)
+                // {
+                //     // Drop down one line
+                //     cursor.x = -m->chars.at(text[charIdx + 1]).offset.x;
+                //     cursor.y += m->lineHeight + lineHeightOffset;
+                // }
+                // else
+                {
+                    // Just advance past space char ->
+                    cursor.x += spaceChar.xadvance + horSpaceOffset;
                 }
 
-                // Advance past space char
-                cursor.x += spaceChar.xadvance;
                 ++charIdx;
             }
             else
@@ -201,16 +209,18 @@ namespace sdgl::graphics {
                     ++endWord;
 
                 // Push glyphs for word (track width to see if we need linebreak after)
-                size_t wordWidth = 0; ///< acts as temporary x cursor offset for word
+                int wordWidth = 0; ///< acts as temporary x cursor offset for word
+                const auto glyphIdx = glyphs.size();
+
                 for (size_t w = charIdx; w < endWord; ++w)
                 {
                     // Get data for char
                     const auto &curChar = m->chars.at(text[w]);
 
                     // See if kerning available to adjust wordWidth == this word's start point
-                    if (withKerning && w > 0)
+                    if (withKerning && w > 0 && glyphs.back().destination.x < wordWidth + curChar.offset.x) // second check makes sure glyph isn't at the beginning of line where kerning not applied
                     {
-                        const auto kernIt = m->kernings.find( std::make_pair(text[w-1], text[w]) );
+                        const auto kernIt = m->kernings.find( std::make_pair<uint, uint>(text[w-1], text[w]) );
                         if (kernIt != m->kernings.end())
                         {
                             // apply found kerning
@@ -221,7 +231,7 @@ namespace sdgl::graphics {
                     // Push glyph for char
                     glyphs.emplace_back(
                         curChar.frame,
-                        Point(cursor.x + (int)wordWidth + curChar.offset.x, cursor.y - base + curChar.offset.y),
+                        Point(cursor.x + wordWidth + (int)curChar.offset.x, cursor.y - (int)base + (int)curChar.offset.y),
                         curChar.texture
                     );
 
@@ -230,21 +240,24 @@ namespace sdgl::graphics {
                 }
 
                 // Check if we need a line break
-                if (maxWidth != 0 && wordWidth + cursor.x > maxWidth)
+                if (maxWidth != 0 && glyphs.back().destination.x + glyphs.back().frame.w > maxWidth)
                 {
-                    const auto minusX = cursor.x;
-                    const auto plusY = m->lineHeight + lineHeightOffset;
+                    const auto plusX = -glyphs.at(glyphIdx).destination.x - (int)m->chars.at(text[charIdx]).offset.x;
+                    const auto plusY = (int)m->lineHeight + lineHeightOffset;
 
                     // apply line break repositioning to all glyphs that were just pushed
-                    for (auto i = charIdx; i<  endWord; ++i)
+                    for (auto i = glyphIdx, glyphSize = glyphs.size(); i < glyphSize; ++i)
                     {
-                        glyphs[i].destination.x -= minusX;
+                        glyphs[i].destination.x += plusX;
                         glyphs[i].destination.y += plusY;
                     }
 
-                    // send cursor to the next line
-                    cursor.x = m->chars.at(charIdx).offset.x;
-                    cursor.y += plusY;
+                    // send cursor to the next line if there's more text to come
+                    if (endWord < size)
+                    {
+                        cursor.x += plusX + wordWidth;
+                        cursor.y += plusY;
+                    }
                 }
                 else
                 {
