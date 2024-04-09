@@ -25,3 +25,6 @@
 [submodule "vendored/entt"]
 	path = vendored/entt
 	url = https://github.com/skypjack/entt
+[submodule "vendored/crunch"]
+	path = vendored/crunch
+	url = https://github.com/ChevyRay/crunch

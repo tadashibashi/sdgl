@@ -14,7 +14,7 @@ namespace sdgl::graphics {
     bool CrunchAtlasData::loadBinaryFile(const string &filepath, bool trimEnabled, bool rotateEnabled, CrunchAtlasData *data)
     {
         string buffer;
-        if (io::readFile(filepath, &buffer))
+        if (!io::readFile(filepath, &buffer))
         {
             return false;
         }

@@ -45,4 +45,6 @@ add_subdirectory(spdlog)
 
 include(stb.cmake)
 
+include(crunch.cmake)
+
 add_subdirectory(entt)

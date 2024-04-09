@@ -1,5 +1,5 @@
 #include "lib.h"
-#include <sdgl/graphics/BMFontData.h>
+#include <sdgl/graphics/font/BMFontData.h>
 
 using sdgl::graphics::BMFontData;
 
