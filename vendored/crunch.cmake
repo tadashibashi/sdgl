@@ -17,12 +17,23 @@ target_include_directories(crunch PRIVATE crunch/crunch)
 
 # Builds a crunch atlas to the specification required for sdgl engine
 # @param FOLDER target folder that contains images; recursively searches it for image files
-# @param DESTINATION destination folder to build to
-function(sdgl_pack_atlas INPUT_LIST DESTINATION)
-    string(REPLACE ";" "," INPUT_LIST_ARG "${INPUT_LIST}")
-    add_custom_target(crunch_atlas_for_${PROJECT_NAME}
-            DEPENDS crunch
-            COMMAND $<TARGET_FILE:crunch> ${DESTINATION} ${INPUT_LIST_ARG} -b -p -t -u -r
+# @param DESTINATION destination location + root name <path/to/folder>/<atlas-name>
+#                    file extensions will be appended to <atlas-name>
+function(sdgl_pack_atlas FOLDER DESTINATION)
+
+    file(GLOB_RECURSE ATLAS_DEPENDENCIES ${FOLDER}/**/*.png)
+    string(REPLACE ";" " " ATLAS_DEP_STR "${ATLAS_DEPENDENCIES}")
+
+    # Ensure target directory is available
+    get_filename_component(PARENT_DIR ${DESTINATION} DIRECTORY)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PARENT_DIR})
+
+    add_custom_command(OUTPUT ${DESTINATION}.bin
+            DEPENDS crunch ${ATLAS_DEPENDENCIES}
+            COMMAND $<TARGET_FILE:crunch> ${DESTINATION} ${FOLDER} -b -p -t -u -r
     )
-    add_dependencies(${PROJECT_NAME} crunch_atlas_for_${PROJECT_NAME})
+
+    add_custom_target(sdgl_pack_atlas_for_${PROJECT_NAME} ALL
+        DEPENDS ${DESTINATION}.bin
+    )
 endfunction()

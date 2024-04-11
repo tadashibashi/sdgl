@@ -77,27 +77,27 @@ namespace sdgl
             bool shouldRemove;
         };
     public:
-        Delegate(): callbacks(), isDirty(false)
+        Delegate(): m_callbacks(), m_isDirty(false)
         {}
 
         [[nodiscard]]
-        size_t size() const { return callbacks.size(); }
+        size_t size() const { return m_callbacks.size(); }
 
         [[nodiscard]]
-        bool empty() const { return callbacks.empty(); }
+        bool empty() const { return m_callbacks.empty(); }
 
-        void clear() const { callbacks.clear(); }
+        void clear() const { m_callbacks.clear(); }
 
         template <typename T>
         Delegate &operator+=(Callback<T, Args...> callback)
         {
-            callbacks.emplace_back(CallbackData{CallbackComparer(callback.object, callback.function)});
+            m_callbacks.emplace_back(CallbackData{CallbackComparer(callback.object, callback.function)});
             return *this;
         }
 
         Delegate &operator+=(void (*func)(Args...))
         {
-            callbacks.emplace_back({
+            m_callbacks.emplace_back({
                 .callback=CallbackComparer(func),
                 .shouldRemove=false
             });
@@ -108,12 +108,12 @@ namespace sdgl
         template <typename T>
         Delegate &operator-=(Callback<T, Args...> callback)
         {
-            for (auto &data : callbacks)
+            for (auto &data : m_callbacks)
             {
                 if (data.callback.matches(callback.object, callback.function))
                 {
                     data.shouldRemove = true;
-                    isDirty = true;
+                    m_isDirty = true;
                     break;
                 }
             }
@@ -123,12 +123,12 @@ namespace sdgl
 
         Delegate &operator-=(void (* func)(Args...))
         {
-            for (auto &data : callbacks)
+            for (auto &data : m_callbacks)
             {
                 if (data.callback.matches(func))
                 {
                     data.shouldRemove = true;
-                    isDirty = true;
+                    m_isDirty = true;
                     break;
                 }
             }
@@ -138,26 +138,27 @@ namespace sdgl
 
         void operator()(Args...args)
         {
-            if (isDirty)
+            if (m_isDirty)
             {
                 processRemovals();
-                isDirty = false;
+                m_isDirty = false;
             }
 
-            for (auto &data : callbacks)
+            // Use predefined size limit to prevent calling callbacks added this frame
+            for (auto i = 0, size = m_callbacks.size(); i < size; ++i)
             {
-                data.callback(std::forward<Args>(args)...);
+                m_callbacks[i](std::forward<Args>(args)...);
             }
         }
     private:
         
         void processRemovals()
         {
-            callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
+            m_callbacks.erase(std::remove_if(m_callbacks.begin(), m_callbacks.end(),
                 [](const CallbackData &data) { return data.shouldRemove;}));
         }
 
-        vector<CallbackData> callbacks;
-        bool isDirty;
+        vector<CallbackData> m_callbacks;
+        bool m_isDirty;
     };
 }

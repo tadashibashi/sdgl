@@ -10,6 +10,7 @@
 #include <sdgl/math/Vector2.h>
 
 #include "RenderProgram.h"
+#include "atlas/TextureAtlas.h"
 
 namespace sdgl {
     class Camera2D;
@@ -80,6 +81,8 @@ namespace sdgl::graphics {
         /// FIXME: perhaps cache rendered texture inside of FontText component? This would allow for ease of
         /// transformations using drawTexture
         void drawText(const FontText &text, Vector2 position, Color color = Color::White, float depth = 0);
+
+        void drawFrame(const TextureAtlas::Frame &frame, Vector2 position, Color color, Vector2 scale, Vector2 anchor, float angle, float depth);
 
         void begin(const float *transformMatrix, SortOrder::Enum sortOrder = SortOrder::FrontToBack);
 

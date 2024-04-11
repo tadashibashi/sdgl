@@ -6,8 +6,13 @@
 
 #include <sdgl/gl.h>
 
+#include <utility>
+
 namespace sdgl {
     struct App::Impl {
+        Impl(backends::Backend *backend, string title, int width, int height, WindowFlags::Enum flags,
+            PluginConfig plugins) : backend(backend), title(std::move(title)), width(width), height(height),
+            flags(flags), plugins(std::move(plugins)), window(nullptr), args() { }
         backends::Backend *backend;
         string title;
         int width;
@@ -19,15 +24,9 @@ namespace sdgl {
     };
 
     App::App(const string &title, const int width, const int height,
-             const WindowFlags::Enum flags, const PluginConfig &plugins) : m(new Impl)
+             const WindowFlags::Enum flags, const PluginConfig &plugins) :
+        m(new Impl(backends::createBackend(), title, width, height, flags, plugins))
     {
-        m->title = title;
-        m->width = width;
-        m->height = height;
-        m->flags = flags;
-        m->plugins = plugins;
-        m->backend = backends::createBackend();
-        m->window = nullptr;
     }
 
     App::~App()
@@ -36,11 +35,15 @@ namespace sdgl {
         delete m;
     }
 
-    int App::run(int argc, char *argv[])
+    int App::run(const int argc, char *argv[])
     {
+        SDGL_LOG("SDGL App Init");
+
         const auto be = m->backend;
         if (!be->init())
             return ErrorCode::BackendInitError;
+
+        SDGL_LOG("Window Backend:  {}", be->name());
 
         const auto window = be->createWindow(m->title, m->width, m->height, m->flags, m->plugins);
         if (!window)
@@ -52,13 +55,10 @@ namespace sdgl {
         m->window = window;
         m->args = vector<string>(argv, argv + argc);
 
-        for (int i = 0; auto &arg : m->args)
-            SDGL_LOG("ARG {}: {}", i++, arg);
-
-        // debug display vendor information
-        SDGL_LOG("OpenGL Vendor: {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
+        // Display vendor information
+        SDGL_LOG("OpenGL Vendor:   {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
         SDGL_LOG("OpenGL Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
-        SDGL_LOG("GLSL Version: {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+        SDGL_LOG("GLSL Version:    {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
         if (!init())
         {
@@ -66,6 +66,8 @@ namespace sdgl {
             be->shutdown();
             return ErrorCode::AppInitError;
         }
+
+        SDGL_LOG("Client app initialized, entering main loop");
 
 #ifdef SDGL_PLATFORM_EMSCRIPTEN
         SDGL_EMSCRIPTEN_MAINLOOP_BEGIN

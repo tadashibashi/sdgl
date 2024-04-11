@@ -32,8 +32,6 @@ add_library(sdgl STATIC
         ecs/SystemManager.h
         Camera2D.cpp
         Camera2D.h
-        defaultShader.cpp
-        defaultShader.h
         graphics/SpriteBatch2D.cpp
         graphics/SpriteBatch2D.h
         graphics/Color.h
@@ -66,6 +64,10 @@ add_library(sdgl STATIC
         graphics/atlas/TextureAtlas.h
         graphics/atlas/CrunchAtlasData.cpp
         graphics/atlas/CrunchAtlasData.h
+        io/convert/content.cpp
+        io/convert/content.h
+        io/Buffer.cpp
+        io/Buffer.h
 )
 
 target_link_libraries(sdgl PRIVATE sdgl_backend PUBLIC glm::glm imgui spdlog::spdlog stb EnTT::EnTT)

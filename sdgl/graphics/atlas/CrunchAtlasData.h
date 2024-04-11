@@ -5,9 +5,13 @@ namespace sdgl::graphics {
     struct CrunchAtlasData
     {
         /// Load crunch atlas data from a binary file
-        /// @param filepath path to the file to open
-        /// @param data [out] pointer to receive the data - must not be null
-        static bool loadBinaryFile(const string &filepath, bool trimEnabled, bool rotateEnabled, CrunchAtlasData *data);
+        /// @param buffer        crunch binary file data
+        /// @param trimEnabled   whether image trimming was enabled on exported atlas
+        /// @param rotateEnabled whether image rotation was enabled on exported atlas
+        /// @param outData [out] pointer to receive the data - must not be null
+        ///
+        /// @returns whether function was successful
+        static bool loadBinary(const string &buffer, bool trimEnabled, bool rotateEnabled, CrunchAtlasData *outData);
 
         struct Image
         {

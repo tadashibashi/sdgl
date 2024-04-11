@@ -18,6 +18,8 @@
 #include <sdgl/graphics/font/FontText.h>
 
 #include <thread>
+#include <sdgl/io/io.h>
+#include <sdgl/io/convert/content.h>
 
 using namespace sdgl;
 
@@ -44,6 +46,8 @@ public:
     }
 private:
     Texture2D m_texture;
+    Texture2D m_pixelTexture;
+    graphics::TextureAtlas m_atlas;
 
     graphics::SpriteBatch2D m_batch{};
 
@@ -57,6 +61,28 @@ protected:
     {
         m_texture.loadFile("RPG_interior.png");
 
+        {
+            string buf;
+            io::readFile("RPG_interior.png", &buf);
+            io::convert::writeImageToSbc(buf, "RPG_interior.sbc");
+        }
+
+        m_atlas.loadCrunch("atlas/sprites.bin");
+
+        frames.emplace_back(m_atlas["compy/1"]);
+        frames.emplace_back(m_atlas["compy/2"]);
+        frames.emplace_back(m_atlas["compy/3"]);
+        frames.emplace_back(m_atlas["compy/4"]);
+        frames.emplace_back(m_atlas["compy/5"]);
+
+        m_pixelTexture.loadBytes(vector<Color>{
+            {0xff, 0xff, 0xff, 0xff},
+            {0xff, 0x00, 0x00, 0xff},
+            {0x00, 0xff, 0x00, 0xff},
+            {0x00, 0x00, 0xff, 0xff},
+        }, 2, 2, TextureFilter::Nearest);
+
+
         int wWidth, wHeight;
         getWindow()->getSize(&wWidth, &wHeight);
         m_camera
@@ -65,16 +91,16 @@ protected:
 
         m_batch.init();
 
-        for (int i = 0; i < 50000; ++i)
-        {
-            m_sprites.emplace_back(Sprite{
-                .position = {mathf::rand(wWidth), mathf::rand(wHeight)},
-                .rotation = mathf::rand(360.f),
-                .speed = {mathf::rand(2.f), mathf::rand(2.f)},
-                .texture = m_texture,
-                .rotationSpeed = mathf::rand(2.f) - 1.f
-            });
-        }
+        // for (int i = 0; i < 50000; ++i)
+        // {
+        //     m_sprites.emplace_back(Sprite{
+        //         .position = {mathf::rand(wWidth), mathf::rand(wHeight)},
+        //         .rotation = mathf::rand(360.f),
+        //         .speed = {mathf::rand(2.f), mathf::rand(2.f)},
+        //         .texture = m_texture,
+        //         .rotationSpeed = mathf::rand(2.f) - 1.f
+        //     });
+        // }
         m_sprites.emplace_back(Sprite{
             .position = {0, 0},
             .rotation = 0,
@@ -93,6 +119,8 @@ protected:
     const float textTimerMax = .05f;
     float textTimer = textTimerMax;
     float lastFrameTime = 0;
+    vector<sdgl::graphics::TextureAtlas::Frame> frames;
+    int animPos = 0;
 
     void update() override
     {
@@ -104,6 +132,7 @@ protected:
         {
             textTimer += textTimerMax;
             m_text.textProgress((m_text.textProgress() + 1) % m_text.glyphs().size());
+            ++animPos;
         }
 
         ImGui::ShowDemoWindow();
@@ -246,13 +275,16 @@ protected:
         getWindow()->getSize(&winWidth, &winHeight);
         m_batch.drawText(m_text, {(float)winWidth / 2.f, (float)winHeight / 2.f});
 
+        m_batch.drawFrame(frames[(animPos / 4) % frames.size()], {0, 0}, Color::White, {1, 1}, Vector2(), 0, 0);
 
+        m_batch.drawTexture(m_pixelTexture, {0, 0, 2, 2}, {200, 200}, Color::White, {10, 10}, {0, 0}, 0, 0);
         m_batch.end();
     }
 
     void shutdown() override
     {
         m_texture.free();
+        m_pixelTexture.free();
         m_font.free();
     }
 

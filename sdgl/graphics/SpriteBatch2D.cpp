@@ -106,6 +106,25 @@ namespace sdgl::graphics {
         }
     }
 
+    void SpriteBatch2D::drawFrame(const TextureAtlas::Frame &frame, Vector2 position, Color color, Vector2 scale,
+        Vector2 anchor, float angle, float depth)
+    {
+        auto texSize = frame.texture.size();
+        if (frame.rotated)
+        {
+            angle -= mathf::HalfPi;
+            anchor = Vector2{frame.frame.w - frame.offset.y - anchor.y, frame.offset.x + anchor.x};
+        }
+        else
+        {
+            anchor += frame.offset;
+        }
+
+
+
+        drawTexture(frame.texture, (Rectangle)frame.frame, position, color, scale, anchor, angle, depth);
+    }
+
     void SpriteBatch2D::begin(const float *transformMatrix, const SortOrder::Enum sortOrder)
     {
         m_matrix = transformMatrix;

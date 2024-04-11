@@ -11,15 +11,11 @@
 }} while(0)
 
 namespace sdgl::graphics {
-    bool CrunchAtlasData::loadBinaryFile(const string &filepath, bool trimEnabled, bool rotateEnabled, CrunchAtlasData *data)
-    {
-        string buffer;
-        if (!io::readFile(filepath, &buffer))
-        {
-            return false;
-        }
 
-        auto view = io::BufferView(buffer, io::Endian::Little);
+    bool CrunchAtlasData::loadBinary(const string &buffer, bool trimEnabled, bool rotateEnabled,
+        CrunchAtlasData *outData)
+    {
+       auto view = io::BufferView(buffer, io::Endian::Little);
 
         int16 numTextures;
         CRUNCH_READ(view, numTextures);
@@ -82,7 +78,7 @@ namespace sdgl::graphics {
         SDGL_ASSERT(!crunchAtlas.textures.empty(), "Atlas should have received at least one texture");
 
         // done, commit results
-        *data = std::move(crunchAtlas);
+        *outData = std::move(crunchAtlas);
         return true;
     }
 }

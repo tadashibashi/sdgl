@@ -86,7 +86,7 @@ namespace sdgl::logging::detail {
 #   define SDGL_WARN(...)
 #   define SDGL_ERROR(...) sdgl::logging::detail::setLastErrorMessage(format(__VA_ARGS__))
 #   define SDGL_GET_ERROR() sdgl::logging::detail::getLastErrorMessage()
-#   define SDGL_ASSERT(condition)
+#   define SDGL_ASSERT(...)
 #   define DEBUG_LOG(...)
 #   define DEBUG_WARN(...)
 #   define DEBUG_ERROR(...)
