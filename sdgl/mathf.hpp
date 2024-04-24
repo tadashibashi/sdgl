@@ -5,4 +5,4 @@
 
 #include "math/Vector2.h"
 #include "math/Rectangle.h"
-#include "math/TweenFunction.h"
+#include "math/easings.h"

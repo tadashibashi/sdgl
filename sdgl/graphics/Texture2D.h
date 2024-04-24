@@ -1,4 +1,5 @@
 #pragma once
+#include <sdgl/Asset.h>
 #include <sdgl/sdglib.h>
 #include <sdgl/math/Vector2.h>
 
@@ -17,14 +18,15 @@ namespace sdgl {
     /// Container for a 2D hardware texture
     /// @note non-RAII, make sure to call free once you are done using texture;
     /// @note loads images with uv coords where {0, 0} is on the top-left corner
-    class Texture2D
+    class Texture2D final : public Asset
     {
     public:
         Texture2D(uint id, int width, int height) : m_id(id), m_size(width, height) { }
         Texture2D() : m_id(), m_size() { }
+        ~Texture2D() override = default;
 
         bool loadFile(const string &filepath, TextureFilter::Enum filter = TextureFilter::Nearest);
-        bool load(const string &buffer, TextureFilter::Enum filter = TextureFilter::Nearest);
+        bool loadMem(const string &buffer, TextureFilter::Enum filter = TextureFilter::Nearest);
 
         /// Load texture data from format RGBA8888
         bool loadBytes(const void *data, size_t length, int width, int height, TextureFilter::Enum filter);
@@ -40,7 +42,7 @@ namespace sdgl {
         auto size() const { return m_size; }
 
         /// This should be manually called, as the destructor will not call it
-        void free();
+        void unload() override;
 
     private:
         uint m_id;

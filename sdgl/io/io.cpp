@@ -5,7 +5,7 @@
 
 namespace sdgl::io {
 
-    bool readFile(const string &filepath, string *outBuffer)
+    bool readFile(const fs::path &filepath, string *outBuffer)
     {
         SDGL_ASSERT(outBuffer, "Out buffer should not be null");
 
@@ -37,7 +37,7 @@ namespace sdgl::io {
         return true;
     }
 
-    bool readFile(const string &filepath, vector<ubyte> *outBuffer)
+    bool readFile(const fs::path &filepath, vector<ubyte> *outBuffer)
     {
         SDGL_ASSERT(outBuffer, "Out buffer should not be null");
 
@@ -69,7 +69,7 @@ namespace sdgl::io {
         return true;
     }
 
-    bool writeFile(const string &filepath, const void *data, const long length)
+    bool writeFile(const fs::path &filepath, const void *data, const long length)
     {
         std::ofstream file;
         file.open(filepath.c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
@@ -89,12 +89,12 @@ namespace sdgl::io {
         return true;
     }
 
-    bool writeFile(const string &filepath, const string &data)
+    bool writeFile(const fs::path &filepath, const string &data)
     {
         return writeFile(filepath, data.c_str(), (long)data.length());
     }
 
-    bool writeFile(const string &filepath, const vector<ubyte> &data)
+    bool writeFile(const fs::path &filepath, const vector<ubyte> &data)
     {
         return writeFile(filepath, (const char *)data.data(), (long)data.size());
     }

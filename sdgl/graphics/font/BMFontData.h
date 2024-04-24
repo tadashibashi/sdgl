@@ -1,12 +1,7 @@
 #pragma once
 #include <sdgl/sdglib.h>
-#include <sdgl/math/Rectangle.h>
 
-#include <sdgl/graphics/Texture2D.h>
-
-inline int Pizza = 10;
-
-namespace sdgl::graphics {
+namespace sdgl {
     /// Manages the loading and storage of an AngelCode BMFont file
     ///
     struct BMFontData

@@ -2,7 +2,7 @@
 #include <sdgl/graphics/Shader.h>
 #include <sdgl/graphics/ShaderAttribs.h>
 
-namespace sdgl::graphics {
+namespace sdgl {
     struct PrimitiveType
     {
         enum Enum

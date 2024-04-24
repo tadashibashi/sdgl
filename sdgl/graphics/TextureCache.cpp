@@ -35,7 +35,7 @@ namespace sdgl {
         if (const auto it = m_textures.find(path);
             it != m_textures.end())
         {
-            it->second.free();
+            it->second.unload();
             m_textures.erase(it);
             return true;
         }
@@ -47,7 +47,7 @@ namespace sdgl {
     {
         for (auto &[key, value] : m_textures)
         {
-            value.free();
+            value.unload();
         }
 
         m_textures.clear();

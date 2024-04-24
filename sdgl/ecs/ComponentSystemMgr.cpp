@@ -25,19 +25,19 @@ namespace sdgl {
     void ComponentSystemMgr::startFrame()
     {
         for (const auto frameSys : m_frameSystems)
-            frameSys->startFrame();
+            frameSys->updateStart();
     }
 
     void ComponentSystemMgr::endFrame()
     {
         for (const auto frameSys : std::ranges::reverse_view(m_frameSystems))
-            frameSys->endFrame();
+            frameSys->updateEnd();
     }
 
     void ComponentSystemMgr::render()
     {
         for (const auto renderSys : m_renderSystems)
-            renderSys->render();
+            renderSys->startRender();
     }
 
     void ComponentSystemMgr::shutdown()
@@ -65,7 +65,7 @@ namespace sdgl {
 
         try
         {
-            if (auto frameSystem = dynamic_cast<IFrameSystem *>(system))
+            if (auto frameSystem = dynamic_cast<IUpdateSystem *>(system))
             {
                 if (m_frameSystems.empty())
                 {
@@ -76,7 +76,7 @@ namespace sdgl {
                     bool wasAdded = false;
                     for (auto it = m_frameSystems.begin(); it != m_frameSystems.end(); ++it)
                     {
-                        if (frameSystem->framePriority() > (*it)->framePriority())
+                        if (frameSystem->updatePriority() > (*it)->updatePriority())
                         {
                             m_frameSystems.insert(it, frameSystem);
                             wasAdded = true;
@@ -160,7 +160,7 @@ namespace sdgl {
         for (auto toRemoveIt = begin; toRemoveIt != m_systems.end(); ++toRemoveIt)
         {
             // erase if frame system
-            if (auto frameSys = dynamic_cast<IFrameSystem *>(*toRemoveIt))
+            if (auto frameSys = dynamic_cast<IUpdateSystem *>(*toRemoveIt))
             {
                 if (auto frameSysIt = std::ranges::find(m_frameSystems, frameSys);
                     frameSysIt != m_frameSystems.end())

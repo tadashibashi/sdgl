@@ -2,13 +2,14 @@
 #include <sdgl/sdglib.h>
 #include <sdgl/logging.h>
 #include <algorithm>
+#include <ranges>
 
 namespace sdgl {
     template <typename T> requires std::equality_comparable<T> && std::is_copy_constructible_v<T>
     class PriorityList
     {
     public:
-        explicit PriorityList(func<float(const T &)> getPriority, func<void(T &)> onDelete, const vector<T> &objects = {}) :
+        explicit PriorityList(func<float(const T &)> getPriority, func<void(T &)> onDelete = {}, const vector<T> &objects = {}) :
             m_v(objects), m_getPriority(std::move(getPriority)), m_onErase(onDelete)
         {
             SDGL_ASSERT(getPriority);
@@ -74,8 +75,11 @@ namespace sdgl {
             return eraseUntilEnd(std::ranges::remove_if(m_v, pred));
         }
 
-        auto begin() const { return m_v.begin(); }
-        auto end() const { return m_v.end(); }
+        auto begin() { return m_v.begin(); }
+        auto end() { return m_v.end(); }
+
+        auto begin() const { return m_v.cbegin(); }
+        auto end() const { return m_v.cend(); }
 
         auto &at(int index) { return m_v.at(index); }
         const auto &at(int index) const { return m_v.at(index); }
@@ -87,6 +91,21 @@ namespace sdgl {
 
         auto size() const { return m_v.size(); }
         auto empty() const { return m_v.empty(); }
+
+        /// Erase all items in the list
+        void clear()
+        {
+            /// Reverse order
+            for (auto &obj : std::ranges::reverse_view(m_v))
+            {
+                if (m_onErase)
+                {
+                    m_onErase(obj);
+                }
+            }
+
+            m_v.clear();
+        }
     private:
 
         /** Returns true if anyting was erased */

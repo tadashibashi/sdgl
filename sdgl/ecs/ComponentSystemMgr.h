@@ -30,7 +30,7 @@ namespace sdgl {
     private:
         bool eraseSystems(vector<ISystem *>::iterator begin);
         vector<ISystem *> m_systems;
-        vector<IFrameSystem *> m_frameSystems;
+        vector<IUpdateSystem *> m_frameSystems;
         vector<IRenderSystem *> m_renderSystems;
 
         int m_initPriority, m_framePriority, m_renderPriority;

@@ -7,8 +7,8 @@ if (EMSCRIPTEN)
             SUFFIX .html
     )
 else()
-    angle_copy_libs()
+    angles_copy_libs()
 endif()
 
 sdgl_make_symlink(${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets)
-sdgl_pack_atlas(${CMAKE_CURRENT_SOURCE_DIR}/assets/atlas ${CMAKE_CURRENT_BINARY_DIR}/atlas/sprites)
+sdgl_pack_atlas(${CMAKE_CURRENT_SOURCE_DIR}/assets/atlas ${CMAKE_CURRENT_BINARY_DIR}/atlas)

@@ -5,23 +5,13 @@
 #include "endian.h"
 
 namespace sdgl::io {
-    struct Endian
-    {
-        enum Enum
-        {
-            Unknown,
-            Little,
-            Big,
-        };
-    };
-
-    inline constexpr Endian::Enum SystemEndian = endian::Little ? Endian::Little :
-                                                     endian::Big ? Endian::Big : Endian::Unknown;
-
     template <typename T>
     concept BufferReadable = std::is_arithmetic_v<T> && std::is_default_constructible_v<T>;
 
-    /// Helper to view a memory buffer and parse values from it
+    template <typename T>
+    concept BufferWritable = BufferReadable<T>;
+
+    /// Helper to view a memory buffer with both read and write functionality
     /// @warning this should only be used on known data types
     class BufferView
     {
@@ -31,35 +21,35 @@ namespace sdgl::io {
         /// @param size size of the buffer in bytes
         /// @param endianness expected endianness of numeric data types (strings are always handled in little-endian order)
         BufferView(const void *buffer, const size_t size, const Endian::Enum endianness = Endian::Little) :
-            m_buf((const ubyte *)buffer), m_pos(0), m_size(size), m_endian(endianness)
+            m_buf((ubyte *)buffer), m_pos(0), m_size(size), m_endian(endianness)
         {}
 
         /// Create BufferView from null-terminated c-string
         /// @param buffer c string with memory to view
         /// @param endianness expected endianness of numeric data types (strings are always handled in little-endian order)
         explicit BufferView(const char *buffer, const Endian::Enum endianness = Endian::Little) :
-            m_buf((const ubyte *)buffer), m_pos(0), m_size(std::strlen(buffer)), m_endian(endianness)
+            m_buf((ubyte *)buffer), m_pos(0), m_size(std::strlen(buffer)), m_endian(endianness)
         {}
 
         /// Create BufferView from string of byte data
         /// @param buffer string containing memory to view
         /// @param endianness expected endianness of numeric data types (string are always handled in little-endian order)
         explicit BufferView(const string &buffer, const Endian::Enum endianness = Endian::Little) :
-            m_buf((const ubyte *)buffer.data()), m_pos(0), m_size(buffer.length()), m_endian(endianness)
+            m_buf((ubyte *)buffer.data()), m_pos(0), m_size(buffer.length()), m_endian(endianness)
         {}
 
         /// Create BufferView from vector of ubyte
         /// @param buffer vector containing memory to view
         /// @param endianness expected endianness of numeric data types (strings are always handled in little-endian order)
         explicit BufferView(const vector<ubyte> &buffer, const Endian::Enum endianness = Endian::Little) :
-            m_buf(buffer.data()), m_pos(0), m_size(buffer.size()), m_endian(endianness)
+            m_buf((ubyte *)buffer.data()), m_pos(0), m_size(buffer.size()), m_endian(endianness)
         {}
 
         /// Create BufferView from vector of bytes
         /// @param buffer vector containing memory to view
         /// @param endianness expected endianness of numeric data types (strings are always handled in little-endian order)
         explicit BufferView(const vector<char> &buffer, const Endian::Enum endianness = Endian::Little) :
-            m_buf((const ubyte *)buffer.data()), m_pos(0), m_size(buffer.size()), m_endian(endianness)
+            m_buf((ubyte *)buffer.data()), m_pos(0), m_size(buffer.size()), m_endian(endianness)
         {}
 
         /// Read data into a numeric value. Currently, this function only supports primitive numeric types.
@@ -75,7 +65,7 @@ namespace sdgl::io {
         }
 
         template <BufferReadable T>
-        T tryRead(T defaultVal = T())
+        T getOr(T defaultVal = T())
         {
             SDGL_ASSERT(read(defaultVal));
             return defaultVal;
@@ -91,7 +81,7 @@ namespace sdgl::io {
         ///          if > 0 `outString` will contain data, otherwise `outString` will remain unmodified.
         ///          Check sdgl::getError() for more information when 0 is returned.
         ///          Note: this number may differ from string length + 1 if `maxSize` clipped the out value.
-        uint read(string &outString, size_t maxSize = SIZE_T_MAX);
+        uint read(string &outString, size_t maxSize = SIZE_MAX);
 
         /// Read a string with an expected length
         /// @param outString [out] string to receive the data
@@ -112,6 +102,7 @@ namespace sdgl::io {
         ///          Check sdgl::getError for more info when 0 is returned.
         ///          Note: this number may differ from string length + 1 if `maxSize` clipped the out value.
         uint read(char *outBuffer, size_t maxSize);
+
 
         /// Peek relative to the current location. In debug mode, an assertion is made to check bounds.
         /// @param offset - offset bytes, may be negative
@@ -150,12 +141,38 @@ namespace sdgl::io {
         {
             m_pos = offset;
         }
-    private:
+    protected:
         uint readImpl(void *buffer, size_t size);
 
-        const ubyte *m_buf;
+        ubyte *m_buf;
         size_t m_pos;
         size_t m_size;
         Endian::Enum m_endian;
+    };
+
+    class BufferWriter : public BufferView
+    {
+    public:
+        BufferWriter(string &buffer, Endian::Enum endianness) :
+            BufferView(buffer.data(), buffer.size(), endianness) { }
+
+        template <BufferWritable T>
+        uint write(T value)
+        {
+            return writeImpl(&value, sizeof(T));
+        }
+        /// Write null-terminated string into the buffer
+        /// @note make sure there is enough space in the buffer for a null-terminator
+        /// @returns the number of bytes written, this includes the string's null terminator
+        uint write(const string &str);
+
+        /// Write string into the buffer
+        /// @note make sure there is enough space for a null-terminator
+        /// @returns the number of bytes read (including null terminator)
+        uint write(string_view str);
+
+        uint write(const char *str, size_t length);
+    private:
+        uint writeImpl(const void *data, size_t size);
     };
 }

@@ -1,34 +1,53 @@
 #pragma once
-#include <sdgl/Window.h>
+#include <sdgl/core/Window.h>
 
 namespace sdgl {
-    /**
-     * Simple one-windowed application
-     */
+
+    /// Simple one-windowed application
     class App {
     public:
-        App(const string &title, int width, int height,
-            WindowFlags::Enum flags=WindowFlags::None,
-            const PluginConfig &plugins = {.imgui=true});
+        App(
+            const string &title,                           ///< Window title, and application name
+            int width,                                     ///< Initial window width
+            int height,                                    ///< Initial window height
+            WindowFlags::Enum flags = WindowFlags::None,   ///< Window flags
+            const PluginConfig &plugins = {.imgui=true}    ///< Window plugin configuration
+        );
         virtual ~App();
 
+        /// Execute application, passing in arguments from the command line
+        /// @param argc number of command line args
+        /// @param argv argument array
+        /// @returns return code, equivalent to `ErrorCode::Enum`
         int run(int argc, char *argv[]);
 
+        /// Flags the application to quit at the start of next frame
         void quit();
 
+        /// Get the app window
         [[nodiscard]]
         Window *getWindow() const;
 
+        /// Get the time, in seconds, since the windowing library was initialized
         [[nodiscard]]
-        float getTime() const;
+        double getTime() const;
+
+        /// Get the time, in seconds, since the last call to update
+        [[nodiscard]]
+        double getDeltaTime() const;
 
         struct ErrorCode
         {
+            /// Application error code returned from `App::run`
             enum Enum : int
             {
+                /// No error
                 Ok = 0,
+                /// Backend windowing library failed during initialization
                 BackendInitError,
+                /// Backend windowing library failed to create the window
                 CreateWindowFailed,
+                /// Application subclass failed to init
                 AppInitError,
             };
         };
@@ -43,4 +62,3 @@ namespace sdgl {
         Impl *m;
     };
 }
-

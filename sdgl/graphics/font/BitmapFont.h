@@ -1,18 +1,34 @@
 #pragma once
+#include <sdgl/Asset.h>
+#include <sdgl/graphics/atlas/TextureAtlas.h>
 
-namespace sdgl::graphics {
+namespace sdgl {
+    struct BMFontData;
     struct Glyph;
 
     /// Font to render pre-rendered atlas of glyphs
     /// Currently, only Angel Code BMFont format is supported, and this implementation is built around it
-    class BitmapFont
+    class BitmapFont final : public Asset
     {
     public:
         BitmapFont();
-        ~BitmapFont();
+        ~BitmapFont() override;
 
+        bool loadBMFont(const string &filepath, const TextureAtlas &textureAtlas, string_view textureRoot);
         bool loadBMFont(const string &filepath);
-        void free();
+
+        /// Load from AngelCode BMFont data already in memory - textures are received from a texture atlas
+        /// @param fileBuffer   in-memory data of AngelCode BMFont file
+        /// @param textureAtlas texture atlas to load textures from
+        /// @param textureRoot  parent path within the atlas where the texture keys are located
+        ///
+        bool loadBMFontMem(const string &fileBuffer, const TextureAtlas &textureAtlas,
+            string_view textureRoot);
+
+        /// Load from AngelCode BMFont data already in memory
+        bool loadBMFontMem(const string &fileBuffer, const string &parentFolder);
+
+        void unload() override;
 
         [[nodiscard]]
         bool isLoaded() const;
@@ -34,6 +50,13 @@ namespace sdgl::graphics {
         void projectText(vector<Glyph> &glyphs, const string &text, uint maxWidth = 0, int horSpaceOffset = 0,
             int lineHeightOffset = 0, bool withKerning = true) const;
     private:
+
+        /// Parse bmfont where font textures are retrieved from a texture atlas
+        /// @param data successfully loaded bmfont data object
+        /// @param textureRoot parent path of where texture files are found - if atlas is not null,
+        ///                    it indicates the parent path of where the texture keys are located
+        /// @param atlas texture atlas to get textures from
+        bool parseBMFontData(const BMFontData &data, string_view textureRoot, const TextureAtlas *atlas);
         struct Impl;
         struct Char;
         Impl *m;

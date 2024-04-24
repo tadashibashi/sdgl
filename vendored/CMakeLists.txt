@@ -1,7 +1,5 @@
-# Google Angle
-if (NOT EMSCRIPTEN)
-    add_subdirectory(angle)
-endif()
+# Graphics library
+add_subdirectory(angles)
 
 # Catch2
 if (SDGL_BUILD_TESTS)
@@ -48,3 +46,5 @@ include(stb.cmake)
 include(crunch.cmake)
 
 add_subdirectory(entt)
+
+add_subdirectory(glaze)

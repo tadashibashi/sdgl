@@ -25,3 +25,18 @@ namespace sdgl::io::endian {
         return dest.u;
     }
 }
+
+namespace sdgl::io {
+    struct Endian
+    {
+        enum Enum
+        {
+            Unknown,
+            Little,
+            Big,
+        };
+    };
+
+    inline constexpr Endian::Enum SystemEndian = endian::Little ? Endian::Little :
+                                                 endian::Big ? Endian::Big : Endian::Unknown;
+}

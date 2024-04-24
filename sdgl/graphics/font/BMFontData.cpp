@@ -9,7 +9,7 @@
     return false; \
 }} while(0)
 
-namespace sdgl::graphics {
+namespace sdgl {
     bool BMFontData::fromFile(const string &filepath, BMFontData *data)
     {
         SDGL_ASSERT(data);
@@ -84,7 +84,7 @@ namespace sdgl::graphics {
         BMFontData bmfont;
 
         // Info: block 1
-        if (const auto blockId = view.tryRead<ubyte>(); blockId != 1)
+        if (const auto blockId = view.getOr<ubyte>(); blockId != 1)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 1, but got {}", blockId);
             return false;
@@ -110,7 +110,7 @@ namespace sdgl::graphics {
         view.read(bmfont.info.fontName);
 
         // Common: block 2
-        if (const auto blockId = view.tryRead<ubyte>(); blockId != 2)
+        if (const auto blockId = view.getOr<ubyte>(); blockId != 2)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 2, but got {}", blockId);
             return false;
@@ -133,7 +133,7 @@ namespace sdgl::graphics {
         BMFONT_READ(view, bmfont.common.blueChnl);
 
         // Pages: block 3
-        if (const auto blockId = view.tryRead<ubyte>(); blockId != 3)
+        if (const auto blockId = view.getOr<ubyte>(); blockId != 3)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 3, but got {}", blockId);
             return false;
@@ -195,7 +195,7 @@ namespace sdgl::graphics {
         }
 
         // Chars: block 4
-        if (const auto blockId = view.tryRead<ubyte>(); blockId != 4)
+        if (const auto blockId = view.getOr<ubyte>(); blockId != 4)
         {
             SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 4, but got {}", blockId);
             return false;
@@ -230,7 +230,7 @@ namespace sdgl::graphics {
         // Kerning Pairs: block 5 (only available if there are any kerning pairs with `amount` differing from 0)
         if (view.position() < view.size())
         {
-            if (const auto blockId = view.tryRead<ubyte>(); blockId != 5)
+            if (const auto blockId = view.getOr<ubyte>(); blockId != 5)
             {
                 SDGL_ERROR("Invalid BMFont v3 binary file: expected block number 5, but got {}", blockId);
                 return false;

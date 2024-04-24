@@ -43,3 +43,5 @@ namespace sdgl::logging::detail {
     void setLastErrorMessage(const string &message) { s_lastCoreError = message; }
     const string &getLastErrorMessage() { return s_lastCoreError; }
 }
+
+

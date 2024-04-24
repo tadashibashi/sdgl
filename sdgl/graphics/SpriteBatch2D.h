@@ -17,7 +17,7 @@ namespace sdgl {
     class Shader;
 }
 
-namespace sdgl::graphics {
+namespace sdgl {
     class FontText;
 
     struct SortOrder {
@@ -71,18 +71,18 @@ namespace sdgl::graphics {
             const Texture2D &texture, ///< texture to draw
             Rectangle source,         ///< source rectangle within the texture in pixels
             Vector2 position,         ///< position in pixels at which to project image
-            Color color,              ///< color to tint the image
-            Vector2 scale,            ///< normalized texture xy scale
-            Vector2 anchor,           ///< the (0, 0) position within the texture from which to rotate / scale from (in pixels)
-            float angle,              ///< rotation in radians
-            float depth               ///< depth sorting value (set sortOrder in `SpriteBatch::begin` to set behavior)
+            Color color = Color::White,   ///< color to tint the image
+            Vector2 scale = {1.f, 1.f},   ///< normalized texture xy scale
+            Vector2 anchor = {0, 0},      ///< the (0, 0) position within the texture from which to rotate / scale from (in pixels)
+            float angle = 0,              ///< rotation in radians
+            float depth = 0               ///< depth sorting value (set sortOrder in `SpriteBatch::begin` to set behavior)
         );
 
         /// FIXME: perhaps cache rendered texture inside of FontText component? This would allow for ease of
         /// transformations using drawTexture
         void drawText(const FontText &text, Vector2 position, Color color = Color::White, float depth = 0);
 
-        void drawFrame(const TextureAtlas::Frame &frame, Vector2 position, Color color, Vector2 scale, Vector2 anchor, float angle, float depth);
+        void drawFrame(const Frame &frame, Vector2 position, Color color, Vector2 scale, Vector2 anchor, float angle, float depth);
 
         void begin(const float *transformMatrix, SortOrder::Enum sortOrder = SortOrder::FrontToBack);
 
@@ -93,7 +93,7 @@ namespace sdgl::graphics {
         vector<RenderBatch> m_batches;
 
         SortOrder::Enum m_sortOrder;
-        graphics::RenderProgram m_program;
+        RenderProgram m_program;
 
         bool m_batchStarted;
 

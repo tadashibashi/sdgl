@@ -1,4 +1,5 @@
 #pragma once
+#include "World.h"
 
 namespace sdgl {
     /**
@@ -6,30 +7,25 @@ namespace sdgl {
      */
     class ISystem {
     public:
+        explicit ISystem(ecs::World &world) : m_world(world) { }
         virtual ~ISystem() = default;
         virtual bool init() = 0;
         virtual void shutdown() = 0;
+        virtual void update(double deltaTime) = 0;
+
         /** Higher occurs earlier, lower occurs later */
         [[nodiscard]]
         virtual int initPriority() const { return 0; }
-    };
-
-    class IFrameSystem {
-    public:
-        virtual ~IFrameSystem() = default;
-        virtual void startFrame() = 0;
-        virtual void endFrame() = 0;
-        /** Higher occurs earlier, lower occurs later */
         [[nodiscard]]
-        virtual int framePriority() const { return 0; }
-    };
+        virtual int updatePriority() const { return 0; }
 
-    class IRenderSystem {
-    public:
-        virtual ~IRenderSystem() = default;
-        virtual void render() = 0;
-        /** Higher occurs earlier, lower occurs later */
+    protected:
         [[nodiscard]]
-        virtual int renderPriority() const { return 0; }
+        const ecs::World &getWorld() const { return m_world; }
+        [[nodiscard]]
+        ecs::World &getworld() { return m_world; }
+
+    private:
+        ecs::World &m_world;
     };
 }

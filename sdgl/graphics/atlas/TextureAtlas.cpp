@@ -5,11 +5,11 @@
 
 #include "CrunchAtlasData.h"
 
-namespace sdgl::graphics {
+namespace sdgl {
 
     TextureAtlas::~TextureAtlas()
     {
-        clear();
+        unload();
     }
 
     bool TextureAtlas::loadCrunch(const string &filepath)
@@ -21,7 +21,12 @@ namespace sdgl::graphics {
             return false;
         }
 
-        // Load crunch map
+        return loadCrunchMem(filepath, fileBuffer);
+    }
+
+    bool TextureAtlas::loadCrunchMem(const string &filepath, const string &fileBuffer)
+    {
+       // Load crunch map
         CrunchAtlasData data;
         if (!CrunchAtlasData::loadBinary(fileBuffer, true, true, &data))
         {
@@ -35,17 +40,17 @@ namespace sdgl::graphics {
             textures.reserve(data.textures.size());
             map<string, Frame> frames;               ///< frames for each texture to collect
 
-            auto parentPath =                        ///< parent folder where textures are located
-                std::filesystem::path(filepath).parent_path().string();
+            auto path = std::filesystem::path(filepath);
+            auto parentPath = path.parent_path();
 
             for (const auto &[texFileName, texImages] : data.textures)
             {
                 // Load texture for atlas page
                 Texture2D curTexture;
-                if (!curTexture.loadFile(format("{}/{}.png", parentPath, texFileName)))
+                if (!curTexture.loadFile( (parentPath / texFileName).string() + ".png" ))
                 {
                     for (auto &t : textures)
-                        t.free();
+                        t.unload();
                     return false;
                 }
 
@@ -59,8 +64,8 @@ namespace sdgl::graphics {
                         .frame = {curImage.x, curImage.y,
                             curImage.rotated ? curImage.height : curImage.width, curImage.rotated ? curImage.width : curImage.height},
                         .offset = {curImage.frameX, curImage.frameY},
-                        .rotated = curImage.rotated > 0,
                         .size = {curImage.frameWidth, curImage.frameHeight},
+                        .rotated = curImage.rotated > 0,
                         .texture = curTexture
                     });
                 }
@@ -71,7 +76,7 @@ namespace sdgl::graphics {
             if (!m_textures.empty())
             {
                 for (auto &t : m_textures)
-                    t.free();
+                    t.unload();
             }
 
             m_textures.swap(textures);
@@ -90,11 +95,11 @@ namespace sdgl::graphics {
         }
     }
 
-    void TextureAtlas::clear()
+    void TextureAtlas::unload()
     {
         for (auto &texture : m_textures)
         {
-            texture.free();
+            texture.unload();
         }
 
         m_textures.clear();

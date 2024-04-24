@@ -1,4 +1,4 @@
-#include <sdgl/gl.h>
+#include <../../sdgl/graphics/gles3/gl.h>
 
 #include <imgui.h>
 
@@ -47,15 +47,15 @@ public:
 private:
     Texture2D m_texture;
     Texture2D m_pixelTexture;
-    graphics::TextureAtlas m_atlas;
+    TextureAtlas m_atlas;
 
-    graphics::SpriteBatch2D m_batch{};
+    SpriteBatch2D m_batch{};
 
     Camera2D m_camera{};
     vector<Sprite> m_sprites{};
 
-    graphics::BitmapFont m_font{};
-    graphics::FontText m_text{};
+    BitmapFont m_font{};
+    FontText m_text{};
 protected:
     bool init() override
     {
@@ -67,13 +67,13 @@ protected:
             io::convert::writeImageToSbc(buf, "RPG_interior.sbc");
         }
 
-        m_atlas.loadCrunch("atlas/sprites.bin");
+        m_atlas.loadCrunch("atlas.bin");
 
-        frames.emplace_back(m_atlas["compy/1"]);
-        frames.emplace_back(m_atlas["compy/2"]);
-        frames.emplace_back(m_atlas["compy/3"]);
-        frames.emplace_back(m_atlas["compy/4"]);
-        frames.emplace_back(m_atlas["compy/5"]);
+        frames.emplace_back(m_atlas["sprites/creatures/compy/1"]);
+        frames.emplace_back(m_atlas["sprites/creatures/compy/2"]);
+        frames.emplace_back(m_atlas["sprites/creatures/compy/3"]);
+        frames.emplace_back(m_atlas["sprites/creatures/compy/4"]);
+        frames.emplace_back(m_atlas["sprites/creatures/compy/5"]);
 
         m_pixelTexture.loadBytes(vector<Color>{
             {0xff, 0xff, 0xff, 0xff},
@@ -109,8 +109,8 @@ protected:
             .rotationSpeed = 0
         });
 
-        SDGL_ASSERT(m_font.loadBMFont("assets/bmfont/font.fnt"), "Font should load without problems");
-        m_text = graphics::FontText(&m_font, "Hello world!\nA line broken world...\nA really really really really long "
+        SDGL_ASSERT(m_font.loadBMFont("assets/atlas/bmfont/font.fnt", m_atlas, "bmfont"), "Font should load without problems");
+        m_text = FontText(&m_font, "Hello world!\nA line broken world...\nA really really really really long "
             "striiiiinnnngggggggggggggg", 180, true, 0, 0);
 
         return true;
@@ -119,7 +119,7 @@ protected:
     const float textTimerMax = .05f;
     float textTimer = textTimerMax;
     float lastFrameTime = 0;
-    vector<sdgl::graphics::TextureAtlas::Frame> frames;
+    vector<Frame> frames;
     int animPos = 0;
 
     void update() override
@@ -235,7 +235,6 @@ protected:
         m_camera.setViewport({0, 0, winWidth, winHeight});
 
         lastFrameTime = curTime;
-
     }
 
     void render() override
@@ -267,10 +266,6 @@ protected:
                 sprite.rotation, 0);
         }
 
-        m_batch.drawTexture(m_text.glyphs()[0].texture, {
-            0, 0, m_text.glyphs()[0].texture.size().x, m_text.glyphs()[0].texture.size().y},
-            {0, 0}, Color::White, {1.f, 1.f}, {0, 0}, 0, 0);
-
         int winWidth, winHeight;
         getWindow()->getSize(&winWidth, &winHeight);
         m_batch.drawText(m_text, {(float)winWidth / 2.f, (float)winHeight / 2.f});
@@ -283,9 +278,9 @@ protected:
 
     void shutdown() override
     {
-        m_texture.free();
-        m_pixelTexture.free();
-        m_font.free();
+        m_texture.unload();
+        m_pixelTexture.unload();
+        m_font.unload();
     }
 
 

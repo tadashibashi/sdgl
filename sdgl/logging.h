@@ -93,3 +93,18 @@ namespace sdgl::logging::detail {
 #endif
 
 #endif // =========================================================================================
+
+// Some common formatter impls, maybe move this to another file?
+template <>
+struct formatter<sdgl::fs::path>
+{
+    template <class FormatContext>
+    constexpr auto parse(FormatContext& ctx) {
+        return ctx.begin();
+    }
+
+    template <class FormatContext>
+    auto format(const sdgl::fs::path& obj, FormatContext& ctx) const {
+        return std::format_to(ctx.out(), "{}", obj.native());
+    }
+};

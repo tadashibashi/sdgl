@@ -7,109 +7,109 @@ namespace sdgl {
 
 #pragma pack(push, 1)
     template <Arithmetic T>
-    class Vector2_ {
+    class Vec2 {
     public:
         T x, y;
-        constexpr Vector2_() : x(0), y(0) { }
-        constexpr Vector2_(T x, T y) : x(x), y(y) { }
+        constexpr Vec2() : x(0), y(0) { }
+        constexpr Vec2(T x, T y) : x(x), y(y) { }
 
-        static const Vector2_<T> Zero;
-        static const Vector2_<T> One;
-
-        template <Arithmetic U>
-        [[nodiscard]]
-        bool operator==(Vector2_<U> other) const { return x == other.x && y == other.y;  }
+        static const Vec2<T> Zero;
+        static const Vec2<T> One;
 
         template <Arithmetic U>
         [[nodiscard]]
-        bool operator!=(Vector2_<U> other) const { return x != other.x || y != other.y;  }
+        bool operator==(Vec2<U> other) const { return x == other.x && y == other.y;  }
 
         template <Arithmetic U>
-        Vector2_ operator+(Vector2_<U> other) const
+        [[nodiscard]]
+        bool operator!=(Vec2<U> other) const { return x != other.x || y != other.y;  }
+
+        template <Arithmetic U>
+        Vec2 operator+(Vec2<U> other) const
         {
-            return Vector2_<T>(x + other.x, y + other.y);
+            return Vec2<T>(x + other.x, y + other.y);
         }
 
         template <Arithmetic U>
-        Vector2_ &operator+=(Vector2_<U> other)
+        Vec2 &operator+=(Vec2<U> other)
         {
             x += other.x; y += other.y;
             return *this;
         }
 
         template <Arithmetic U>
-        Vector2_ operator-(Vector2_<U> other) const
+        Vec2 operator-(Vec2<U> other) const
         {
-            return Vector2_<T>(x - other.x, y - other.y);
+            return Vec2<T>(x - other.x, y - other.y);
         }
 
         template <Arithmetic U>
-        Vector2_ &operator-=(Vector2_<U> other)
+        Vec2 &operator-=(Vec2<U> other)
         {
             x -= other.x; y -= other.y;
             return *this;
         }
 
         template <Arithmetic U>
-        Vector2_ operator*(Vector2_<U> other) const
+        Vec2 operator*(Vec2<U> other) const
         {
-            return Vector2_<T>(x * other.x, y * other.y);
+            return Vec2<T>(x * other.x, y * other.y);
         }
 
         template <Arithmetic U>
-        Vector2_ &operator*=(Vector2_<U> other)
+        Vec2 &operator*=(Vec2<U> other)
         {
             x *= other.x; y *= other.y;
             return *this;
         }
 
         template <Arithmetic U>
-        Vector2_ operator/(Vector2_<U> other) const
+        Vec2 operator/(Vec2<U> other) const
         {
-            return Vector2_<T>(x / other.x, y / other.y);
+            return Vec2<T>(x / other.x, y / other.y);
         }
 
         template <Arithmetic U>
-        Vector2_ &operator/=(Vector2_<U> other)
+        Vec2 &operator/=(Vec2<U> other)
         {
             x /= other.x; y /= other.y;
             return *this;
         }
 
         template <Arithmetic U>
-        Vector2_ operator*(U scalar) const
+        Vec2 operator*(U scalar) const
         {
-            return Vector2_<T>(x * scalar, y * scalar);
+            return Vec2<T>(x * scalar, y * scalar);
         }
 
         template <Arithmetic U>
-        Vector2_ &operator*=(U scalar)
+        Vec2 &operator*=(U scalar)
         {
             x *= scalar; y *= scalar;
             return *this;
         }
 
         template <Arithmetic U>
-        Vector2_ operator/(U scalar) const
+        Vec2 operator/(U scalar) const
         {
-            return Vector2_<T>(x / scalar, y / scalar);
+            return Vec2<T>(x / scalar, y / scalar);
         }
 
         template <Arithmetic U>
-        Vector2_ &operator/=(U scalar)
+        Vec2 &operator/=(U scalar)
         {
             x /= scalar; y /= scalar;
             return *this;
         }
 
-        Vector2_ operator -()
+        Vec2 operator -()
         {
-            return Vector2_(-x, -y);
+            return Vec2(-x, -y);
         }
 
-        Vector2_ operator +()
+        Vec2 operator +()
         {
-            return Vector2_(x, y);
+            return Vec2(x, y);
         }
 
         /**
@@ -126,15 +126,15 @@ namespace sdgl {
          * If length is zero, a zero vector will be returned
          */
         [[nodiscard]]
-        Vector2_ normal() const
+        Vec2 normal() const
         {
             auto l = length();
-            return (l == 0) ?  Zero : Vector2_(x / l, y / l);
+            return (l == 0) ?  Zero : Vec2(x / l, y / l);
         }
 
         template <Arithmetic U>
         [[nodiscard]]
-        float angleTo(Vector2_<U> other) const
+        float angleTo(Vec2<U> other) const
         {
             return mathf::pointAngle(other.x - x, other.y - y);
         }
@@ -149,28 +149,26 @@ namespace sdgl {
         }
 
         template <Arithmetic U>
-        explicit operator Vector2_<U>() const
+        explicit operator Vec2<U>() const
         {
-            return Vector2_<U>(static_cast<U>(x), static_cast<U>(y));
+            return Vec2<U>(static_cast<U>(x), static_cast<U>(y));
         }
     };
 #pragma pack(pop)
 
     template<Arithmetic T>
-    const Vector2_<T> Vector2_<T>::Zero = Vector2_(0, 0);
+    const Vec2<T> Vec2<T>::Zero = Vec2(0, 0);
 
     template<Arithmetic T>
-    const Vector2_<T> Vector2_<T>::One = Vector2_(1, 1);
+    const Vec2<T> Vec2<T>::One = Vec2(1, 1);
 
-    using Point = Vector2_<int>;
-    using Vector2 = Vector2_<float>;
-
-
+    using Point = Vec2<int>;
+    using Vector2 = Vec2<float>;
 }
 
 #include <sdgl/format.h>
 template <typename T>
-struct formatter<sdgl::Vector2_<T>>
+struct formatter<sdgl::Vec2<T>>
 {
     template <class FormatContext>
     constexpr auto parse(FormatContext& ctx) {
@@ -178,7 +176,7 @@ struct formatter<sdgl::Vector2_<T>>
     }
 
     template <class FormatContext>
-    auto format(const sdgl::Vector2_<T>& obj, FormatContext& ctx) const {
+    auto format(const sdgl::Vec2<T>& obj, FormatContext& ctx) const {
         return std::format_to(ctx.out(), "({}, {})", obj.x, obj.y);
     }
 };

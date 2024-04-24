@@ -4,13 +4,13 @@
 #include <sdgl/math/mathf.h>
 
 namespace sdgl {
-    Tween::Tween(const float duration, const TweenFunc func) :
+    Tween::Tween(const float duration, const EasingFunc func) :
         m_isYoyo(false), m_isReversing(false), m_isPaused(false),
         m_speed(1.f), m_duration(duration), m_onEnd(), m_onStep(), m_tweenFunc(func),
         m_currentTime(0), m_currentValue()
     {
         SDGL_ASSERT(duration >= 0);
-        SDGL_ASSERT(func);
+        SDGL_ASSERT(func, "Tween must have a function to operate on");
         updateValue();
     }
 
@@ -59,7 +59,7 @@ namespace sdgl {
         m_isPaused = true;
     }
 
-    void Tween::update(const float deltaTime)
+    void Tween::update(double deltaTime)
     {
         if (m_isPaused) return;
 

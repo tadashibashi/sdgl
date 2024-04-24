@@ -5,7 +5,7 @@ TEST_CASE("Tween tests", "[sdgl::Tween]")
 {
     SECTION("Can update value")
     {
-        Tween t(10, tweenf::linear);
+        Tween t(10, easings::linear);
 
         REQUIRE(t.getCurrentValue() == 0);
 
@@ -21,7 +21,7 @@ TEST_CASE("Tween tests", "[sdgl::Tween]")
 
     SECTION("Callback sets value as expected")
     {
-        Tween t(100, tweenf::linear);
+        Tween t(100, easings::linear);
 
         float value = 0;
         t.onStep([&](const float current) {
@@ -39,7 +39,7 @@ TEST_CASE("Tween tests", "[sdgl::Tween]")
 
     SECTION("Yoyo behavior works as expected")
     {
-        Tween t(10, tweenf::linear);
+        Tween t(10, easings::linear);
         t.setYoyo(true);
 
         REQUIRE(t.isYoyo());
@@ -68,7 +68,7 @@ TEST_CASE("Tween tests", "[sdgl::Tween]")
 
     SECTION("Scales values correctly with helper")
     {
-        Tween t(10, tweenf::linear);
+        Tween t(10, easings::linear);
         t.update(5);
 
         REQUIRE(t.calculateValue(0, 10) == 5);

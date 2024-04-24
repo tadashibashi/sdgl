@@ -3,6 +3,7 @@
 // ===== Includes for pch and defines =====
 
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <string>
 #include <string_view>
@@ -24,6 +25,8 @@ namespace sdgl {
         using string = std::string;
         using string_view = std::string_view;
 
+        namespace fs = std::filesystem;
+
         template <typename K, typename V, typename Compare = std::less<K>,
             typename Allocator = std::allocator<std::pair<const K, V> >>
         using map = std::map<K, V, Compare, Allocator>;
@@ -34,5 +37,3 @@ namespace sdgl {
         template <typename T>
         using func = std::function<T>;
 }
-
-

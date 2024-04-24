@@ -1,35 +1,41 @@
 #include "BitmapFont.h"
 
-#include <__filesystem/path.h>
+#include <filesystem>
 
 #include "BMFontData.h"
 #include "Glyph.h"
 
-namespace sdgl::graphics {
+namespace sdgl {
     struct BitmapFont::Char
     {
-        Rectangle_<uint16> frame;
-        Vector2_<int16> offset;   ///< x: subtract from cursorX to get frame start X;
+        Rect<uint16> frame;
+        Vec2<int16> offset;   ///< x: subtract from cursorX to get frame start X;
                                   ///< y: cursorY - base + yoffset = frame start Y
         int16 xadvance;           ///< horizontal length from cursor start to end
-        Texture2D texture;      ///< gpu texture id
+        const Frame &texture;     ///< texture frame
     };
 
     struct BitmapFont::Impl
     {
         string fontName;
-        uint16 fontSize;            ///< original size from generation
+        uint16 fontSize{};            ///< original size from generation
         uint16 base = 0;            ///< Distance from top line to the glyph baseline == cursorY
         uint16 lineHeight = 0;
-        vector<Texture2D> pages;
+        vector<Frame> pages;
         map<uint, Char> chars;
         map<std::pair<uint, uint>, int> kernings;
+        bool ownsFrames = false;
 
         void unload()
         {
-            for (auto &page : pages)
+            if (ownsFrames)
             {
-                page.free();
+                for (auto &page : pages)
+                {
+                    page.texture.unload();
+                }
+
+                ownsFrames = false;
             }
 
             chars.clear();
@@ -50,6 +56,17 @@ namespace sdgl::graphics {
         delete m;
     }
 
+    bool BitmapFont::loadBMFont(const string &filepath, const TextureAtlas &textureAtlas, string_view textureRoot)
+    {
+        BMFontData data;
+        if (!BMFontData::fromFile(filepath, &data))
+        {
+            return false;
+        }
+
+        return parseBMFontData(data, textureRoot, &textureAtlas);
+    }
+
     bool BitmapFont::loadBMFont(const string &filepath)
     {
         BMFontData data;
@@ -58,57 +75,33 @@ namespace sdgl::graphics {
             return false;
         }
 
-        // load pages into texture
-        auto parentFolder = std::filesystem::path(filepath).parent_path().string();
-
-        vector<Texture2D> textures;
-        textures.reserve(data.pages.size());
-
-        // Page textures
-        for (const auto &[id, file] : data.pages)
-        {
-            Texture2D texture;
-            if (!texture.loadFile(format("{}/{}", parentFolder, file)))
-            {
-                return false;
-            }
-
-            textures.emplace_back(texture);
-        }
-
-        // Chars
-        map<uint, Char> chars;
-        for (const auto &c : data.chars)
-        {
-            chars.try_emplace(c.id,
-                Char {
-                    Rectangle_<uint16>{c.x, c.y, c.width, c.height},
-                    Vector2_<int16>(c.xoffset, c.yoffset),
-                    c.xadvance,
-                    textures[c.page]
-                }
-            );
-        }
-
-        // Kernings
-        map<std::pair<uint, uint>, int> kernings;
-        for (const auto &k : data.kernings)
-        {
-            kernings.try_emplace(std::make_pair(k.first, k.second), k.amount);
-        }
-
-        m->pages.swap(textures);
-        m->chars.swap(chars);
-        m->kernings.swap(kernings);
-        m->fontName = data.info.fontName;
-        m->fontSize = data.info.fontSize;
-        m->base = data.common.base;
-        m->lineHeight = data.common.lineHeight;
-
-        return true;
+        const auto parentPath = std::filesystem::path(filepath).parent_path();
+        return parseBMFontData(data, parentPath.string(), nullptr);
     }
 
-    void BitmapFont::free()
+    bool BitmapFont::loadBMFontMem(const string &fileBuffer, const TextureAtlas &textureAtlas, string_view textureRoot)
+    {
+        BMFontData data;
+        if (!BMFontData::fromBuffer(fileBuffer, &data))
+        {
+            return false;
+        }
+
+        return parseBMFontData(data, textureRoot, &textureAtlas);
+    }
+
+    bool BitmapFont::loadBMFontMem(const string &fileBuffer, const string &parentFolder)
+    {
+        BMFontData data;
+        if (!BMFontData::fromBuffer(fileBuffer, &data))
+        {
+            return false;
+        }
+
+        return parseBMFontData(data, parentFolder, nullptr);
+    }
+
+    void BitmapFont::unload()
     {
         m->unload();
     }
@@ -161,7 +154,6 @@ namespace sdgl::graphics {
             {
                 // Space
 
-                // FIXME: research if kerning for spaces is necessary?
                 // See if kerning available to adjust wordWidth == this word's start point
                 if (withKerning && charIdx > 0)
                 {
@@ -240,7 +232,7 @@ namespace sdgl::graphics {
                 }
 
                 // Check if we need a line break
-                if (maxWidth != 0 && glyphs.back().destination.x + glyphs.back().frame.w > maxWidth)
+                if (maxWidth != 0 && glyphs.back().destination.x + glyphs.back().source.w > maxWidth)
                 {
                     const auto plusX = -glyphs.at(glyphIdx).destination.x - (int)m->chars.at(text[charIdx]).offset.x;
                     const auto plusY = (int)m->lineHeight + lineHeightOffset;
@@ -272,5 +264,76 @@ namespace sdgl::graphics {
 
         }
 
+    }
+
+    bool BitmapFont::parseBMFontData(const BMFontData &data, string_view textureRoot, const TextureAtlas *atlas)
+    {
+        // load pages into texture
+        auto parentFolder = std::filesystem::path(textureRoot);
+
+        vector<Frame> textureFrames;
+        textureFrames.reserve(data.pages.size());
+
+        // Get page textures
+        if (atlas) // from atlas, if provided
+        {
+            for (const auto &[id, file] : data.pages)
+            {
+                textureFrames.emplace_back(atlas->at( (parentFolder / file).replace_extension() ));
+            }
+        }
+        else      // from direct files, if atlas not provided
+        {
+            for (const auto &[id, file] : data.pages)
+            {
+                Texture2D texture;
+                if (!texture.loadFile(parentFolder / file))
+                {
+                    return false;
+                }
+
+                const auto textureSize = static_cast<Vec2<int16>>(texture.size());
+                textureFrames.emplace_back(Frame{
+                    Rect<int16>{0, 0, textureSize.x , textureSize.y},
+                    Vec2<int16> {},
+                    textureSize,
+                    false,
+                    texture
+                });
+            }
+        }
+
+
+        // Parse chars
+        map<uint, Char> chars;
+        for (const auto &c : data.chars)
+        {
+            chars.try_emplace(c.id,
+                Char {
+                    Rect<uint16>{c.x, c.y, c.width, c.height},
+                    Vec2<int16>(c.xoffset, c.yoffset),
+                    c.xadvance,
+                    textureFrames[c.page]
+                }
+            );
+        }
+
+        // Parse kernings
+        map<std::pair<uint, uint>, int> kernings;
+        for (const auto &k : data.kernings)
+        {
+            kernings.try_emplace(std::make_pair(k.first, k.second), k.amount);
+        }
+
+        m->pages.swap(textureFrames);
+        m->chars.swap(chars);
+        m->kernings.swap(kernings);
+        m->fontName = data.info.fontName;
+        m->fontSize = data.info.fontSize;
+        m->base = data.common.base;
+        m->lineHeight = data.common.lineHeight;
+        m->ownsFrames = !static_cast<bool>(atlas);
+
+        return true;
     }
 }

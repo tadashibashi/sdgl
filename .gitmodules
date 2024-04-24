@@ -28,3 +28,6 @@
 [submodule "vendored/crunch"]
 	path = vendored/crunch
 	url = https://github.com/ChevyRay/crunch
+[submodule "vendored/angles"]
+	path = vendored/angles
+	url = https://github.com/tadashibashi/angles

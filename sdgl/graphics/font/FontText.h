@@ -2,7 +2,7 @@
 #include "BitmapFont.h"
 #include "Glyph.h"
 
-namespace sdgl::graphics {
+namespace sdgl {
 
     /// Stores a piece of text to be rendered and caches a list of glyphs according to the set parameters
     class FontText

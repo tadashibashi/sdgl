@@ -1,18 +1,19 @@
 #include "App.h"
 
-#include <sdgl/backends/Backend.h>
+#include <sdgl/core/backends/Backend.h>
 #include <sdgl/logging.h>
-#include <sdgl/platform.h>
-
-#include <sdgl/gl.h>
+#include <sdgl/graphics/gles3/gl.h>
 
 #include <utility>
 
 namespace sdgl {
     struct App::Impl {
         Impl(backends::Backend *backend, string title, int width, int height, WindowFlags::Enum flags,
-            PluginConfig plugins) : backend(backend), title(std::move(title)), width(width), height(height),
-            flags(flags), plugins(std::move(plugins)), window(nullptr), args() { }
+          PluginConfig plugins) :
+            backend(backend), title(std::move(title)), width(width), height(height),
+            flags(flags), plugins(std::move(plugins)), window(nullptr), args(), currentTime(), lastFrameTime()
+        {}
+
         backends::Backend *backend;
         string title;
         int width;
@@ -21,6 +22,8 @@ namespace sdgl {
         PluginConfig plugins;
         Window *window;
         vector<string> args;
+
+        double currentTime, lastFrameTime;
     };
 
     App::App(const string &title, const int width, const int height,
@@ -37,7 +40,7 @@ namespace sdgl {
 
     int App::run(const int argc, char *argv[])
     {
-        SDGL_LOG("SDGL App Init");
+        SDGL_LOG("Initialize SDGL App: {}", m->title);
 
         const auto be = m->backend;
         if (!be->init())
@@ -52,13 +55,14 @@ namespace sdgl {
             return ErrorCode::CreateWindowFailed;
         }
 
-        m->window = window;
-        m->args = vector<string>(argv, argv + argc);
-
+        // FUTURE: eventually this will be removed since we want GL functions to be abstracted away
         // Display vendor information
         SDGL_LOG("OpenGL Vendor:   {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
         SDGL_LOG("OpenGL Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
         SDGL_LOG("GLSL Version:    {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+        m->window = window;
+        m->args = vector<string>(argv, argv + argc);
 
         if (!init())
         {
@@ -94,6 +98,9 @@ namespace sdgl {
         m->backend->processInput();
         const auto window = m->window;
 
+        m->lastFrameTime = m->currentTime;
+        m->currentTime = m->backend->getAppTime();
+
         window->startFrame();
         update();
         window->endFrame();
@@ -116,9 +123,14 @@ namespace sdgl {
         return m->window;
     }
 
-    float App::getTime() const
+    double App::getTime() const
     {
         return m->backend->getAppTime();
+    }
+
+    double App::getDeltaTime() const
+    {
+        return m->currentTime - m->lastFrameTime;
     }
 }
 

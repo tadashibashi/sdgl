@@ -1,17 +1,17 @@
 #pragma once
 #include <sdgl/sdglib.h>
-#include "math/TweenFunction.h"
+#include <sdgl/math/easings.h>
 
 namespace sdgl
 {
     /**
      * A function that should contain no side effects - input a normalized value and get one back
      */
-    using TweenFunc = float(*)(float);
+    using EasingFunc = float(*)(float);
 
     class Tween {
     public:
-        explicit Tween(float duration, TweenFunc func = tweenf::easeInOutQuad);
+        explicit Tween(float duration, EasingFunc func = easings::inOutQuad);
         ~Tween() = default;
 
         /**
@@ -68,7 +68,7 @@ namespace sdgl
          * @param deltaTime - the amount of time in seconds that have passed since the
          * last call to update
          */
-        void update(float deltaTime);
+        void update(double deltaTime);
 
         /**
          * Get current value scaled between a start and end point
@@ -96,6 +96,6 @@ namespace sdgl
         float m_currentValue;
         func<void()> m_onEnd;
         func<void(float)> m_onStep;
-        TweenFunc m_tweenFunc;
+        EasingFunc m_tweenFunc;
     };
 }

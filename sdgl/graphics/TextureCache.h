@@ -2,6 +2,7 @@
 #include <sdgl/graphics/Texture2D.h>
 
 namespace sdgl {
+
     class TextureCache {
     public:
         TextureCache();
@@ -28,7 +29,6 @@ namespace sdgl {
 
         /// Unload entire cache
         void unload();
-
 
     private:
         map<string, Texture2D> m_textures;

@@ -49,28 +49,34 @@ namespace sdgl {
         return m->viewport;
     }
 
-    Camera2D & Camera2D::setViewport(Rectangle value)
+    Camera2D &Camera2D::setViewport(Rectangle value)
     {
         if (value != m->viewport)
         {
             m->viewport = value;
-            m->ortho = glm::ortho<float>((float)value.x, (float)value.w, (float)value.h, (float)value.y);
+
+            // This flips the y axis
+            m->ortho = glm::ortho<float>(
+                static_cast<float>(value.x),   ///< left
+                static_cast<float>(value.w),   ///< right
+                static_cast<float>(value.h),   ///< top
+                static_cast<float>(value.y));  ///< bottom
             m->isDirty = true;
         }
 
         return *this;
     }
 
-    Vector2 Camera2D::getOrigin() const
+    Vector2 Camera2D::getOrigin(const bool normalized) const
     {
-        return m->origin;
+        return normalized ? m->origin : m->origin * m->viewport.size();
     }
 
-    Camera2D & Camera2D::setOrigin(Vector2 value)
+    Camera2D &Camera2D::setOrigin(const Vector2 value, const bool normalized)
     {
         if (value != m->origin)
         {
-            m->origin = value;
+            m->origin = normalized ? value : value / (Vector2)m->viewport.size();
             m->isDirty = true;
         }
 

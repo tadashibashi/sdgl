@@ -102,6 +102,8 @@ namespace sdgl::io {
         }
     }
 
+
+
     ubyte BufferView::peek(const int offset) const
     {
         const int index = static_cast<int>(m_pos) + offset;
@@ -113,6 +115,8 @@ namespace sdgl::io {
 
     uint BufferView::readImpl(void *buffer, const size_t size)
     {
+        if (size == 0) return 0; // edge case
+
         if (m_pos + size > m_size)
         {
             SDGL_ERROR("Size of read exceeds buffer size");
@@ -137,5 +141,57 @@ namespace sdgl::io {
 
         m_pos += size;
         return size;
+    }
+
+    uint BufferWriter::writeImpl(const void *data, size_t size)
+    {
+        if (size == 0) return 0; // edge case
+
+        if (m_pos + size > m_size)
+        {
+            SDGL_ERROR("Size of write exceeds buffer size");
+            return 0;
+        }
+
+        if (size > 1 && SystemEndian != m_endian)
+        {
+            // Write bytes in reverse order
+            auto dest = m_buf + m_pos;
+            auto source = (const ubyte *)data + size - 1;
+            while (source >= data)
+            {
+                *dest++ = *source--;
+            }
+        }
+        else
+        {
+            std::memcpy(m_buf + m_pos, data, size);
+        }
+
+        m_pos += size;
+        return size;
+    }
+
+    uint BufferWriter::write(const string &str)
+    {
+        return write(str.data(), str.size());
+    }
+
+    uint BufferWriter::write(const string_view str)
+    {
+        return write(str.data(), str.size());
+    }
+
+    uint BufferWriter::write(const char *str, size_t length)
+    {
+        if (length + m_pos + 1 > m_size) // +1 for null terminator
+        {
+            SDGL_ERROR("Size of write exceeds buffer size");
+            return 0;
+        }
+
+        std::memcpy(m_buf + m_pos, str, length);
+        m_buf[m_pos + length] = '\0';
+        return length + 1;
     }
 }

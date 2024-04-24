@@ -8,7 +8,7 @@
 
 namespace sdgl::mathf {
     template <Arithmetic T, Arithmetic U>
-    bool intersects(Vector2_<T> a, Vector2_<U> b) // rounds numbers for pixel-accuracy
+    bool intersects(Vec2<T> a, Vec2<U> b) // rounds numbers for pixel-accuracy
     {
         return static_cast<int>(a.x + .5f) == static_cast<int>(b.x + .5f) &&
             static_cast<int>(a.y + .5f) == static_cast<int>(b.y + .5f);
@@ -16,7 +16,7 @@ namespace sdgl::mathf {
 
     template <Arithmetic T, Arithmetic U>
     [[nodiscard]]
-    bool intersects(Rectangle_<T> a, Rectangle_<U> b)
+    bool intersects(Rect<T> a, Rect<U> b)
     {
         return !(a.area() == 0 || b.area() == 0 ||
             a.right() < b.left() || a.bottom() < b.top() ||
@@ -25,7 +25,7 @@ namespace sdgl::mathf {
 
     template <Arithmetic T, Arithmetic U>
     [[nodiscard]]
-    bool intersects(Rectangle_<T> rect, Vector2_<U> point)
+    bool intersects(Rect<T> rect, Vec2<U> point)
     {
         return !(rect.area() == 0 ||
             point.x < rect.left() || point.x > rect.right() ||
@@ -34,7 +34,7 @@ namespace sdgl::mathf {
 
     template <Arithmetic T, Arithmetic U>
     [[nodiscard]]
-    bool intersects(Vector2_<U> point, Rectangle_<T> rect)
+    bool intersects(Vec2<U> point, Rect<T> rect)
     {
         return intersects(rect, point);
     }
@@ -43,26 +43,26 @@ namespace sdgl::mathf {
      * @return distance between two vectors
      */
     template <Arithmetic U, Arithmetic V>
-    float distance(Vector2_<U> a, Vector2_<V> b)
+    float distance(Vec2<U> a, Vec2<V> b)
     {
         return distance(a.x, a.y, b.x, b.y);
     }
 
-    inline Vector2_<float> trajectory(const float angle, const float distance)
+    inline Vec2<float> trajectory(const float angle, const float distance)
     {
-        Vector2_<float> res{};
+        Vec2<float> res{};
         trajectory(angle, distance, &res.x, &res.y);
         return res;
     }
 
     template <Arithmetic T, Arithmetic U>
-    float pointAngle(Vector2_<T> a, Vector2_<U> b)
+    float pointAngle(Vec2<T> a, Vec2<U> b)
     {
         return pointAngle(b.x - a.x, b.y - a.y);
     }
 
     template<Arithmetic T>
-    Vector2 rotate(Vector2_<T> vec, const float angle)
+    Vector2 rotate(Vec2<T> vec, const float angle)
     {
         Vector2 result;
         rotate(vec.x, vec.y, angle, &result.x, &result.y);

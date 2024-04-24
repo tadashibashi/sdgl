@@ -1,7 +1,7 @@
 #pragma once
 #include <sdgl/graphics/Texture2D.h>
 
-namespace sdgl::graphics {
+namespace sdgl {
     struct CrunchAtlasData
     {
         /// Load crunch atlas data from a binary file

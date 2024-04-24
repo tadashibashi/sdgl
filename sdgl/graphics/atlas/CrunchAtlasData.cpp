@@ -6,11 +6,11 @@
 /// Helper to read a field from a BufferView for BMFont read functions. Invokes a `return
 /// false` on error, so it should be called in a function with a bool return type.
 #define CRUNCH_READ(view, field) do { if ((view).read(field) != sizeof(field)) { \
-    SDGL_ERROR("Failed to read {}", #field); \
+    SDGL_ERROR("CrunchAtlasData failed to read {}", #field); \
     return false; \
 }} while(0)
 
-namespace sdgl::graphics {
+namespace sdgl {
 
     bool CrunchAtlasData::loadBinary(const string &buffer, bool trimEnabled, bool rotateEnabled,
         CrunchAtlasData *outData)

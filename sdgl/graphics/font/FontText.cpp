@@ -1,7 +1,7 @@
 #include "FontText.h"
 
 
-namespace sdgl::graphics {
+namespace sdgl {
     FontText::FontText() : m_glyphs(), m_font(nullptr), m_text(), m_maxWidth(0), m_textProgress(0), m_useKerning(true),
                           m_horSpaceOffset(0), m_lineHeightOffset(0)
     {}

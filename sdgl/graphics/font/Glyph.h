@@ -1,18 +1,21 @@
 #pragma once
 #include <sdgl/sdglib.h>
-#include <sdgl/math/Rectangle.h>
 #include <sdgl/graphics/Texture2D.h>
+#include <sdgl/math/Rectangle.h>
 
-namespace sdgl::graphics {
+namespace sdgl {
+    struct Frame;
 
     /// Instructions for rendering a text glyph
+    /// This may be usable for any texture, but does not contain offset information to support trimming and rotation
+    /// since bitmap fonts don't trim or rotate locally.
     struct Glyph
     {
-        Glyph(const Rectangle_<uint16> frame, const Point destination, const Texture2D texture) :
-            frame(frame), destination(destination), texture(texture) { }
+        Glyph(const Rect<uint16> frame, const Point destination, const Frame &parentFrame) :
+            source(frame), destination(destination), frame(parentFrame) { }
 
-        Rectangle_<uint16> frame;  ///< Source frame rectangle in pixels within texture
-        Point destination;         ///< Destination position, relative to {0, 0}
-        Texture2D texture;            ///< Gpu texture id (necessary to support multiple-paged fonts)
+        Rect<int16> source;  ///< Source frame rectangle in pixels within frame
+        Point destination;   ///< Destination position, relative to {0, 0}
+        const Frame &frame;  ///< Source texture info
     };
 }
