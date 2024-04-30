@@ -10,26 +10,19 @@ A simple, direct game library
 ## Technologies
 
 - C++ 20
-- OpenGL ES3 / Angle (Desktop builds)
-- Emscripten (Web builds)
+- OpenGL ES3 / Angle (desktop builds)
+- Emscripten (web builds)
+- SDL2 (windowing / input)
 
 ## Motivation
 
-Build a cross-platform graphics library that is low-level enough to work with the
-graphics card (shaders, buffers), but high level enough to avoid writing adaptations
-for multiple modern graphics APIs.
+I wanted to build a game engine as a challenge to learn graphics programming.
+I chose OpenGL because it's low-level enough to work with the graphics card (shaders, buffers),
+and ANGLE makes compiling cross-platform as easy as adding a few conditional defines.
 
-ANGLE does the heavy lifting with regard to the adaptation layer. As the basis for WebGL 
-in Chrome, it appears to be a steadfast option for OpenGL ES apps.
+ANGLE also gives a performance boost as a translation layer to native graphics libraries (Metal, Vulkan, D3D11).
+And as the basis for WebGL in Chrome, it appears to be a reasonably steadfast option.
 
-## Feature Roadmap
-
-- [ ] Windowing backend (glfw)
-- [ ] 2D graphic rendering
-  - [ ] Shaders
-  - [ ] Sprite atlas parsing & rendering
-  - [ ] TTF / Bitmap font rendering
-- [ ] Tiled TMX support
 
 
 ## Runtime Dependencies
@@ -41,7 +34,7 @@ in Chrome, it appears to be a steadfast option for OpenGL ES apps.
 | glad    | MIT     |
 | glaze   | MIT     |
 | glm     | MIT     |
-| glfw    | ZLIB    |
+| SDL2    | ZLIB    |
 | spdlog  | MIT     |
 
 ### Future

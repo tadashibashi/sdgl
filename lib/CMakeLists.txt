@@ -1,18 +1,6 @@
 # Graphics library
 add_subdirectory(angles)
 
-# Catch2
-if (SDGL_BUILD_TESTS)
-    add_subdirectory(Catch2)
-endif()
-
-# GLFW
-if (NOT EMSCRIPTEN AND "${SDGL_BACKEND}" STREQUAL "glfw3")
-    set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
-    add_subdirectory(glfw)
-endif()
-
 # SDL3
 if ("${SDGL_BACKEND}" STREQUAL "sdl3")
     set(SDL_TEST_LIBRARY     OFF CACHE BOOL "" FORCE)
@@ -42,9 +30,5 @@ endif()
 add_subdirectory(spdlog)
 
 include(stb.cmake)
-
-include(crunch.cmake)
-
-add_subdirectory(entt)
 
 add_subdirectory(glaze)
