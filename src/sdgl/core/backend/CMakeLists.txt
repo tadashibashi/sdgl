@@ -25,8 +25,8 @@ if ("${SDGL_BACKEND}" STREQUAL "sdl2")
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/Window.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/SdlGuard.cpp
 
-        ${CMAKE_SOURCE_DIR}/lib/imgui/backends/imgui_impl_opengl3.cpp
-        ${CMAKE_SOURCE_DIR}/lib/imgui/backends/imgui_impl_sdl2.cpp
+        ${SDGL_ROOT_DIR}/lib/imgui/backends/imgui_impl_opengl3.cpp
+        ${SDGL_ROOT_DIR}/lib/imgui/backends/imgui_impl_sdl2.cpp
     )
 elseif("${SDGL_BACKEND}" STREQUAL "sdl3") # currently unsupported
     add_subdirectory(sdl3)

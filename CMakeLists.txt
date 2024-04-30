@@ -13,6 +13,8 @@ set(     SDGL_GRAPHICS_LIB  "gles3" CACHE STRING "Graphics library backend")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
+set(SDGL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "" FORCE)
+
 add_subdirectory(lib)
 add_subdirectory(src)
 
