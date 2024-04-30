@@ -14,6 +14,7 @@ add_library(sdgl STATIC
         core/PluginManager.cpp
         core/PluginManager.h
         core/IPlugin.h
+        core/InputManager.h core/InputManager.cpp
         BitFlags.h BitFlags.cpp
         logging.h
         logging.cpp
