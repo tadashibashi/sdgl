@@ -26,9 +26,9 @@ namespace sdgl {
         friend class Backend;
 
         /// Note to backend: only pass initial key down, not repeats
-        /// @param key key code of SDL2/3
-        void doKeyDown(unsigned int key);
-        void doKeyUp(unsigned int key);
+        /// @param scancode from SDL2/3
+        void doKeyDown(unsigned int scancode);
+        void doKeyUp(unsigned int scancode);
 
         BitFlags m_data;
         bool m_current;

@@ -1,5 +1,4 @@
 #include "../../Keyboard.h"
-#include "Keyboard.h"
 
 #include <SDL_keycode.h>
 
@@ -168,18 +167,18 @@ void sdgl::Keyboard::preProcessInput()
     }
 }
 
-void sdgl::Keyboard::doKeyDown(unsigned int key)
+void sdgl::Keyboard::doKeyDown(unsigned int scancode)
 {
     // exhibit "sticky" behavior of glfw3
     // layout of m_data => { value0, last0, released0, value1, last1, released1, etc...}
 
-    const auto key = s_SdlKeyToKey[key] * 3;
+    const auto key = s_SdlKeyToKey[scancode] * 3;
     m_data.set(key, true);      // set state flag
     m_data.set(key + 2, false); // unset release flag
 }
 
-void sdgl::Keyboard::doKeyUp(unsigned int key)
+void sdgl::Keyboard::doKeyUp(unsigned int scancode)
 {
-    const auto key = s_SdlKeyToKey[key] * 3;
+    const auto key = s_SdlKeyToKey[scancode] * 3;
     m_data.set(key + 2, true); // set release flag
 }

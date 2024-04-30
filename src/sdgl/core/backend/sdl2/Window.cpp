@@ -2,7 +2,6 @@
 #include <SDL2/SDL_video.h>
 
 #include "../../InputManager.h"
-#include "Window.h"
 
 #include <sdgl/graphics/Color.h>
 

@@ -79,9 +79,11 @@ add_library(sdgl STATIC
         ArgParser.h
         io/FileWriter.h
         io/FileWriter.cpp
+
+        ${sdgl_backend_SRC}
 )
 
-target_link_libraries(sdgl PUBLIC sdgl_backend glm::glm imgui spdlog::spdlog stb glaze::glaze)
+target_link_libraries(sdgl PUBLIC ${sdgl_backend_LIBS} glm::glm imgui spdlog::spdlog stb glaze::glaze)
 
 target_include_directories(sdgl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)
 target_precompile_headers(sdgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/sdgl.pch)

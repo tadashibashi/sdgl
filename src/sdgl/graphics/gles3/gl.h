@@ -4,7 +4,7 @@
 #   define GL_SILENCE_DEPRECATION 1
 #endif
 
-#include <GLES3/gl3.h>
+#include <angles.h>
 
 #ifdef SDGL_DEBUG
 
