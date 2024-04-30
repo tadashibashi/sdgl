@@ -6,6 +6,7 @@
 #include "InputManager.h"
 
 #include <sdgl/sdglib.h>
+#include <sdgl/graphics/Color.h>
 
 struct SDL_Window;
 using SDL_GLContext = void *;
@@ -20,8 +21,8 @@ namespace sdgl {
         vector<IPlugin *> plugins = {};
     };
 
-    struct WindowFlags {
-        enum Enum : uint {
+    struct WindowInit {
+        enum Flags : uint {
             None = 0,
             Fullscreen = 1,
             Resizable = 1 << 1,
@@ -30,11 +31,11 @@ namespace sdgl {
         };
     };
 
-    inline constexpr WindowFlags::Enum operator| (const WindowFlags::Enum a, const WindowFlags::Enum b)
+    inline constexpr WindowInit::Flags operator| (const WindowInit::Flags a, const WindowInit::Flags b)
     {
-        return static_cast<WindowFlags::Enum>(static_cast<uint>(a) | static_cast<uint>(b));
+        return static_cast<WindowInit::Flags>(static_cast<uint>(a) | static_cast<uint>(b));
     }
-    inline constexpr WindowFlags::Enum &operator|=(WindowFlags::Enum &a, const WindowFlags::Enum b)
+    inline constexpr WindowInit::Flags &operator|=(WindowInit::Flags &a, const WindowInit::Flags b)
     {
         return a = a | b;
     }

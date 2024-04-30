@@ -22,6 +22,7 @@ namespace sdgl {
     Window::Window(SDL_Window *window, SDL_GLContext context) : m(new Impl(window, context)) { }
     Window::~Window()
     {
+        m_plugins.shutdown();
         SDL_GL_DeleteContext(m->context);
         SDL_DestroyWindow(m->window);
         delete m;
@@ -82,12 +83,12 @@ namespace sdgl {
 
     bool Window::isFullscreen() const
     {
-        return SDL_GetWindowFlags(m->window) & SDL_WINDOW_FULLSCREEN;
+        return SDL_GetWindowFlags(m->window) & SDL_WINDOW_FULLSCREEN_DESKTOP;
     }
 
     Window &Window::setFullscreen(bool value)
     {
-        SDL_SetWindowFullscreen(m->window, value ? SDL_WINDOW_FULLSCREEN : 0);
+        SDL_SetWindowFullscreen(m->window, value ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
         return *this;
     }
 
@@ -153,7 +154,7 @@ namespace sdgl {
     void Window::clear(const Color &color)
     {
         makeCurrent();
-        glClearColor(color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f);
+        glClearColor((float)color.r / 255.f, (float)color.g / 255.f, (float)color.b / 255.f, (float)color.a / 255.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 

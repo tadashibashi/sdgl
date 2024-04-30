@@ -8,7 +8,7 @@ else()
     project(sdgl C CXX)
 endif()
 
-set(     SDGL_BACKEND       "sdl2" CACHE STRING "Windowing backend library") # glfw3, sdl3
+set(     SDGL_BACKEND       "sdl2" CACHE STRING "Windowing backend library") # todo: sdl3
 set(     SDGL_GRAPHICS_LIB  "gles3" CACHE STRING "Graphics library backend")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")

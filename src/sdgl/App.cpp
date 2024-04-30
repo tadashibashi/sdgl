@@ -8,7 +8,7 @@
 
 namespace sdgl {
     struct App::Impl {
-        Impl(Backend *backend, string title, int width, int height, WindowFlags::Enum flags,
+        Impl(Backend *backend, string title, int width, int height, WindowInit::Flags flags,
           PluginConfig plugins) :
             backend(backend), title(std::move(title)), width(width), height(height),
             flags(flags), plugins(std::move(plugins)), window(nullptr), args(), currentTime(), lastFrameTime()
@@ -18,7 +18,7 @@ namespace sdgl {
         string title;
         int width;
         int height;
-        WindowFlags::Enum flags;
+        WindowInit::Flags flags;
         PluginConfig plugins;
         Window *window;
         vector<string> args;
@@ -27,7 +27,7 @@ namespace sdgl {
     };
 
     App::App(const string &title, const int width, const int height,
-             const WindowFlags::Enum flags, const PluginConfig &plugins) :
+             const WindowInit::Flags flags, const PluginConfig &plugins) :
         m(new Impl(new Backend, title, width, height, flags, plugins))
     {
     }
@@ -55,11 +55,21 @@ namespace sdgl {
             return ErrorCode::CreateWindowFailed;
         }
 
-        // FUTURE: eventually this will be removed since we want GL functions to be abstracted away
         // Display vendor information
-        SDGL_LOG("OpenGL Vendor:   {}", reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
-        SDGL_LOG("OpenGL Renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
-        SDGL_LOG("GLSL Version:    {}", reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+        {
+            const auto vendor       = glGetString(GL_VENDOR);
+            const auto renderer     = glGetString(GL_RENDERER);
+            const auto shadingLang  = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+            // Use conditionals since some platforms return nullptr
+            if (vendor)
+                SDGL_LOG("OpenGL Vendor:   {}", reinterpret_cast<const char *>(vendor));
+            if (renderer)
+                SDGL_LOG("OpenGL Renderer: {}", reinterpret_cast<const char *>(renderer));
+            if (shadingLang)
+                SDGL_LOG("GLSL Version:    {}", reinterpret_cast<const char *>(shadingLang));
+        }
+
 
         m->window = window;
         m->args = vector<string>(argv, argv + argc);
@@ -118,7 +128,7 @@ namespace sdgl {
         m->window->setShouldClose(true);
     }
 
-    Window *App::getWindow() const
+    Window *App::window() const
     {
         return m->window;
     }

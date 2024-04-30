@@ -92,3 +92,5 @@ string(TOUPPER "${CMAKE_BUILD_TYPE}" SDGL_BUILD_TYPE)
 if ("${SDGL_BUILD_TYPE}" MATCHES "DEBUG")
     target_compile_definitions(sdgl PUBLIC -DSDGL_DEBUG=1)
 endif()
+
+target_compile_definitions(sdgl PRIVATE -DIMGUI_IMPL_OPENGL_ES3=1)

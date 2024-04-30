@@ -26,7 +26,7 @@ namespace sdgl {
         [[nodiscard]]
         string_view name() const;
 
-        Window *createWindow(const string &title, int width, int height, WindowFlags::Enum flags, const PluginConfig &plugins);
+        Window *createWindow(const string &title, int width, int height, WindowInit::Flags flags, const PluginConfig &plugins);
         void destroyWindow(Window *window);
 
         void processInput();

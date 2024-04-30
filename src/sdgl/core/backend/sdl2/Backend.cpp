@@ -40,19 +40,18 @@ namespace sdgl {
     [[nodiscard]]
     string_view Backend::name() const { return "SDL2"; }
 
-    Window *Backend::createWindow(const string &title, int width, int height, WindowFlags::Enum flags, const PluginConfig &plugins)
+    Window *Backend::createWindow(const string &title, int width, int height, WindowInit::Flags flags, const PluginConfig &plugins)
     {
         uint32_t winFlags = 0;
-        if (flags & WindowFlags::Resizable)
+        if (flags & WindowInit::Resizable)
             winFlags |= SDL_WINDOW_RESIZABLE;
-        if (flags & WindowFlags::Fullscreen)
-            winFlags |= SDL_WINDOW_FULLSCREEN;
-        if (flags & WindowFlags::Borderless)
+        if (flags & WindowInit::Fullscreen)
+            winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        if (flags & WindowInit::Borderless)
             winFlags |= SDL_WINDOW_BORDERLESS;
-        if (flags & WindowFlags::AlwaysOnTop)
+        if (flags & WindowInit::AlwaysOnTop)
             winFlags |= SDL_WINDOW_ALWAYS_ON_TOP;
 
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -62,19 +61,21 @@ namespace sdgl {
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
         SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
+        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
         auto win = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            width, height, winFlags | SDL_WINDOW_OPENGL);
+            width, height, winFlags | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
 
         if (win == nullptr)
         {
-            std::cerr << "SDL3 window failed to create: " << SDL_GetError() << '\n';
+            std::cerr << "SDL window failed to create: " << SDL_GetError() << '\n';
             return nullptr;
         }
 
         auto context = SDL_GL_CreateContext(win);
         if (!context)
         {
-            std::cerr << "SDL3 failed to create gl context: " << SDL_GetError() << '\n';
+            std::cerr << "SDL failed to create gl context: " << SDL_GetError() << '\n';
             SDL_DestroyWindow(win);
             return nullptr;
         }
@@ -90,9 +91,15 @@ namespace sdgl {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        glEnable(GL_DEPTH_TEST);
+
+
         // Viewport
-        SDL_GetWindowSize(win, &width, &height);
+        SDL_GL_GetDrawableSize(win, &width, &height);
         glViewport(0, 0, width, height);
+
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         auto wrapper =  new Window(win, context);
 
@@ -117,6 +124,11 @@ namespace sdgl {
     void Backend::destroyWindow(Window *window)
     {
         delete window; // destructor of window handles cleanup
+
+        auto it = std::find_if(m->windows.begin(), m->windows.end(),
+            [window](Window *curWindow) { return curWindow == window; });
+        if (it != m->windows.end())
+            m->windows.erase(it);
     }
 
     static Window *getWindow(uint id)
@@ -159,8 +171,16 @@ namespace sdgl {
         SDL_Event e;
         while (SDL_PollEvent(&e))
         {
+            for (auto window : m->windows)
+                window->plugins()->processEvent(&e);
+
             switch(e.type)
             {
+                case SDL_QUIT:
+                {
+                    for (auto window : m->windows)
+                        window->setShouldClose(true);
+                } break;
                 case SDL_WINDOWEVENT:
                 {
                     processWindowEvent(e.window);
@@ -191,10 +211,9 @@ namespace sdgl {
     {
         for (auto window : m->windows)
         {
-            destroyWindow(window);
+            delete window;
         }
         m->windows.clear();
-
         SDL_Quit();
     }
 }

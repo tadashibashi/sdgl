@@ -10,7 +10,7 @@ namespace sdgl {
             const string &title,                           ///< Window title, and application name
             int width,                                     ///< Initial window width
             int height,                                    ///< Initial window height
-            WindowFlags::Enum flags = WindowFlags::None,   ///< Window flags
+            WindowInit::Flags flags = WindowInit::None,   ///< Window flags
             const PluginConfig &plugins = {.imgui=true}    ///< Window plugin configuration
         );
         virtual ~App();
@@ -26,7 +26,7 @@ namespace sdgl {
 
         /// Get the app window
         [[nodiscard]]
-        Window *getWindow() const;
+        Window *window() const;
 
         /// Get the time, in seconds, since the windowing library was initialized
         [[nodiscard]]
