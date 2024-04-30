@@ -27,6 +27,8 @@ namespace sdgl {
             return false;
         }
 
+        m->startTime = high_resolution_clock::now();
+
         //SDL_GameControllerOpen(0)
         return true;
     }
