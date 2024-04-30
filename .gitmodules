@@ -1,33 +1,18 @@
-[submodule "vendored/glfw"]
-	path = vendored/glfw
-	url = https://github.com/glfw/glfw
 [submodule "vendored/glm"]
-	path = vendored/glm
+	path = lib/glm
 	url = https://github.com/g-truc/glm
 [submodule "vendored/imgui"]
-	path = vendored/imgui
+	path = lib/imgui
 	url = https://github.com/ocornut/imgui
-[submodule "vendored/Catch2"]
-	path = vendored/Catch2
-	url = https://github.com/catchorg/Catch2
-[submodule "vendored/SDL"]
-	path = vendored/SDL
-	url = https://github.com/libsdl-org/SDL
 [submodule "vendored/spdlog"]
-	path = vendored/spdlog
+	path = lib/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "vendored/stb"]
-	path = vendored/stb
+	path = lib/stb
 	url = https://github.com/nothings/stb
 [submodule "vendored/glaze"]
-	path = vendored/glaze
+	path = lib/glaze
 	url = https://github.com/stephenberry/glaze
-[submodule "vendored/entt"]
-	path = vendored/entt
-	url = https://github.com/skypjack/entt
-[submodule "vendored/crunch"]
-	path = vendored/crunch
-	url = https://github.com/ChevyRay/crunch
 [submodule "vendored/angles"]
-	path = vendored/angles
+	path = lib/angles
 	url = https://github.com/tadashibashi/angles
