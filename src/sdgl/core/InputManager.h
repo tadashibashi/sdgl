@@ -1,7 +1,7 @@
 #pragma once
 #include "Keyboard.h"
 #include "Mouse.h"
-#include "Gamepad.h"
+#include "GamepadConstants.h"
 
 #include <optional>
 
@@ -42,29 +42,33 @@ namespace sdgl {
         bool isPressed(Key::Enum key) const { return m_keyboard->isPressed(key); }
 
         [[nodiscard]]
-        bool isUp(Key::Enum key) const { return m_keyboard->isUp(key); };
+        bool isUp(Key::Enum key) const { return m_keyboard->isUp(key); }
 
         [[nodiscard]]
         bool isReleased(Key::Enum key) const { return m_keyboard->isReleased(key); }
 
-        // [[nodiscard]]
-        // virtual bool isDown(MouseBtn::Enum button) const = 0;
+        [[nodiscard]]
+        bool isDown(MouseBtn::Enum button) const { return m_mouse->isDown(button); }
 
-        // [[nodiscard]]
-        // virtual bool isPressed(MouseBtn::Enum button) const = 0;
+        [[nodiscard]]
+        bool isPressed(MouseBtn::Enum button) const { return m_mouse->isPressed(button); }
 
-        // [[nodiscard]]
-        // virtual bool isUp(MouseBtn::Enum button) const = 0;
+        [[nodiscard]]
+        bool isUp(MouseBtn::Enum button) const { return m_mouse->isUp(button); }
 
-        // [[nodiscard]]
-        // virtual bool isReleased(MouseBtn::Enum button) const = 0;
+        [[nodiscard]]
+        bool isReleased(MouseBtn::Enum button) const { return m_mouse->isReleased(button); }
 
-        // [[nodiscard]]
-        // virtual float getAxis(MouseAxis::Enum axis) const = 0;
-        // [[nodiscard]]
-        // virtual float getAxisLast(MouseAxis::Enum axis) const = 0;
+        [[nodiscard]]
+        bool isDoubleClicked(MouseBtn::Enum button) const { return m_mouse->isDoubleClicked(button); }
 
-        // virtual void getMousePosition(double *x, double *y) const = 0;
+        [[nodiscard]]
+        float getAxis(MouseAxis::Enum axis) const { return m_mouse->getAxis(axis); }
+
+        [[nodiscard]]
+        float getLastAxis(MouseAxis::Enum axis) const { return m_mouse->getlastAxis(axis); }
+
+        void getMousePosition(float *x, float *y) const { return m_mouse->getPosition(x, y); }
 
         // [[nodiscard]]
         // virtual bool isGamepadConnected(int index) const = 0;
@@ -77,8 +81,12 @@ namespace sdgl {
         // [[nodiscard]]
         // virtual float getAxisLast(int index, GamepadAxis::Enum axis) const = 0;
 
-        Keyboard *keyboard() { return &m_keyboard.value(); }
+        [[nodiscard]]
+        const Keyboard *keyboard() const { return &m_keyboard.value(); }
+        [[nodiscard]]
+        const Mouse *mouse() const { return &m_mouse.value(); }
     private:
         std::optional<Keyboard> m_keyboard;
+        std::optional<Mouse> m_mouse;
     };
 }

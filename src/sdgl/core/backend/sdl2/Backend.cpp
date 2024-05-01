@@ -144,6 +144,8 @@ namespace sdgl {
     void Backend::processWindowEvent(const SDL_WindowEvent &e)
     {
         auto window = getWindow(e.windowID);
+        if (!window)
+            return;
 
         switch(e.event)
         {
@@ -167,7 +169,7 @@ namespace sdgl {
     {
         for (auto window : m->windows)
         {
-            window->input()->preProcessInput();
+            const_cast<InputManager *>(window->input())->preProcessInput();
         }
 
         SDL_Event e;
@@ -183,6 +185,7 @@ namespace sdgl {
                     for (auto window : m->windows)
                         window->setShouldClose(true);
                 } break;
+
                 case SDL_WINDOWEVENT:
                 {
                     processWindowEvent(e.window);
@@ -191,20 +194,68 @@ namespace sdgl {
                 case SDL_KEYDOWN:
                 {
                     auto window = getWindow(e.key.windowID);
-                    auto keyboard = window->input()->keyboard();
-                    if (!keyboard)
+                    if (!window)
+                        break;
+                    auto keyboard = const_cast<Keyboard *>(window->input()->keyboard());
+                    if (!keyboard || e.key.repeat)
                         break;
                     keyboard->doKeyDown(e.key.keysym.scancode);
                 } break;
 
                 case SDL_KEYUP:
                 {
-                    auto window = getWindow(e.key.windowID);
-                    auto keyboard = window->input()->keyboard();
-                    if (!keyboard)
+                    // key ups should affect all windows to prevent stuck state if mouse leaves window
+                    for (auto window : m->windows)
+                    {
+                        auto keyboard = const_cast<Keyboard *>(window->input()->keyboard());
+                        if (!keyboard || e.key.repeat) // TODO: remove this? I don't think keyups can be repeated
+                            break;
+                        keyboard->doKeyUp(e.key.keysym.scancode);
+                    }
+                } break;
+
+                case SDL_MOUSEMOTION:
+                {
+                    auto window = getWindow(e.button.windowID);
+                    if (!window)
                         break;
-                    keyboard->doKeyUp(e.key.keysym.scancode);
-                }
+                    auto mouse = const_cast<Mouse *>(window->input()->mouse());
+                    if (!mouse)
+                        break;
+                    mouse->setPosition(static_cast<float>(e.button.x), static_cast<float>(e.button.y));
+                } break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                {
+                    auto window = getWindow(e.button.windowID);
+                    if (!window)
+                        break;
+                    auto mouse = const_cast<Mouse *>(window->input()->mouse());
+                    if (!mouse)
+                        break;
+                    SDGL_LOG("Mouse button down: {}", e.button.button);
+                    if (e.button.clicks == 2)
+                        mouse->doButtonDoubleClick(e.button.button);
+                    else
+                        mouse->doButtonDown(e.button.button);
+                } break;
+
+                case SDL_MOUSEBUTTONUP:
+                {
+                    SDGL_LOG("Mouse button UP: {}", e.button.button);
+                    // mouse ups should affect all windows to prevent stuck state if mouse leaves window
+                    for (auto window : m->windows)
+                    {
+                        auto mouse = const_cast<Mouse *>(window->input()->mouse());
+                        if (!mouse)
+                            break;
+                        mouse->doButtonUp(e.button.button);
+                    }
+
+                } break;
+
+                default:
+                    break;
             }
         }
     }

@@ -20,6 +20,7 @@ if ("${SDGL_BACKEND}" STREQUAL "sdl2")
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/ImGuiSdl2.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/ImGuiSdl2.h
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/Keyboard.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/Mouse.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/SdlGuard.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/Backend.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sdl2/Window.cpp

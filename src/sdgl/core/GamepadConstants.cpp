@@ -1,4 +1,4 @@
-#include "Gamepad.h"
+#include "GamepadConstants.h"
 
 namespace sdgl {
     static const char *s_btnNames[] = {

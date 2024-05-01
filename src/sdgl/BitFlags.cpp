@@ -5,19 +5,19 @@
 
 sdgl::BitFlags::BitFlags(size_t numFlags) : m_flags(), m_size( std::ceil( numFlags / 32.f) )
 {
-    auto memSize = m_size * 32u;
+    auto memSize = m_size * sizeof(uint32_t);
     m_flags = static_cast<uint32_t *>(std::malloc(memSize));
     std::memset(m_flags, 0, memSize);
 }
 
 sdgl::BitFlags::BitFlags(const BitFlags &other) :
-    m_flags(static_cast<uint32_t *>(std::malloc(other.m_size * 32u))),
+    m_flags(static_cast<uint32_t *>(std::malloc(other.m_size * sizeof(uint32_t)))),
     m_size(other.m_size)
 {
-    std::memcpy(m_flags, other.m_flags, m_size * 32u);
+    std::memcpy(m_flags, other.m_flags, m_size * sizeof(uint32_t));
 }
 
-sdgl::BitFlags::BitFlags(BitFlags &&other) : m_flags(other.m_flags), m_size(other.m_size)
+sdgl::BitFlags::BitFlags(BitFlags &&other) noexcept : m_flags(other.m_flags), m_size(other.m_size)
 {
     other.m_flags = nullptr;
     other.m_size = 0;
@@ -29,15 +29,15 @@ sdgl::BitFlags::operator=(const BitFlags &other)
     if (m_flags)
         std::free(m_flags);
 
-    m_flags = static_cast<uint32_t *>(std::malloc(other.m_size * 32u));
+    m_flags = static_cast<uint32_t *>(std::malloc(other.m_size * sizeof(uint32_t)));
     m_size = other.m_size;
 
-    std::memcpy(m_flags, other.m_flags, other.m_size * 32u);
+    std::memcpy(m_flags, other.m_flags, other.m_size * sizeof(uint32_t));
     return *this;
 }
 
 sdgl::BitFlags &
-sdgl::BitFlags::operator=(BitFlags &&other)
+sdgl::BitFlags::operator=(BitFlags &&other) noexcept
 {
     if (m_flags)
         std::free(m_flags);
@@ -71,5 +71,5 @@ void sdgl::BitFlags::set(size_t index, bool value)
 
 void sdgl::BitFlags::unsetAll()
 {
-    std::memset(m_flags, 0, m_size * 32u);
+    std::memset(m_flags, 0, m_size * sizeof(uint32_t));
 }

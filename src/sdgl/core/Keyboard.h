@@ -30,7 +30,6 @@ namespace sdgl {
         void doKeyDown(unsigned int scancode);
         void doKeyUp(unsigned int scancode);
 
-        BitFlags m_data;
-        bool m_current;
+        BitFlags m_keys, m_lastKeys, m_released;
     };
 }

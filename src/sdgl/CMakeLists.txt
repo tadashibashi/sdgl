@@ -21,7 +21,7 @@ add_library(sdgl STATIC
         io/io.cpp
         io/io.h
         App.cpp
-        core/Gamepad.h
+        core/GamepadConstants.h
         math/mathf.cpp
         sdgl_traits.h
         math/Vector2.h
@@ -71,7 +71,7 @@ add_library(sdgl STATIC
         SceneRunner.h
         Scene.cpp
         Scene.h
-        core/Gamepad.cpp
+        core/GamepadConstants.cpp
         ContentManager.cpp
         ContentManager.h
         Asset.h
@@ -82,6 +82,7 @@ add_library(sdgl STATIC
         io/FileWriter.cpp
 
         ${sdgl_backend_SRC}
+        core/Gamepad.h
 )
 
 target_link_libraries(sdgl PUBLIC ${sdgl_backend_LIBS} glm::glm imgui spdlog::spdlog stb glaze::glaze)

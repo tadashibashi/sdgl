@@ -115,12 +115,12 @@ static uint16_t s_SdlKeyToKey[SDL_NUM_SCANCODES] = {0};
 
 static_assert(sizeof(s_keyToSdlKey) / sizeof(uint16_t) == sdgl::Key::Count);
 
-sdgl::Keyboard::Keyboard() : m_data(Key::Count * 3), m_current()
+sdgl::Keyboard::Keyboard() : m_keys(Key::Count), m_lastKeys(Key::Count), m_released(Key::Count)
 {
     if (s_SdlKeyToKey[SDL_SCANCODE_Z] == 0)
     {
         // setup sdl key to key array
-        for (int i = 0; auto key : s_keyToSdlKey)
+        for (int i = 0; const auto key : s_keyToSdlKey)
         {
             s_SdlKeyToKey[key] = i++;
         }
@@ -129,41 +129,54 @@ sdgl::Keyboard::Keyboard() : m_data(Key::Count * 3), m_current()
 
 bool sdgl::Keyboard::isDown(Key::Enum key) const
 {
-    return m_data.get(key * 3);
+    return m_keys.get(key);
 }
 
 bool sdgl::Keyboard::isPressed(Key::Enum key) const
 {
-    const auto index = key * 3;
-    return m_data.get(index) && !m_data.get(index + 1);
+    return m_keys.get(key) && !m_lastKeys.get(key);
 }
 
 bool sdgl::Keyboard::isUp(Key::Enum key) const
 {
-    return !m_data.get(key * 3);
+    return !m_keys.get(key);
 }
 
 bool sdgl::Keyboard::isReleased(Key::Enum key) const
 {
-    const auto index = key * 3;
-    return !m_data.get(index) && m_data.get(index + 1);
+    return !m_keys.get(key) && m_lastKeys.get(key);
 }
+
+
 
 void sdgl::Keyboard::preProcessInput()
 {
-    for (size_t i = 0; i < Key::Count; ++i)
+    const auto memSize = m_keys.size() * sizeof(uint32_t);
+
+    // update last states
+    std::memcpy(m_lastKeys.data(), m_keys.data(), memSize);
+
+    // apply releases
+    static_assert(Key::Count > 96 && Key::Count <= 128); // If this emits a compile error, then update indices and handrolled code below
     {
-        auto index = i * 3;
+        uint32_t *current = m_keys.data();
+        uint32_t *released = m_released.data();
 
-        // update last states
-        m_data.set(index + 1, m_data.get(index));
+        auto result0 = ~*current | *released;
+        *current = ~result0;
+        *released = result0;
 
-        // process releases
-        if (m_data.get(index + 2))
-        {
-            m_data.set(index, false);
-            m_data.set(index + 2, false);
-        }
+        auto result1 = ~*(current + 1) | *(released + 1);
+        *(current + 1) = ~result1;
+        *(released + 1) = result1;
+
+        auto result2 = ~*(current + 2) | *(released + 2);
+        *(current + 2) = ~result2;
+        *(released + 2) = result2;
+
+        auto result3 = ~*(current + 3) | *(released + 3);
+        *(current + 3) = ~result3;
+        *(released + 3) = result3;
     }
 }
 
@@ -172,13 +185,13 @@ void sdgl::Keyboard::doKeyDown(unsigned int scancode)
     // exhibit "sticky" behavior of glfw3
     // layout of m_data => { value0, last0, released0, value1, last1, released1, etc...}
 
-    const auto key = s_SdlKeyToKey[scancode] * 3;
-    m_data.set(key, true);      // set state flag
-    m_data.set(key + 2, false); // unset release flag
+    const auto key = s_SdlKeyToKey[scancode];
+    m_keys.set(key, true);      // set state flag
+    m_released.set(key, false); // unset release flag
 }
 
 void sdgl::Keyboard::doKeyUp(unsigned int scancode)
 {
-    const auto key = s_SdlKeyToKey[scancode] * 3;
-    m_data.set(key + 2, true); // set release flag
+    const auto key = s_SdlKeyToKey[scancode];
+    m_released.set(key, true); // set release flag
 }

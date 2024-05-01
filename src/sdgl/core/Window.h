@@ -1,5 +1,5 @@
 #pragma once
-#include "Gamepad.h"
+#include "GamepadConstants.h"
 #include "Mouse.h"
 #include "Key.h"
 #include "PluginManager.h"
@@ -81,6 +81,18 @@ namespace sdgl {
         string_view getTitle() const;
         Window &setTitle(const string &title);
 
+        // TODO: use SDL RelativeMouseMode?
+
+        [[nodiscard]]
+        bool getMouseGrabMode() const;
+        Window &setMouseGrabMode(bool value);
+
+        [[nodiscard]]
+        bool isMouseVisible() const;
+        Window &setMouseVisible(bool value);
+
+
+
         /**
          *
          * @return pointer to the backend window object
@@ -110,7 +122,7 @@ namespace sdgl {
 
         PluginManager *plugins() { return &m_plugins; }
 
-        InputManager *input();
+        const InputManager *input() const;
 
     private:
         friend class Backend;
