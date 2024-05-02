@@ -31,4 +31,6 @@ add_subdirectory(spdlog)
 
 include(stb.cmake)
 
+include(SDL_GameControllerDB.cmake)
+
 add_subdirectory(glaze)

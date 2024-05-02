@@ -5,6 +5,8 @@
 
 #include <optional>
 
+#include "Gamepad.h"
+
 namespace sdgl {
     struct InputInit {
         enum Flags : uint {
@@ -30,7 +32,7 @@ namespace sdgl {
     public:
         InputManager();
 
-        void init(InputInit::Flags initFlags = InputInit::All);
+        void init(InputInit::Flags initFlags, const Gamepad *gamepads);
         void preProcessInput();
 
         // ===== Window Input =====
@@ -70,23 +72,29 @@ namespace sdgl {
 
         void getMousePosition(float *x, float *y) const { return m_mouse->getPosition(x, y); }
 
-        // [[nodiscard]]
-        // virtual bool isGamepadConnected(int index) const = 0;
-        // [[nodiscard]]
-        // virtual bool isDown(int index, GamepadBtn::Enum button) const = 0;
-        // [[nodiscard]]
-        // virtual bool isPressed(int index, GamepadBtn::Enum button) const = 0;
-        // [[nodiscard]]
-        // virtual float getAxis(int index, GamepadAxis::Enum axis) const = 0;
-        // [[nodiscard]]
-        // virtual float getAxisLast(int index, GamepadAxis::Enum axis) const = 0;
+        [[nodiscard]]
+        bool isGamepadConnected(int index) const { return m_gamepads[index].isConnected(); };
+        [[nodiscard]]
+        bool isDown(int index, GamepadBtn::Enum button) const { return m_gamepads[index].isDown(button); }
+        [[nodiscard]]
+        bool isPressed(int index, GamepadBtn::Enum button) const { return m_gamepads[index].isPressed(button); }
+        [[nodiscard]]
+        float getAxis(int index, GamepadAxis::Enum axis) const { return m_gamepads[index].getAxis(axis); }
+        [[nodiscard]]
+        float getAxisLast(int index, GamepadAxis::Enum axis) const { return m_gamepads[index].getLastAxis(axis); }
 
         [[nodiscard]]
         const Keyboard *keyboard() const { return &m_keyboard.value(); }
         [[nodiscard]]
         const Mouse *mouse() const { return &m_mouse.value(); }
+        [[nodiscard]]
+        const Gamepad *gamepad(int index) const { return m_gamepads + index; }
+
+        [[nodiscard]]
+        bool gamepadsActive() const { return static_cast<bool>(m_gamepads); }
     private:
         std::optional<Keyboard> m_keyboard;
         std::optional<Mouse> m_mouse;
+        const Gamepad *m_gamepads;
     };
 }

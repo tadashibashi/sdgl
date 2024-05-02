@@ -42,7 +42,7 @@ namespace sdgl {
 
     class Window {
     public:
-        Window(SDL_Window *window, SDL_GLContext context);
+        Window(SDL_Window *window, SDL_GLContext context, const Gamepad *gamepads);
         ~Window();
 
         Window &setSize(int x, int y);

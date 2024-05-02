@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <angles.h>
-
+#include <filesystem>
 #include <chrono>
 
 #include "ImGuiSdl2.h"
@@ -11,10 +11,14 @@
 using namespace std::chrono_literals;
 using namespace std::chrono;
 
+static constexpr int MaxGamepads = 4;
+
 namespace sdgl {
     struct Backend::Impl {
-        std::vector<Window *> windows;
-        time_point<high_resolution_clock> startTime;
+        std::vector<Window *> windows{};
+        time_point<high_resolution_clock> startTime{};
+        Gamepad gamepads[MaxGamepads] = {};
+        SDL_GameController *controllers[MaxGamepads] = {nullptr};
     };
 
     Backend::Backend() : m(new Impl) { }
@@ -27,9 +31,22 @@ namespace sdgl {
             return false;
         }
 
+        if (std::filesystem::exists("gamecontrollerdb.txt"))
+        {
+            SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+        }
+
         m->startTime = high_resolution_clock::now();
 
-        //SDL_GameControllerOpen(0)
+        for (int i = 0; i < MaxGamepads; ++i)
+        {
+            m->controllers[i] = SDL_GameControllerOpen(i);
+            if (m->controllers[i])
+            {
+                m->gamepads[i].doConnect(true);
+            }
+        }
+
         return true;
     }
 
@@ -103,7 +120,7 @@ namespace sdgl {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto wrapper =  new Window(win, context);
+        auto wrapper =  new Window(win, context, m->gamepads);
 
         if (plugins.imgui)
             wrapper->plugins()->addPlugin(new ImGuiSdl2(win, context));
@@ -165,11 +182,24 @@ namespace sdgl {
         }
     }
 
+    // normalize s16 to float ranging from -1 to 1
+    static float normalizeS16(int16_t value)
+    {
+        return value < 0 ? (float)value / (float)-INT16_MIN :
+            (float)value / (float)INT16_MAX;
+    }
+
     void Backend::processInput()
     {
         for (auto window : m->windows)
         {
             const_cast<InputManager *>(window->input())->preProcessInput();
+        }
+
+        for (int i = 0; auto &gamepad : m->gamepads)
+        {
+            if (m->controllers[i])
+                gamepad.preProcessInput();
         }
 
         SDL_Event e;
@@ -233,7 +263,7 @@ namespace sdgl {
                     auto mouse = const_cast<Mouse *>(window->input()->mouse());
                     if (!mouse)
                         break;
-                    SDGL_LOG("Mouse button down: {}", e.button.button);
+
                     if (e.button.clicks == 2)
                         mouse->doButtonDoubleClick(e.button.button);
                     else
@@ -242,7 +272,6 @@ namespace sdgl {
 
                 case SDL_MOUSEBUTTONUP:
                 {
-                    SDGL_LOG("Mouse button UP: {}", e.button.button);
                     // mouse ups should affect all windows to prevent stuck state if mouse leaves window
                     for (auto window : m->windows)
                     {
@@ -254,6 +283,59 @@ namespace sdgl {
 
                 } break;
 
+                case SDL_CONTROLLERBUTTONDOWN:
+                {
+                    const auto id = e.cbutton.which;
+                    if (id == -1 || id > 3) break;
+
+                    auto &gamepad = m->gamepads[id];
+                    gamepad.doButtonDown(e.cbutton.button);
+                } break;
+
+                case SDL_CONTROLLERBUTTONUP:
+                {
+                    const auto id = e.cbutton.which;
+                    if (id == -1 || id > 3) break;
+
+                    auto &gamepad = m->gamepads[id];
+                    gamepad.doButtonUp(e.cbutton.button);
+                } break;
+
+                case SDL_CONTROLLERDEVICEREMOVED:
+                {
+                    const auto id = e.cdevice.which;
+                    if (id == -1 || id > 3) break;
+
+                    auto &gamepad = m->gamepads[id];
+                    gamepad.doConnect(false);
+                    if (m->controllers[id])
+                    {
+                        SDL_GameControllerClose(m->controllers[id]);
+                        m->controllers[id] = nullptr;
+                    }
+
+                } break;
+
+                case SDL_CONTROLLERDEVICEADDED:
+                {
+                    const auto id = e.cdevice.which;
+                    if (id == -1 || id > 3) break;
+
+                    auto &gamepad = m->gamepads[id];
+                    gamepad.doConnect(true);
+                    m->controllers[id] = SDL_GameControllerOpen(id);
+
+                } break;
+
+                case SDL_CONTROLLERAXISMOTION:
+                {
+                    const auto id = e.caxis.which;
+                    if (id == -1 || id > 3) break;
+
+                    auto &gamepad = m->gamepads[id];
+                    gamepad.doAxisSet(e.caxis.axis, normalizeS16(e.caxis.value));
+                } break;
+
                 default:
                     break;
             }
@@ -262,6 +344,11 @@ namespace sdgl {
 
     void Backend::shutdown()
     {
+        for (auto ctrl : m->controllers)
+        {
+
+        }
+
         for (auto window : m->windows)
         {
             delete window;

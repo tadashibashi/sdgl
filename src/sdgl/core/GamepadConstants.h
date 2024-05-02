@@ -23,7 +23,7 @@ namespace sdgl {
             Count
         };
 
-        static string_view getName(GamepadBtn::Enum btn);
+        static string_view getName(Enum btn);
     };
 
     struct GamepadAxis {
@@ -38,7 +38,7 @@ namespace sdgl {
             Count
         };
 
-        static string_view getName(GamepadAxis::Enum axis);
+        static string_view getName(Enum axis);
     };
 }
 

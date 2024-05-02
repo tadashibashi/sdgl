@@ -11,8 +11,8 @@
 
 namespace sdgl {
     struct Window::Impl {
-        Impl(SDL_Window *window, SDL_GLContext context) : window(window), context(context), shouldClose(), input() {
-            input.init();
+        Impl(SDL_Window *window, SDL_GLContext context, const Gamepad *gamepads) : window(window), context(context), shouldClose(), input() {
+            input.init(InputInit::All, gamepads);
         }
 
         SDL_Window *window;
@@ -21,7 +21,7 @@ namespace sdgl {
         bool shouldClose;
     };
 
-    Window::Window(SDL_Window *window, SDL_GLContext context) : m(new Impl(window, context)) { }
+    Window::Window(SDL_Window *window, SDL_GLContext context, const Gamepad *gamepads) : m(new Impl(window, context, gamepads)) { }
     Window::~Window()
     {
         m_plugins.shutdown();

@@ -16,3 +16,6 @@
 [submodule "vendored/angles"]
 	path = lib/angles
 	url = https://github.com/tadashibashi/angles
+[submodule "lib/SDL_GameControllerDB"]
+	path = lib/SDL_GameControllerDB
+	url = https://github.com/mdqinc/SDL_GameControllerDB.git
