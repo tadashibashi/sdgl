@@ -50,6 +50,7 @@ add_library(sdgl STATIC
         graphics/gles3/spriteBatch2DShader.inl
         math/random.cpp
         math/random.h
+        math/Circle.h math/Circle.cpp
         graphics/font/BMFontData.cpp
         graphics/font/BMFontData.h
         io/BufferView.cpp
