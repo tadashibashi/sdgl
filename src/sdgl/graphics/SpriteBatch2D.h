@@ -10,15 +10,12 @@
 #include <sdgl/math/Vector2.h>
 
 #include "RenderProgram.h"
-#include "atlas/TextureAtlas.h"
 
 namespace sdgl {
     class Camera2D;
-    class Shader;
-}
-
-namespace sdgl {
     class FontText;
+    class Frame;
+    class Shader;
 
     struct SortOrder {
         enum Enum

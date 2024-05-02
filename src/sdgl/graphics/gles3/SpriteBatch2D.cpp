@@ -153,17 +153,26 @@ namespace sdgl {
 
     void SpriteBatch2D::begin(const float *transformMatrix, const SortOrder::Enum sortOrder)
     {
+        SDGL_ASSERT(!m_batchStarted,
+            "Mismatched SpriteBatch2D::begin call. Did you remember to call end?");
         m_matrix = transformMatrix;
         m_batches.clear();
         m_glyphs.clear();
         m_sortOrder = sortOrder;
+
+        m_batchStarted = true;
     }
 
     void SpriteBatch2D::end()
     {
+        SDGL_ASSERT(m_batchStarted,
+            "Mismatched SpriteBatch2D::end call. Did you remember to call begin?");
+
         sortGlyphs();
         createBatches();
         renderBatches();
+
+        m_batchStarted = false;
     }
 
 
