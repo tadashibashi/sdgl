@@ -1,8 +1,9 @@
-#include "../Shader.h"
-#include "gl.h"
+#include "Shader.h"
 
 #include <sdgl/logging.h>
 #include <sdgl/io/io.h>
+
+#include <sdgl/angles.h>
 #include <glm/glm.hpp>
 
 namespace sdgl {

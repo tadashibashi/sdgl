@@ -1,14 +1,12 @@
-#include <sdgl/graphics/SpriteBatch2D.h>
+#include "SpriteBatch2D.h"
+#include "spriteBatch2DShader.inl"
 
 #include <sdgl/math/geometry.h>
-#include "spriteBatch2DShader.inl"
 
 #include <sdgl/graphics/font/Glyph.h>
 #include <sdgl/graphics/font/FontText.h>
 
 #include <glm/gtc/type_ptr.hpp>
-
-#include <angles.h>
 
 namespace sdgl {
     static constexpr int VertsPerQuad = 6;
@@ -19,7 +17,6 @@ namespace sdgl {
         m_program(), m_batchStarted(false), u_texture(),
         u_projMtx(), u_texSize(), m_matrix()
     {
-        init();
     }
 
     void SpriteBatch2D::init()
@@ -319,8 +316,26 @@ namespace sdgl {
 
             // Draw batch
             m_program.render(PrimitiveType::Triangles,
-              static_cast<GLint>(batch.offset),
-              static_cast<GLint>(batch.count));
+              static_cast<int>(batch.offset),
+              static_cast<int>(batch.count));
         }
     }
-}
+    void SpriteBatch2D::drawTexture(const Texture2D &texture, Rectangle source,
+                                    Rectangle destination, Color tint,
+                                    Vector2 anchor, float angle, float depth) {
+        if (source.w == 0 || source.h == 0) // avoid div by zero
+            return;
+        auto scale = Vector2((float)destination.w / source.w,
+                             (float)destination.h / source.h);
+        drawTexture(texture, source,
+                    {(float)destination.x, (float)destination.y}, tint, scale,
+                    anchor, angle, depth);
+    }
+    void SpriteBatch2D::drawTexture(const Texture2D &texture, Vector2 position,
+                                    Color tint, Vector2 scale, Vector2 anchor,
+                                    float angle, float depth) {
+        const auto texSize = texture.size();
+        drawTexture(texture, {0, 0, texSize.x, texSize.y}, position, tint,
+                    scale, anchor, angle, depth);
+    }
+    } // namespace sdgl

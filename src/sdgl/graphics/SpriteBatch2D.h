@@ -61,17 +61,31 @@ namespace sdgl {
         SpriteBatch2D();
         ~SpriteBatch2D() = default;
 
+        void init();
+
         /// Draw a subimage of a texture
         void drawTexture(
             const Texture2D &texture, ///< texture to draw
             Rectangle source,         ///< source rectangle within the texture in pixels
             Vector2 position,         ///< position in pixels at which to project image
-            Color color = Color::White,   ///< color to tint the image
+            Color tint = Color::White,   ///< color to tint the image
             Vector2 scale = {1.f, 1.f},   ///< normalized texture xy scale
             Vector2 anchor = {0, 0},      ///< the (0, 0) position within the texture from which to rotate / scale from (in pixels)
             float angle = 0,              ///< rotation in radians
             float depth = 0               ///< depth sorting value (set sortOrder in `SpriteBatch::begin` to set behavior)
         );
+
+        /// Draw entire texture
+        void drawTexture(const Texture2D &texture, Vector2 position,
+                         Color tint = Color::White, Vector2 scale = {1.f, 1.f},
+                         Vector2 anchor = {0, 0}, float angle = 0,
+                         float depth = 0);
+
+        /// Draw texture mapped to destination rectangle
+        void drawTexture(const Texture2D &texture, Rectangle source,
+                         Rectangle destination, Color tint = Color::White,
+                         Vector2 anchor = {0, 0}, float angle = 0,
+                         float depth = 0);
 
         /// FIXME: perhaps cache rendered texture inside of FontText component? This would allow for ease of
         /// transformations using drawTexture
@@ -99,7 +113,7 @@ namespace sdgl {
 
         const float *m_matrix;
         
-        void init();
+
         void createBatches();
         void sortGlyphs();
         void renderBatches();

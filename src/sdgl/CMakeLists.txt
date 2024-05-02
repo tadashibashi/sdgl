@@ -3,7 +3,7 @@ add_subdirectory(core/backend)
 add_library(sdgl STATIC
         sdglib.h
         graphics/Shader.h
-        graphics/gles3/Shader.cpp
+        graphics/Shader.cpp
         core/backend/Backend.h
         core/Key.h
         core/Key.cpp
@@ -31,23 +31,23 @@ add_library(sdgl STATIC
         math/easings.cpp
         Camera2D.cpp
         Camera2D.h
-        graphics/gles3/SpriteBatch2D.cpp
+        graphics/SpriteBatch2D.cpp
         graphics/SpriteBatch2D.h
         graphics/Color.h
         graphics/Color.cpp
         graphics/Texture2D.h
-        graphics/gles3/Texture2D.cpp
+        graphics/Texture2D.cpp
         io/stb_image_impl.cpp
         platform/emscripten.h
         platform/emscripten.cpp
         Delegate.h
-        graphics/gles3/ShaderAttribs.cpp
+        graphics/ShaderAttribs.cpp
         graphics/ShaderAttribs.h
-        graphics/gles3/RenderProgram.cpp
+        graphics/RenderProgram.cpp
         graphics/RenderProgram.h
         graphics/TextureCache.cpp
         graphics/TextureCache.h
-        graphics/gles3/spriteBatch2DShader.inl
+        graphics/spriteBatch2DShader.inl
         math/random.cpp
         math/random.h
         math/Circle.h math/Circle.cpp

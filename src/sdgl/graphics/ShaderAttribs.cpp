@@ -1,5 +1,6 @@
-#include "../ShaderAttribs.h"
-#include "gl.h"
+#include "ShaderAttribs.h"
+
+#include <sdgl/angles.h>
 
 namespace sdgl {
     struct GLTypeHash

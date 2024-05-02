@@ -1,6 +1,6 @@
-#include "../RenderProgram.h"
-#include "gl.h"
+#include "RenderProgram.h"
 
+#include <sdgl/angles.h>
 #include <utility>
 
 namespace sdgl {

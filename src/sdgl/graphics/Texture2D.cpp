@@ -1,8 +1,9 @@
-#include "../Texture2D.h"
+#include "Texture2D.h"
 
+#include <sdgl/angles.h>
 #include <sdgl/io/io.h>
+
 #include <stb_image.h>
-#include "gl.h"
 
 namespace sdgl {
     bool Texture2D::loadFile(const string &filepath, const TextureFilter::Enum filter)
