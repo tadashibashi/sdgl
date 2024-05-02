@@ -10,7 +10,7 @@ if ("${SDGL_BACKEND}" STREQUAL "sdl2")
     # Fetch SDL2 release 2.30.2
     FetchContent_Declare(SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG        f461d91cd265d7b9a44b4d472b1df0c0ad2855a0
+        GIT_TAG        fb1497566c5a05e2babdcf45ef0ab5c7cca2c4ae
     )
 
     FetchContent_MakeAvailable(SDL2)

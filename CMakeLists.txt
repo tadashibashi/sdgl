@@ -11,7 +11,7 @@ endif()
 set(     SDGL_BACKEND       "sdl2" CACHE STRING "Windowing backend library") # todo: sdl3
 set(     SDGL_GRAPHICS_LIB  "gles3" CACHE STRING "Graphics library backend")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
 set(SDGL_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "" FORCE)
 
@@ -21,3 +21,6 @@ add_subdirectory(src)
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR OR SDGL_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
+
+# Make this available by default
+include(add_sdgl_executable)
