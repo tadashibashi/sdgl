@@ -80,9 +80,7 @@ namespace sdgl::mathf {
         return intersects(circle, rect);
     }
 
-    /**
-     * @return distance between two vectors
-     */
+    /// @return distance between two vectors
     template <Arithmetic U, Arithmetic V>
     [[nodiscard]]
     float distance(Vec2<U> a, Vec2<V> b)
@@ -91,20 +89,22 @@ namespace sdgl::mathf {
     }
 
     [[nodiscard]]
-    inline Vec2<float> trajectory(const float angle, const float distance)
+    inline Vector2 trajectory(const float angle, const float distance)
     {
-        Vec2<float> res{};
+        Vector2 res{};
         trajectory(angle, distance, &res.x, &res.y);
         return res;
     }
 
+    /// Get the angle between two points
     template <Arithmetic T, Arithmetic U>
     [[nodiscard]]
-    float pointAngle(Vec2<T> a, Vec2<U> b)
+    float pointAngle(Vec2<T> start, Vec2<U> end)
     {
-        return pointAngle(b.x - a.x, b.y - a.y);
+        return pointAngle(end.x - start.x, end.y - start.y);
     }
 
+    /// Rotate a Vec2 around {0, 0}
     template<Arithmetic T>
     [[nodiscard]]
     Vector2 rotate(Vec2<T> vec, const float angle)
