@@ -1,7 +1,6 @@
 #include "../SpriteBatch2D.h"
 #include <sdgl/math/geometry.h>
 #include "spriteBatch2DShader.inl"
-#include "gl.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <sdgl/graphics/font/Glyph.h>
@@ -15,7 +14,9 @@ namespace sdgl {
         m_sortOrder(SortOrder::BackToFront),
         m_program(), m_batchStarted(false), u_texture(),
         u_projMtx(), u_texSize(), m_matrix()
-    { }
+    {
+        init();
+    }
 
     void SpriteBatch2D::init()
     {

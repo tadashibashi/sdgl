@@ -61,8 +61,6 @@ namespace sdgl {
         SpriteBatch2D();
         ~SpriteBatch2D() = default;
 
-        void init();
-
         /// Draw a subimage of a texture
         void drawTexture(
             const Texture2D &texture, ///< texture to draw
@@ -83,9 +81,12 @@ namespace sdgl {
 
         void begin(const float *transformMatrix, SortOrder::Enum sortOrder = SortOrder::FrontToBack);
 
+        /// End sprite batch drawing; must be paired with begin()
         void end();
 
     private:
+
+
         vector<Glyph> m_glyphs;
         vector<RenderBatch> m_batches;
 
@@ -97,7 +98,8 @@ namespace sdgl {
         int u_texture, u_projMtx, u_texSize;
 
         const float *m_matrix;
-
+        
+        void init();
         void createBatches();
         void sortGlyphs();
         void renderBatches();
