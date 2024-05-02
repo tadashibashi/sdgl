@@ -1,10 +1,14 @@
-#include "../SpriteBatch2D.h"
+#include <sdgl/graphics/SpriteBatch2D.h>
+
 #include <sdgl/math/geometry.h>
 #include "spriteBatch2DShader.inl"
 
-#include <glm/gtc/type_ptr.hpp>
 #include <sdgl/graphics/font/Glyph.h>
 #include <sdgl/graphics/font/FontText.h>
+
+#include <glm/gtc/type_ptr.hpp>
+
+#include <angles.h>
 
 namespace sdgl {
     static constexpr int VertsPerQuad = 6;
