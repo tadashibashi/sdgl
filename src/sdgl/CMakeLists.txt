@@ -91,8 +91,10 @@ target_link_libraries(sdgl PUBLIC ${sdgl_backend_LIBS} glm::glm imgui spdlog::sp
 target_include_directories(sdgl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)
 target_precompile_headers(sdgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/sdgl.pch)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" SDGL_BUILD_TYPE)
-if ("${SDGL_BUILD_TYPE}" MATCHES "DEBUG")
+if ("${SDGL_BUILD_TYPE}" MATCHES "DEBUG" OR "${SDGL_BUILD_TYPE}" MATCHES "RELWITHDEBINFO")
     target_compile_definitions(sdgl PUBLIC -DSDGL_DEBUG=1)
+else()
+    target_compile_definitions(sdgl PUBLIC -DSDGL_DEBUG=0)
 endif()
 
 target_compile_definitions(sdgl PRIVATE -DIMGUI_IMPL_OPENGL_ES3=1)

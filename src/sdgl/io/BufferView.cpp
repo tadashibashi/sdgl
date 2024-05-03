@@ -1,4 +1,6 @@
 #include "BufferView.h"
+#include <sdgl/assert.h>
+#include <sdgl/logging.h>
 
 namespace sdgl::io {
     uint BufferView::read(string &outString, const size_t maxSize)

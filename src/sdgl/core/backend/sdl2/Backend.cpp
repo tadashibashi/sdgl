@@ -5,6 +5,7 @@
 #include <angles.h>
 #include <filesystem>
 #include <chrono>
+#include <sdgl/angles.h>
 
 #include "ImGuiSdl2.h"
 
@@ -107,18 +108,18 @@ namespace sdgl {
         }
 
         // Blending
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND); GL_ERR_CHECK();
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); GL_ERR_CHECK();
 
-        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST); GL_ERR_CHECK();
 
 
         // Viewport
         SDL_GL_GetDrawableSize(win, &width, &height);
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, width, height); GL_ERR_CHECK();
 
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_ERR_CHECK();
 
         auto wrapper =  new Window(win, context, m->gamepads);
 
@@ -174,7 +175,7 @@ namespace sdgl {
             case SDL_WINDOWEVENT_SIZE_CHANGED:
             {
                 window->makeCurrent();
-                glViewport(0, 0, e.data1, e.data2);
+                glViewport(0, 0, e.data1, e.data2); GL_ERR_CHECK();
             } break;
 
             default:

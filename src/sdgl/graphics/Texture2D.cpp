@@ -1,6 +1,7 @@
 #include "Texture2D.h"
 
 #include <sdgl/angles.h>
+#include <sdgl/assert.h>
 #include <sdgl/io/io.h>
 
 #include <stb_image.h>

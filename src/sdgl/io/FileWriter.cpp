@@ -1,6 +1,6 @@
 #include "FileWriter.h"
 #include <fstream>
-#include <sdgl/logging.h>
+#include <sdgl/assert.h>
 
 #include "endian.h"
 

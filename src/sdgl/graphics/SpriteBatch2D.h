@@ -37,8 +37,8 @@ namespace sdgl {
                 position{position}, color{color}, texcoord{uv} {}
 
             Vector2  position;
-            Color    color;
             Vector2  texcoord;
+            Color    color;
         };
 
         struct Glyph

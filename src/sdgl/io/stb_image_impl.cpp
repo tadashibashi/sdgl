@@ -2,7 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #endif
 
-#ifdef SDGL_DEBUG
+#if SDGL_DEBUG
 #   define STBI_FAILURE_USERMSG
 #else
 #   define STBI_NO_FAILURE_STRINGS

@@ -1,4 +1,6 @@
 #include "BMFontData.h"
+
+#include <sdgl/assert.h>
 #include <sdgl/io/io.h>
 #include <sdgl/io/BufferView.h>
 

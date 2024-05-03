@@ -1,7 +1,6 @@
 #pragma once
 
 #include <sdgl/sdglib.h>
-#include <sdgl/logging.h>
 #include "endian.h"
 
 namespace sdgl::io {

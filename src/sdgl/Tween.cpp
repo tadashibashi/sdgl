@@ -1,6 +1,6 @@
 #include "Tween.h"
 
-#include <sdgl/logging.h>
+#include <sdgl/assert.h>
 #include <sdgl/math/mathf.h>
 
 namespace sdgl {

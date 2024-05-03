@@ -1,10 +1,9 @@
-#if defined(SDGL_DEBUG)
+#if SDGL_LOGGING
 #include "logging.h"
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace sdgl::logging::detail {
 
-#if !defined(SDGL_CLIENT_LOGGING_SILENT_MODE)
     spdlog::logger *getClientLogger()
     {
         static std::shared_ptr<spdlog::logger> s_clientLogger;
@@ -17,9 +16,7 @@ namespace sdgl::logging::detail {
 
         return s_clientLogger.get();
     }
-#endif
 
-#if !defined(SDGL_LOGGING_SILENT_MODE)
     spdlog::logger *getCoreLogger()
     {
         static std::shared_ptr<spdlog::logger> s_coreLogger;
@@ -33,7 +30,6 @@ namespace sdgl::logging::detail {
 
         return s_coreLogger.get();
     }
-#endif
 }
 
 #endif

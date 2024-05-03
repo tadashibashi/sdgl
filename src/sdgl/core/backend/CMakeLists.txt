@@ -6,6 +6,8 @@ if ("${SDGL_BACKEND}" STREQUAL "sdl2")
 
     set(SDL_TEST OFF CACHE BOOL "" FORCE)
     set(SDL2_DISABLE_UNINSTALL ON CACHE BOOL "" FORCE)
+    set(SDL_STATIC ON CACHE BOOL "" FORCE)
+    set(SDL_DYNAMIC OFF CACHE BOOL "" FORCE)
 
     # Fetch SDL2 release 2.30.2
     FetchContent_Declare(SDL2

@@ -1,6 +1,7 @@
 #include "io.h"
 #include <fstream>
 
+#include <sdgl/assert.h>
 #include "../logging.h"
 
 namespace sdgl::io {

@@ -2,6 +2,8 @@
 #include <sdgl/graphics/Shader.h>
 #include <sdgl/graphics/ShaderAttribs.h>
 
+#include <sdgl/logging.h>
+
 namespace sdgl {
     struct PrimitiveType
     {

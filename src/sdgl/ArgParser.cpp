@@ -1,6 +1,7 @@
 #include "ArgParser.h"
 
 #include <sdgl/logging.h>
+#include <sdgl/assert.h>
 
 namespace sdgl {
     bool ArgParser::Arg::getValue(string *outVal) const

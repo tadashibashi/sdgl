@@ -1,5 +1,5 @@
 #pragma once
-#include <sdgl/logging.h>
+#include <sdgl/assert.h>
 
 #include <typeinfo>
 #include <type_traits>
