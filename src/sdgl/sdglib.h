@@ -27,12 +27,11 @@ namespace sdgl {
 
         namespace fs = std::filesystem;
 
-        template <typename K, typename V, typename Compare = std::less<K>,
-            typename Allocator = std::allocator<std::pair<const K, V> >>
-        using map = std::map<K, V, Compare, Allocator>;
+        using std::map;
 
-        template <typename T, typename Allocator = std::allocator<T>>
-        using vector = std::vector<T, Allocator>;
+        using std::array;
+
+        using std::vector;
 
         template <typename T>
         using func = std::function<T>;

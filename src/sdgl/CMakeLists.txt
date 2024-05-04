@@ -88,7 +88,7 @@ add_library(sdgl STATIC
 
 target_link_libraries(sdgl PUBLIC ${sdgl_backend_LIBS} glm::glm imgui spdlog::spdlog stb glaze::glaze)
 
-target_include_directories(sdgl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)
+target_include_directories(sdgl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ ${SDGL_ROOT_DIR}/include)
 target_precompile_headers(sdgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/sdgl.pch)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" SDGL_BUILD_TYPE)
 if ("${SDGL_BUILD_TYPE}" MATCHES "DEBUG" OR "${SDGL_BUILD_TYPE}" MATCHES "RELWITHDEBINFO")
