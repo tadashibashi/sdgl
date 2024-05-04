@@ -72,13 +72,28 @@ namespace sdgl
     template <typename ...Args>
     class Delegate {
         struct CallbackData {
-            explicit CallbackData(detail::CallbackComparer<Args...> callback) : callback(callback), shouldRemove() { }
+            explicit CallbackData(detail::CallbackComparer<Args...> callback) :
+                callback(callback), shouldRemove(false) { }
             detail::CallbackComparer<Args...> callback;
             bool shouldRemove;
         };
     public:
         Delegate(): m_callbacks(), m_isDirty(false)
         {}
+
+        // Prevent copy / copy assignment
+        Delegate(const Delegate &) = delete;
+        Delegate &operator=(const Delegate &) = delete;
+
+        // Enable move / move assignment
+        Delegate(Delegate &&other) noexcept : m_callbacks(std::move(other.m_callbacks)), m_isDirty(other.m_isDirty)
+        {}
+
+        Delegate &operator=(Delegate &&other)
+        {
+            m_callbacks = std::move(other.m_callbacks);
+            m_isDirty = other.m_isDirty;
+        }
 
         [[nodiscard]]
         size_t size() const { return m_callbacks.size(); }
@@ -91,17 +106,13 @@ namespace sdgl
         template <typename T>
         Delegate &operator+=(Callback<T, Args...> callback)
         {
-            m_callbacks.emplace_back(CallbackData{CallbackComparer(callback.object, callback.function)});
+            m_callbacks.emplace_back(CallbackData(detail::CallbackComparer(callback.object, callback.function)));
             return *this;
         }
 
         Delegate &operator+=(void (*func)(Args...))
         {
-            m_callbacks.emplace_back({
-                .callback=CallbackComparer(func),
-                .shouldRemove=false
-            });
-
+            m_callbacks.emplace_back(CallbackData(detail::CallbackComparer(func)));
             return *this;
         }
 
@@ -145,13 +156,13 @@ namespace sdgl
             }
 
             // Use predefined size limit to prevent calling callbacks added this frame
-            for (auto i = 0, size = m_callbacks.size(); i < size; ++i)
+            for (size_t i = 0, size = m_callbacks.size(); i < size; ++i)
             {
-                m_callbacks[i](std::forward<Args>(args)...);
+                m_callbacks[i].callback(std::forward<Args>(args)...);
             }
         }
     private:
-        
+
         void processRemovals()
         {
             m_callbacks.erase(std::remove_if(m_callbacks.begin(), m_callbacks.end(),
