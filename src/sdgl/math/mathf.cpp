@@ -74,9 +74,9 @@ namespace sdgl::mathf {
     void trajectory(const float angle, const float distance, float *x, float *y)
     {
         if (x)
-            *x = std::sinf(angle) * distance;
+            *x = std::cosf(angle) * distance;
         if (y)
-            *y = std::cosf(angle) * distance;
+            *y = std::sinf(angle) * distance;
     }
 
     void rotate(const float x, const float y, const float angle, float *resultX, float *resultY)
