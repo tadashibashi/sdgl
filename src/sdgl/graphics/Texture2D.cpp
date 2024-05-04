@@ -2,11 +2,15 @@
 
 #include <sdgl/angles.h>
 #include <sdgl/assert.h>
+#include <sdgl/logging.h>
 #include <sdgl/io/io.h>
 
 #include <stb_image.h>
 
+
 namespace sdgl {
+    TextureFilter::Enum Texture2D::s_defaultFilter = TextureFilter::Nearest;
+
     bool Texture2D::loadFile(const string &filepath, const TextureFilter::Enum filter)
     {
         string buffer;

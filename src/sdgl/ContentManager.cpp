@@ -10,12 +10,12 @@ namespace sdgl {
         unloadAll();
     }
 
-    Texture2D *ContentManager::loadTexture(const string &filepath, TextureFilter::Enum flags)
+    const Texture2D *ContentManager::loadTexture(const fs::path &filepath)
     {
         if (const auto cached = checkCache<Texture2D>(filepath))
             return cached;
         auto texture = new Texture2D();
-        if (!texture->loadFile(filepath, flags))
+        if (!texture->loadFile(filepath))
         {
             delete texture;
             return nullptr;
@@ -25,7 +25,7 @@ namespace sdgl {
         return texture;
     }
 
-    BitmapFont *ContentManager::loadBitmapFont(const string &filepath)
+    const BitmapFont *ContentManager::loadBitmapFont(const fs::path &filepath)
     {
         if (const auto cached = checkCache<BitmapFont>(filepath))
             return cached;
@@ -40,7 +40,7 @@ namespace sdgl {
         return font;
     }
 
-    TextureAtlas *ContentManager::loadTextureAtlas(const string &filepath)
+    const TextureAtlas *ContentManager::loadTextureAtlas(const fs::path &filepath)
     {
         if (const auto cached = checkCache<TextureAtlas>(filepath))
             return cached;
@@ -55,10 +55,10 @@ namespace sdgl {
         return atlas;
     }
 
-    bool ContentManager::unload(const string &filepath)
+    bool ContentManager::unload(const fs::path &filepath)
     {
         // See if this container holds this asset in memory
-        auto it = m_cache.find(filepath);
+        auto it = m_cache.find(filepath.native());
         if (it == m_cache.end())
         {
             // It doesn't
