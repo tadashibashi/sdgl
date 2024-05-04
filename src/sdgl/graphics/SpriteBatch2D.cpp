@@ -56,7 +56,7 @@ namespace sdgl {
 
         // Scale anchor point
         anchor *= scale;
-        
+
         // Snap destination coords to pixel grid
         FRectangle dest = {
             std::round(position.x),
@@ -320,22 +320,5 @@ namespace sdgl {
               static_cast<int>(batch.count));
         }
     }
-    void SpriteBatch2D::drawTexture(const Texture2D &texture, Rectangle source,
-                                    Rectangle destination, Color tint,
-                                    Vector2 anchor, float angle, float depth) {
-        if (source.w == 0 || source.h == 0) // avoid div by zero
-            return;
-        auto scale = Vector2((float)destination.w / source.w,
-                             (float)destination.h / source.h);
-        drawTexture(texture, source,
-                    {(float)destination.x, (float)destination.y}, tint, scale,
-                    anchor, angle, depth);
-    }
-    void SpriteBatch2D::drawTexture(const Texture2D &texture, Vector2 position,
-                                    Color tint, Vector2 scale, Vector2 anchor,
-                                    float angle, float depth) {
-        const auto texSize = texture.size();
-        drawTexture(texture, {0, 0, texSize.x, texSize.y}, position, tint,
-                    scale, anchor, angle, depth);
-    }
-    } // namespace sdgl
+
+} // namespace sdgl
