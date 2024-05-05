@@ -47,7 +47,9 @@ namespace sdgl {
         /// @param withKerning  whether to apply horizontal kerning spacing rules (default: true)
         ///
         /// @note This function is somewhat expensive, please call only when text changes
-        void projectText(vector<Glyph> &glyphs, const string &text, uint maxWidth = 0, int horSpaceOffset = 0,
+        /// @returns greatest extent of the cursor for any non-white space character
+        ///  (cursor.y goes to the baseline, but not full height of a character; cursor x-position goes beyond last character)
+        Point projectText(vector<Glyph> &glyphs, const string &text, uint maxWidth = 0, int horSpaceOffset = 0,
             int lineHeightOffset = 0, bool withKerning = true) const;
     private:
 

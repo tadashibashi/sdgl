@@ -69,10 +69,16 @@ namespace sdgl {
         /// this object. This is useful for dialog that is revealed gradually.
         /// @note make sure to check glyphs().size() insteadof text().size(), since invisible characters like
         ///       carriage returns / line feeds get counted as a string character, but is not counted as a glyph.
-        FontText &textProgress(size_t value) { m_textProgress = value; return *this; }
+        FontText &textProgress(size_t value);
+
+        /// Get the current width of the text, taking textProgress into account
+        /// @return
+        [[nodiscard]]
+        Point currentSize() const;
 
     private:
         void updateGlyphs();
+        void updateCurrentSize() const;
 
         vector<Glyph> m_glyphs;
         BitmapFont *m_font;
@@ -82,6 +88,9 @@ namespace sdgl {
         bool m_useKerning;
         int m_horSpaceOffset;
         int m_lineHeightOffset;
+
+        mutable Point m_curSize;
+        mutable bool m_shouldUpdateSize; // dirty-flag pattern
     };
 
 } // sdgl::graphics

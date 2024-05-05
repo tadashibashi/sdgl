@@ -116,14 +116,16 @@ namespace sdgl {
         return m->fontName;
     }
 
-    void BitmapFont::projectText(vector<Glyph> &glyphs, const string &text, const uint maxWidth, const int horSpaceOffset,
+    Point BitmapFont::projectText(vector<Glyph> &glyphs, const string &text, const uint maxWidth, const int horSpaceOffset,
                                  const int lineHeightOffset, const bool withKerning) const
     {
         glyphs.clear();
         if (text.empty() || !isLoaded())
         {
-            return;
+            return {};
         }
+
+        Point cursorMax;
 
         const auto base = m->base;
 
@@ -188,6 +190,8 @@ namespace sdgl {
                 {
                     // Just advance past space char ->
                     cursor.x += spaceChar.xadvance + horSpaceOffset;
+
+                    // don't account for greatestWidth here since it's empty space
                 }
 
                 ++charIdx;
@@ -255,14 +259,21 @@ namespace sdgl {
                 {
                     // no line break, add word width
                     cursor.x += static_cast<int>(wordWidth);
+
                 }
+
+                if (cursor.x > cursorMax.x)
+                    cursorMax.x = cursor.x;
+                if (cursor.y > cursorMax.y)
+                    cursorMax.y = cursor.y;
 
                 // Move char counter to the end of word
                 charIdx = endWord;
             }
 
-
         }
+
+        return cursorMax;
 
     }
 

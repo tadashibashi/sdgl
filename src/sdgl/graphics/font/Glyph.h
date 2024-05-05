@@ -16,6 +16,6 @@ namespace sdgl {
 
         Rect<int16> source;  ///< Source frame rectangle in pixels within frame
         Point destination;   ///< Destination position, relative to {0, 0}
-        const Frame &frame;  ///< Source texture info
+        const Frame &frame;  ///< Source atlas texture frame
     };
 }
