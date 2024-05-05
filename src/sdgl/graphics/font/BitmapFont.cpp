@@ -4,12 +4,13 @@
 
 #include "BMFontData.h"
 #include "Glyph.h"
+#include <sdgl/logging.h>
 
 namespace sdgl {
     struct BitmapFont::Char
     {
         Rect<uint16> frame;
-        Vec2<int16> offset;   ///< x: subtract from cursorX to get frame start X;
+        Vec2<int16> offset;       ///< x: subtract from cursorX to get frame start X;
                                   ///< y: cursorY - base + yoffset = frame start Y
         int16 xadvance;           ///< horizontal length from cursor start to end
         const Frame &texture;     ///< texture frame
@@ -116,10 +117,16 @@ namespace sdgl {
         return m->fontName;
     }
 
-    Point BitmapFont::projectText(vector<Glyph> &glyphs, const string &text, const uint maxWidth, const int horSpaceOffset,
+    Point BitmapFont::projectText(vector<Glyph> *glyphs, const string &text, const uint maxWidth, const int horSpaceOffset,
                                  const int lineHeightOffset, const bool withKerning) const
     {
-        glyphs.clear();
+        if (!glyphs)
+        {
+            SDGL_ERROR("`glyphs` out variable was null");
+            return {};
+        }
+
+        glyphs->clear();
         if (text.empty() || !isLoaded())
         {
             return {};
@@ -168,7 +175,7 @@ namespace sdgl {
                 }
 
                 // push glyph
-                glyphs.emplace_back(
+                glyphs->emplace_back(
                     spaceChar.frame,
                     Point(cursor.x + (int)spaceChar.offset.x, cursor.y - (int)base + (int)spaceChar.offset.y),
                     spaceChar.texture
@@ -206,7 +213,7 @@ namespace sdgl {
 
                 // Push glyphs for word (track width to see if we need linebreak after)
                 int wordWidth = 0; ///< acts as temporary x cursor offset for word
-                const auto glyphIdx = glyphs.size();
+                const auto glyphIdx = glyphs->size();
 
                 for (size_t w = charIdx; w < endWord; ++w)
                 {
@@ -214,7 +221,7 @@ namespace sdgl {
                     const auto &curChar = m->chars.at(text[w]);
 
                     // See if kerning available to adjust wordWidth == this word's start point
-                    if (withKerning && w > 0 && glyphs.back().destination.x < wordWidth + curChar.offset.x) // second check makes sure glyph isn't at the beginning of line where kerning not applied
+                    if (withKerning && w > 0 && glyphs->back().destination.x < wordWidth + curChar.offset.x) // second check makes sure glyph isn't at the beginning of line where kerning not applied
                     {
                         const auto kernIt = m->kernings.find( std::make_pair<uint, uint>(text[w-1], text[w]) );
                         if (kernIt != m->kernings.end())
@@ -225,7 +232,7 @@ namespace sdgl {
                     }
 
                     // Push glyph for char
-                    glyphs.emplace_back(
+                    glyphs->emplace_back(
                         curChar.frame,
                         Point(cursor.x + wordWidth + (int)curChar.offset.x, cursor.y - (int)base + (int)curChar.offset.y),
                         curChar.texture
@@ -236,16 +243,16 @@ namespace sdgl {
                 }
 
                 // Check if we need a line break
-                if (maxWidth != 0 && glyphs.back().destination.x + glyphs.back().source.w > maxWidth)
+                if (maxWidth != 0 && glyphs->back().destination.x + glyphs->back().source.w > maxWidth)
                 {
-                    const auto plusX = -glyphs.at(glyphIdx).destination.x - (int)m->chars.at(text[charIdx]).offset.x;
+                    const auto plusX = -glyphs->at(glyphIdx).destination.x - (int)m->chars.at(text[charIdx]).offset.x;
                     const auto plusY = (int)m->lineHeight + lineHeightOffset;
 
                     // apply line break repositioning to all glyphs that were just pushed
-                    for (auto i = glyphIdx, glyphSize = glyphs.size(); i < glyphSize; ++i)
+                    for (auto i = glyphIdx, glyphSize = glyphs->size(); i < glyphSize; ++i)
                     {
-                        glyphs[i].destination.x += plusX;
-                        glyphs[i].destination.y += plusY;
+                        glyphs->operator[](i).destination.x += plusX;
+                        glyphs->operator[](i).destination.y += plusY;
                     }
 
                     // send cursor to the next line if there's more text to come
@@ -279,7 +286,6 @@ namespace sdgl {
 
     bool BitmapFont::parseBMFontData(const BMFontData &data, string_view textureRoot, const TextureAtlas *atlas)
     {
-        // load pages into texture
         auto parentFolder = std::filesystem::path(textureRoot);
 
         vector<Frame> textureFrames;
@@ -343,7 +349,7 @@ namespace sdgl {
         m->fontSize = data.info.fontSize;
         m->base = data.common.base;
         m->lineHeight = data.common.lineHeight;
-        m->ownsFrames = !static_cast<bool>(atlas);
+        m->ownsFrames = !static_cast<bool>(atlas); // if we loaded from atlas, defer texture ownership, otherwise we will manage them
 
         return true;
     }

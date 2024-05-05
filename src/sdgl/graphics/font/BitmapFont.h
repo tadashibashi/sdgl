@@ -14,18 +14,30 @@ namespace sdgl {
         BitmapFont();
         ~BitmapFont() override;
 
+        /// Load BMFont file, retriving its image textures from an atlas.
+        /// Loading from an atlas enables efficient graphics card rendering with fewer textures.
+        /// @param filepath      filepath to the bmfont binary file
+        /// @param textureAtlas  atlas where the textures for this font have been loaded
+        /// @param textureRoot   parent path of where the textures in the atlas are located
+        /// @return whether load succeeded
         bool loadBMFont(const string &filepath, const TextureAtlas &textureAtlas, string_view textureRoot);
+        /// Load BMFont file, retrieving its image textures from files
+        /// @param filepath path to the bmfont binary file - image files should be located in the same directory
+        /// @return whether load succeeded
         bool loadBMFont(const string &filepath);
 
         /// Load from AngelCode BMFont data already in memory - textures are received from a texture atlas
         /// @param fileBuffer   in-memory data of AngelCode BMFont file
         /// @param textureAtlas texture atlas to load textures from
         /// @param textureRoot  parent path within the atlas where the texture keys are located
-        ///
+        /// @return whether load succeeded
         bool loadBMFontMem(const string &fileBuffer, const TextureAtlas &textureAtlas,
             string_view textureRoot);
 
         /// Load from AngelCode BMFont data already in memory
+        /// @param fileBuffer   in-memory data of AngleCode BMFont binary file
+        /// @param parentFolder parent folder where texture files exist
+        /// @return whether load succeeded
         bool loadBMFontMem(const string &fileBuffer, const string &parentFolder);
 
         void unload() override;
@@ -49,7 +61,7 @@ namespace sdgl {
         /// @note This function is somewhat expensive, please call only when text changes
         /// @returns greatest extent of the cursor for any non-white space character
         ///  (cursor.y goes to the baseline, but not full height of a character; cursor x-position goes beyond last character)
-        Point projectText(vector<Glyph> &glyphs, const string &text, uint maxWidth = 0, int horSpaceOffset = 0,
+        Point projectText(vector<Glyph> *glyphs, const string &text, uint maxWidth = 0, int horSpaceOffset = 0,
             int lineHeightOffset = 0, bool withKerning = true) const;
     private:
 

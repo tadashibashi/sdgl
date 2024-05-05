@@ -107,7 +107,7 @@ namespace sdgl {
     {
         if (m_font)
         {
-            m_font->projectText(m_glyphs, m_text, m_maxWidth, m_horSpaceOffset, m_lineHeightOffset,
+            m_font->projectText(&m_glyphs, m_text, m_maxWidth, m_horSpaceOffset, m_lineHeightOffset,
                                 m_useKerning);
         }
         else
