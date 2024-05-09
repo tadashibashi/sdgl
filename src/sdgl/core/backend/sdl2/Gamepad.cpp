@@ -1,5 +1,5 @@
 #include "../../Gamepad.h"
-#include <SDL2/SDL_gamecontroller.h>
+#include <SDL_gamecontroller.h>
 
 static constexpr uint8_t s_btnToSdlBtn[] = {
     SDL_CONTROLLER_BUTTON_A,

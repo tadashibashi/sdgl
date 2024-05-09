@@ -1,7 +1,7 @@
 #include "../Backend.h"
 
 #include <iostream>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <angles.h>
 #include <filesystem>
 #include <chrono>
@@ -26,7 +26,7 @@ namespace sdgl {
     Backend::~Backend() { delete m; }
     bool Backend::init()
     {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER) != 0)
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) != 0)
         {
             std::cerr << "SDL failed to initialize: " << SDL_GetError() << '\n';
             return false;

@@ -1,5 +1,5 @@
 #include "SdlGuard.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <mutex>
 #include <iostream>

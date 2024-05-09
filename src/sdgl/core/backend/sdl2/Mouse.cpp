@@ -1,5 +1,6 @@
 #include "../../Mouse.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
+#include <cstring>
 
 // static int8_t s_buttonToSdlButton[] = {
 //     SDL_BUTTON_LEFT,
