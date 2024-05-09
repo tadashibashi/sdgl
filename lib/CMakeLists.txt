@@ -1,13 +1,23 @@
 # Graphics library
 add_subdirectory(angles)
 
-# SDL3
-if ("${SDGL_BACKEND}" STREQUAL "sdl3")
-    set(SDL_TEST_LIBRARY     OFF CACHE BOOL "" FORCE)
-    add_subdirectory(SDL)
+
+
+# glaze
+add_subdirectory(glaze)
+
+if (NOT EMSCRIPTEN)
+    set(SDL_TEST OFF CACHE BOOL "" FORCE)
+    set(SDL2_DISABLE_UNINSTALL ON CACHE BOOL "" FORCE)
+    set(SDL_STATIC ON CACHE BOOL "" FORCE)
+    set(SDL_DYNAMIC OFF CACHE BOOL "" FORCE)
+    add_subdirectory(SDL2)
 endif()
 
-# GLM
+set(FMOD_VERSION 2.02.21 CACHE STRING "" FORCE)
+add_subdirectory(fmod-cmake)
+
+# glm
 set(GLM_ENABLE_CXX_20    ON  CACHE BOOL "Turn on C++ 20 for GLM" FORCE)
 set(GLM_ENABLE_FAST_MATH ON  CACHE BOOL "Enable fast math optimizations" FORCE)
 set(GLM_BUILD_LIBRARY    ON  CACHE BOOL "Build glm" FORCE)
@@ -29,8 +39,11 @@ else()
 endif()
 add_subdirectory(spdlog)
 
-include(stb.cmake)
+if (EMSCRIPTEN)
+    target_compile_options(spdlog PRIVATE -pthread)
+    target_link_options(spdlog PRIVATE -pthread)
+endif()
+
 
 include(SDL_GameControllerDB.cmake)
-
-add_subdirectory(glaze)
+include(stb.cmake)

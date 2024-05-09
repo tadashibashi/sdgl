@@ -13,25 +13,28 @@ function(copy_assets)
         set(ARG_TARGET ${PROJECT_NAME})
     endif()
 
-    foreach(FILE ${ARG_FILES})
-        # Copy Assets
-        add_custom_command(
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LOCAL_ASSET_DIR}/${FILE} ${TARGET_ASSET_DIR}/${FILE}
-            OUTPUT ${TARGET_ASSET_DIR}/${FILE}
-        )
-
-        list(APPEND DEPS ${TARGET_ASSET_DIR}/${FILE})
-    endforeach()
-
-    add_custom_target(${ARG_TARGET}-copy-assets
-        DEPENDS "${DEPS}"
-    )
-
-    add_dependencies(${ARG_TARGET} ${ARG_TARGET}-copy-assets)
-
     # Set emscripten flags
     if (EMSCRIPTEN)
-        target_compile_options(${ARG_TARGET} PRIVATE --preload-file ${TARGET_ASSET_DIR}@${ARG_FOLDER})
+        target_link_options(${ARG_TARGET} PRIVATE --preload-file ${LOCAL_ASSET_DIR}@${ARG_FOLDER})
+    else()
+
+        foreach(FILE ${ARG_FILES})
+            # Copy Assets
+            add_custom_command(
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LOCAL_ASSET_DIR}/${FILE} ${TARGET_ASSET_DIR}/${FILE}
+                OUTPUT ${TARGET_ASSET_DIR}/${FILE}
+            )
+
+            list(APPEND DEPS ${TARGET_ASSET_DIR}/${FILE})
+        endforeach()
+
+        add_custom_target(${ARG_TARGET}-copy-assets
+            DEPENDS "${DEPS}"
+        )
+
+        add_dependencies(${ARG_TARGET} ${ARG_TARGET}-copy-assets)
+
     endif()
+
 
 endfunction()
