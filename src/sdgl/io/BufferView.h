@@ -66,7 +66,10 @@ namespace sdgl::io {
         template <BufferReadable T>
         T getOr(T defaultVal = T())
         {
-            SDGL_ASSERT(read(defaultVal));
+
+            auto result = read(defaultVal);
+            SDGL_ASSERT(result);
+
             return defaultVal;
         }
 

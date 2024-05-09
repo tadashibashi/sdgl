@@ -1,5 +1,6 @@
 #include "App.h"
 
+#include <sdgl/platform.h>
 #include <sdgl/core/backend/Backend.h>
 #include <sdgl/logging.h>
 #include <angles.h>
@@ -11,7 +12,7 @@ namespace sdgl {
         Impl(Backend *backend, string title, int width, int height, WindowInit::Flags flags,
           PluginConfig plugins) :
             backend(backend), title(std::move(title)), width(width), height(height),
-            flags(flags), plugins(std::move(plugins)), window(nullptr), args(), currentTime(), lastFrameTime()
+            flags(flags), plugins(std::move(plugins)), window(nullptr), args(), audio(), currentTime(), lastFrameTime()
         {}
 
         Backend *backend;
@@ -22,6 +23,7 @@ namespace sdgl {
         PluginConfig plugins;
         Window *window;
         vector<string> args;
+        AudioEngine audio;
 
         double currentTime, lastFrameTime;
     };
@@ -71,6 +73,15 @@ namespace sdgl {
         }
 
 
+        if (!m->audio.init())
+        {
+            be->destroyWindow(window);
+            be->shutdown();
+            return ErrorCode::AudioInitError;
+        }
+        SDGL_LOG("Audio engine initialized.");
+
+
         m->window = window;
         m->args = vector<string>(argv, argv + argc);
 
@@ -97,6 +108,7 @@ namespace sdgl {
 
         shutdown();
 
+        m->audio.shutdown();
         be->destroyWindow(window);
         be->shutdown();
 
@@ -113,6 +125,7 @@ namespace sdgl {
 
         window->startFrame();
         update();
+        m->audio.update();
         window->endFrame();
 
         window->makeCurrent();
@@ -131,6 +144,11 @@ namespace sdgl {
     Window *App::window() const
     {
         return m->window;
+    }
+
+    AudioEngine *App::audio()
+    {
+        return &m->audio;
     }
 
     double App::getTime() const

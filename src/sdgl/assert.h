@@ -15,7 +15,7 @@
 #define SDGL_ASSERT(...) IMPL_SDGL_GET_ASSERT_MACRO(__VA_ARGS__, IMPL_SDGL_ASSERT_2, IMPL_SDGL_ASSERT_1)(__VA_ARGS__)
 #else
 
-#    ifdef (_MSVER)
+#    ifdef _MSVER
 #       define SDGL_ASSERT(...) __noop
 #    else
 #        define SDGL_ASSERT(...) do {} while(0)

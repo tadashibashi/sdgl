@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <functional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -32,6 +33,7 @@ namespace sdgl {
         using std::array;
 
         using std::vector;
+        using std::set;
 
         template <typename T>
         using func = std::function<T>;

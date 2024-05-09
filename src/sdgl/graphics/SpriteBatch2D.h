@@ -102,7 +102,6 @@ namespace sdgl {
 
         const float *m_matrix;
 
-
         void createBatches();
         void sortGlyphs();
         void renderBatches();

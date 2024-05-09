@@ -50,7 +50,7 @@ namespace sdgl {
     )
     {
         // Texture checks
-        SDGL_ASSERT(texture.id(), "Texture must be initialized");
+        SDGL_ASSERT(texture.id(), "Texture must be initialized and loaded to the graphics card");
 
         const auto texCoords = static_cast<FRectangle>(source);
 

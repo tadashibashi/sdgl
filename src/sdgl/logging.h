@@ -17,7 +17,7 @@ namespace sdgl {
 #   if SDGL_DEBUG
 #       define SDGL_LOGGING 1
 #   else
-        define SDGL_LOGGING 0
+#       define SDGL_LOGGING 0
 #   endif
 #endif
 

@@ -2,7 +2,7 @@
 
 #if defined(SDGL_PLATFORM_EMSCRIPTEN)
 
-#include <sdgl/logging.h>
+#include <sdgl/assert.h>
 #include <utility>
 
 namespace sdgl::platform::emscripten {

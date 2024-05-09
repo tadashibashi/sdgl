@@ -1,5 +1,6 @@
 #pragma once
 #include <sdgl/core/Window.h>
+#include <sdgl/audio/AudioEngine.h>
 
 namespace sdgl {
 
@@ -28,6 +29,8 @@ namespace sdgl {
         [[nodiscard]]
         Window *window() const;
 
+        AudioEngine *audio();
+
         /// Get the time, in seconds, since the windowing library was initialized
         [[nodiscard]]
         double getTime() const;
@@ -47,6 +50,8 @@ namespace sdgl {
                 BackendInitError,
                 /// Backend windowing library failed to create the window
                 CreateWindowFailed,
+                /// Audio engine failed to initialize
+                AudioInitError,
                 /// Application subclass failed to init
                 AppInitError,
             };
