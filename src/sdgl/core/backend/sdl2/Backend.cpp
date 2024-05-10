@@ -175,7 +175,7 @@ namespace sdgl {
                 window->setShouldClose(true);
             } break;
 
-            case SDL_WINDOWEVENT_SIZE_CHANGED:
+            case SDL_WINDOWEVENT_RESIZED:
             {
                 window->makeCurrent();
                 glViewport(0, 0, e.data1, e.data2); GL_ERR_CHECK();

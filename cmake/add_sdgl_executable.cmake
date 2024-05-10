@@ -24,4 +24,11 @@ function(add_sdgl_executable TARGET_NAME)
 
     endif()
 
+    if (EMSCRIPTEN)
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            OUTPUT_NAME app
+            SUFFIX .js
+        )
+    endif()
+
 endfunction()

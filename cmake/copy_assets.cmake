@@ -16,6 +16,17 @@ function(copy_assets)
     # Set emscripten flags
     if (EMSCRIPTEN)
         target_link_options(${ARG_TARGET} PRIVATE --preload-file ${TARGET_ASSET_DIR}@${ARG_FOLDER})
+
+        # copy .html shell and .js to the output directory
+        if (NOT EXISTS ${BINARY_DIR}/index.html)
+            execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${SDGL_ROOT_DIR}/src/sdgl/platform/index.html ${BINARY_DIR}/index.html)
+        endif()
+
+        if (NOT EXISTS ${BINARY_DIR}/main.js)
+            execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${SDGL_ROOT_DIR}/src/sdgl/platform/main.js ${BINARY_DIR}/main.js)
+        endif()
     endif()
 
     # Copy files to into binary asset dir

@@ -9,9 +9,11 @@ if ("${SDGL_BACKEND}" STREQUAL "sdl2")
             -sALLOW_MEMORY_GROWTH=1
             -sTOTAL_STACK=32MB
             -sINITIAL_MEMORY=536870912
+            -sMODULARIZE=1
+            -sEXPORT_NAME=SdglAppModule
             # -sFORCE_FILESYSTEM=1
             #-fwasm-exceptions # for some reason this setting causes out of bounds access
-            -sASSERTIONS=2
+            -sASSERTIONS=1
         )
         set(backend_FLAGS
             -sUSE_SDL=2
