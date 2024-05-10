@@ -1,5 +1,5 @@
 #pragma once
-#include "Sound.h"
+#include "SoundInstance.h"
 
 namespace sdgl {
     class AudioEngine {

@@ -3,8 +3,8 @@ add_subdirectory(core/backend)
 add_library(sdgl STATIC
         audio/AudioEngine.h
         audio/AudioEngine.cpp
-        audio/Sound.h
-        audio/Sound.cpp
+        audio/SoundInstance.h
+        audio/SoundInstance.cpp
         audio/fmod.h
 
         core/backend/Backend.h
