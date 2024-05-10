@@ -14,4 +14,9 @@ function(copy_gamepad_mappings)
         DEPENDS ${MAPFILE})
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}-copy-gamepad-mapping)
 
+    # link mappings file into emscripten .data file
+    if (EMSCRIPTEN)
+        target_link_options(${TARGET_NAME} PRIVATE --preload-file ${MAP_FILE})
+    endif()
+
 endfunction()
