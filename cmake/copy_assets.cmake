@@ -5,36 +5,35 @@ function(copy_assets)
                                     # target exe should be in same folder as this function call
     set(multiValueArgs FILES)
     cmake_parse_arguments(ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-    set(LOCAL_ASSET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_FOLDER})
-    set(TARGET_ASSET_DIR ${CMAKE_CURRENT_BINARY_DIR}/${ARG_FOLDER})
-
     if (NOT ARG_TARGET)
         set(ARG_TARGET ${PROJECT_NAME})
     endif()
+    get_target_property(BINARY_DIR ${ARG_TARGET} BINARY_DIR)
+
+    set(LOCAL_ASSET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_FOLDER})
+    set(TARGET_ASSET_DIR ${BINARY_DIR}/${ARG_FOLDER})
 
     # Set emscripten flags
     if (EMSCRIPTEN)
-        target_link_options(${ARG_TARGET} PRIVATE --preload-file ${LOCAL_ASSET_DIR}@${ARG_FOLDER})
-    else()
+        target_link_options(${ARG_TARGET} PRIVATE --preload-file ${TARGET_ASSET_DIR}@${ARG_FOLDER})
+    endif()
 
-        foreach(FILE ${ARG_FILES})
-            # Copy Assets
-            add_custom_command(
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LOCAL_ASSET_DIR}/${FILE} ${TARGET_ASSET_DIR}/${FILE}
-                OUTPUT ${TARGET_ASSET_DIR}/${FILE}
-            )
-
-            list(APPEND DEPS ${TARGET_ASSET_DIR}/${FILE})
-        endforeach()
-
-        add_custom_target(${ARG_TARGET}-copy-assets
-            DEPENDS "${DEPS}"
+    # Copy files to into binary asset dir
+    foreach(FILE ${ARG_FILES})
+        # Copy Assets
+        add_custom_command(
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LOCAL_ASSET_DIR}/${FILE} ${TARGET_ASSET_DIR}/${FILE}
+            OUTPUT ${TARGET_ASSET_DIR}/${FILE}
         )
 
-        add_dependencies(${ARG_TARGET} ${ARG_TARGET}-copy-assets)
+        list(APPEND DEPS ${TARGET_ASSET_DIR}/${FILE})
+    endforeach()
 
-    endif()
+    add_custom_target(${ARG_TARGET}-copy-assets
+        DEPENDS "${DEPS}"
+    )
+
+    add_dependencies(${ARG_TARGET} ${ARG_TARGET}-copy-assets)
 
 
 endfunction()
