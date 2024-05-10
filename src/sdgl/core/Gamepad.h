@@ -28,7 +28,7 @@ namespace sdgl {
         void preProcessInput();
 
         [[nodiscard]]
-        bool isConnected() const { return m_connected; }
+        bool isConnected() const { return m_controller != nullptr; }
 
         void close();
     private:
@@ -37,13 +37,11 @@ namespace sdgl {
         float m_axes[GamepadAxis::Count];
         float m_lastAxes[GamepadAxis::Count];
 
-        bool m_connected;
-
         void *m_controller; // pointer to SDL_GameController
 
         void doButtonDown(uint8_t buttonid);
         void doButtonUp(uint8_t buttonid);
         void doAxisSet(uint8_t axisid, float value);
-        void doConnect(bool isConnected);
+        void doConnect(void *controller);
     };
 }

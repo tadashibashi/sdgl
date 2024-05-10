@@ -17,40 +17,41 @@ static constexpr int MaxGamepads = 4;
 
 namespace sdgl {
     struct Backend::Impl {
-        Impl() : windows(), startTime(), gamepads{}, controllers{nullptr} { }
+        Impl() : windows(), gamepads{}, startTime() { }
 
         vector<Window *> windows;
-        time_point<high_resolution_clock> startTime;
         Gamepad gamepads[MaxGamepads];
-        SDL_GameController *controllers[MaxGamepads];
+        time_point<high_resolution_clock> startTime;
     };
 
     Backend::Backend() : m(new Impl) { }
     Backend::~Backend() { delete m; }
+
     bool Backend::init()
     {
         if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER) != 0)
         {
-            std::cerr << "SDL failed to initialize: " << SDL_GetError() << '\n';
+            SDGL_ERROR("SDL failed to initialize: {}", SDL_GetError());
             return false;
         }
 
+        // Load game controller mappings
         if (std::filesystem::exists("gamecontrollerdb.txt"))
         {
             SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
         }
 
-        m->startTime = high_resolution_clock::now();
+        // Load open game controllers
         for (int i = 0; i < MaxGamepads; ++i)
         {
-            m->controllers[i] = SDL_GameControllerOpen(i);
-            if (m->controllers[i])
+            auto controller = SDL_GameControllerOpen(i);
+            if (controller)
             {
-                m->gamepads[i].doConnect(true);
-                m->gamepads[i].m_controller = m->controllers[i];
+                m->gamepads[i].doConnect(controller);
             }
         }
 
+        m->startTime = high_resolution_clock::now();
         return true;
     }
 
@@ -204,7 +205,7 @@ namespace sdgl {
 
         for (int i = 0; auto &gamepad : m->gamepads)
         {
-            if (m->controllers[i])
+            if (gamepad.isConnected())
                 gamepad.preProcessInput();
         }
 
@@ -313,33 +314,28 @@ namespace sdgl {
                     if (id == -1 || id > 3) break;
 
                     auto &gamepad = m->gamepads[id];
-                    gamepad.doConnect(false);
-                    if (m->controllers[id])
-                    {
-                        SDL_GameControllerClose(m->controllers[id]);
-                        m->controllers[id] = nullptr;
-                    }
+                    gamepad.close();
 
                 } break;
 
                 case SDL_CONTROLLERDEVICEADDED:
                 {
                     const auto id = e.cdevice.which;
-                    if (id == -1 || id > 3) break;
+                    if (id < 0 || id >= MaxGamepads) break; // only allow supported range of controllers
 
-                    auto &gamepad = m->gamepads[id];
-                    gamepad.doConnect(true);
-                    m->controllers[id] = SDL_GameControllerOpen(id);
+                    // retrieve connected controller
+                    auto controller = SDL_GameControllerOpen(id);
+                    if (controller)
+                        m->gamepads[id].doConnect(controller);
 
                 } break;
 
                 case SDL_CONTROLLERAXISMOTION:
                 {
                     const auto id = e.caxis.which;
-                    if (id == -1 || id > 3) break;
+                    if (id < 0 || id >= MaxGamepads) break; // only allow supported range of controllers
 
-                    auto &gamepad = m->gamepads[id];
-                    gamepad.doAxisSet(e.caxis.axis, normalizeS16(e.caxis.value));
+                    m->gamepads[id].doAxisSet(e.caxis.axis, normalizeS16(e.caxis.value));
                 } break;
 
                 default:

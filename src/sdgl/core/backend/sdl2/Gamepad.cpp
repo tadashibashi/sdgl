@@ -34,7 +34,7 @@ static uint8_t s_sdlAxisToAxis[SDL_CONTROLLER_AXIS_MAX];
 
 sdgl::Gamepad::Gamepad() :
     m_btns(GamepadBtn::Count), m_lastBtns(GamepadBtn::Count), m_released(GamepadBtn::Count),
-    m_axes(), m_lastAxes(), m_connected(false), m_controller()
+    m_axes(), m_lastAxes(), m_controller(nullptr)
 {
     if (s_sdlBtnToBtn[SDL_CONTROLLER_BUTTON_DPAD_DOWN] == 0)
     {
@@ -74,7 +74,10 @@ void sdgl::Gamepad::preProcessInput()
 void sdgl::Gamepad::close()
 {
     if (m_controller)
+    {
         SDL_GameControllerClose(static_cast<SDL_GameController *>(m_controller));
+        m_controller = nullptr;
+    }
 }
 
 void sdgl::Gamepad::doButtonDown(uint8_t buttonid)
@@ -96,7 +99,7 @@ void sdgl::Gamepad::doAxisSet(uint8_t axisid, float value)
     m_axes[axis] = value;
 }
 
-void sdgl::Gamepad::doConnect(bool isConnected)
+void sdgl::Gamepad::doConnect(void *controller)
 {
-    m_connected = isConnected;
+    m_controller = controller;
 }
