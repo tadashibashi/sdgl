@@ -3,8 +3,20 @@ set(backend_LIBS imgui angles)
 
 if ("${SDGL_BACKEND}" STREQUAL "sdl2")
     if (EMSCRIPTEN)
-        set(backend_LINK_FLAGS -sUSE_SDL=2)
-        set(backend_FLAGS -sUSE_SDL=2)
+        set(backend_LINK_FLAGS
+            -sUSE_SDL=2
+            -sENVIRONMENT=web
+            -sALLOW_MEMORY_GROWTH=1
+            -sTOTAL_STACK=32MB
+            -sINITIAL_MEMORY=536870912
+            # -sFORCE_FILESYSTEM=1
+            #-fwasm-exceptions # for some reason this setting causes out of bounds access
+            -sASSERTIONS=2
+        )
+        set(backend_FLAGS
+            -sUSE_SDL=2
+            #-fwasm-exceptions # for some reason this setting causes out of bounds access
+            )
     else()
         set(backend_LIBS ${backend_LIBS} SDL2::SDL2 SDL2::SDL2main)
     endif()
