@@ -73,7 +73,8 @@ void sdgl::Gamepad::preProcessInput()
 
 void sdgl::Gamepad::close()
 {
-    SDL_GameControllerClose(static_cast<SDL_GameController *>(m_controller));
+    if (m_controller)
+        SDL_GameControllerClose(static_cast<SDL_GameController *>(m_controller));
 }
 
 void sdgl::Gamepad::doButtonDown(uint8_t buttonid)

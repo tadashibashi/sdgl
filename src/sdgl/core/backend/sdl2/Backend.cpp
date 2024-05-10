@@ -1,11 +1,12 @@
 #include "../Backend.h"
 
 #include <iostream>
-#include <SDL.h>
-#include <angles.h>
+#include <sdgl/logging.h>
+#include <sdgl/angles.h>
+
 #include <filesystem>
 #include <chrono>
-#include <sdgl/angles.h>
+#include <SDL.h>
 
 #include "ImGuiSdl2.h"
 
@@ -16,17 +17,19 @@ static constexpr int MaxGamepads = 4;
 
 namespace sdgl {
     struct Backend::Impl {
-        std::vector<Window *> windows{};
-        time_point<high_resolution_clock> startTime{};
-        Gamepad gamepads[MaxGamepads] = {};
-        SDL_GameController *controllers[MaxGamepads] = {nullptr};
+        Impl() : windows(), startTime(), gamepads{}, controllers{nullptr} { }
+
+        vector<Window *> windows;
+        time_point<high_resolution_clock> startTime;
+        Gamepad gamepads[MaxGamepads];
+        SDL_GameController *controllers[MaxGamepads];
     };
 
     Backend::Backend() : m(new Impl) { }
     Backend::~Backend() { delete m; }
     bool Backend::init()
     {
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) != 0)
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER) != 0)
         {
             std::cerr << "SDL failed to initialize: " << SDL_GetError() << '\n';
             return false;
@@ -38,13 +41,13 @@ namespace sdgl {
         }
 
         m->startTime = high_resolution_clock::now();
-
         for (int i = 0; i < MaxGamepads; ++i)
         {
             m->controllers[i] = SDL_GameControllerOpen(i);
             if (m->controllers[i])
             {
                 m->gamepads[i].doConnect(true);
+                m->gamepads[i].m_controller = m->controllers[i];
             }
         }
 
@@ -88,14 +91,14 @@ namespace sdgl {
 
         if (win == nullptr)
         {
-            std::cerr << "SDL window failed to create: " << SDL_GetError() << '\n';
+            SDGL_ERROR("SDL window failed to create: {}", SDL_GetError());
             return nullptr;
         }
 
         auto context = SDL_GL_CreateContext(win);
         if (!context)
         {
-            std::cerr << "SDL failed to create gl context: " << SDL_GetError() << '\n';
+            SDGL_ERROR("SDL failed to create gl context: {}", SDL_GetError());
             SDL_DestroyWindow(win);
             return nullptr;
         }
@@ -115,9 +118,9 @@ namespace sdgl {
 
 
         // Viewport
-        SDL_GL_GetDrawableSize(win, &width, &height);
-        glViewport(0, 0, width, height); GL_ERR_CHECK();
-
+        int drawW, drawH;
+        SDL_GL_GetDrawableSize(win, &drawW, &drawH);
+        glViewport(0, 0, drawW, drawH); GL_ERR_CHECK();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); GL_ERR_CHECK();
 
@@ -194,7 +197,9 @@ namespace sdgl {
     {
         for (auto window : m->windows)
         {
-            const_cast<InputManager *>(window->input())->preProcessInput();
+            auto input = const_cast<InputManager *>(window->input());
+            if (input)
+                input->preProcessInput();
         }
 
         for (int i = 0; auto &gamepad : m->gamepads)
@@ -345,9 +350,9 @@ namespace sdgl {
 
     void Backend::shutdown()
     {
-        for (auto ctrl : m->controllers)
+        for (auto gamepad : m->gamepads)
         {
-
+            gamepad.close();
         }
 
         for (auto window : m->windows)
