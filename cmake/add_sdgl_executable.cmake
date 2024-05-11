@@ -12,6 +12,7 @@ function(add_sdgl_executable TARGET_NAME)
     endif()
 
     add_executable(${TARGET_NAME} ${EXE_TYPE} ${ARG_SOURCE})
+    get_target_property(TARGET_VERSION ${TARGET_NAME} VERSION)
 
     target_link_libraries(${TARGET_NAME} PRIVATE sdgl)
 
@@ -42,27 +43,24 @@ function(add_sdgl_executable TARGET_NAME)
         # setup resources
         if (ARG_ICON_FILE)
             set_source_files_properties("${ARG_ICON_FILE}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+            execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_ICON_FILE} ${BINARY_DIR}/${TARGET_NAME}.app/Contents/Resources/${ARG_ICON_FILE})
         endif()
 
         foreach(CUR_RES ${RESOURCES})
             set_source_files_properties("${CUR_RES}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
         endforeach()
 
-        set(FRAMEWORKS
-            ${BINARY_DIR}/libEGL
-        )
+        get_target_property(TARGET_LIBRARIES ${TARGET_NAME} LINK_LIBRARIES)
 
-        add_custom_command(TARGET ${TARGET_NAME}
-            POST_BUILD
-            COMMAND
-                install_name_tool -id "@rpath/libEGL.dylib"
-                "${BINARY_DIR}/${TARGET_NAME}.app/Contents/Frameworks/libEGL.dylib"
-            )
+        if (EXISTS "${BINARY_DIR}/${TARGET_NAME}.app/Contents/Resources")
+            set(EMBED_RESOURCES "${BINARY_DIR}/${TARGET_NAME}.app/Contents/Resources")
+        endif()
 
         set_target_properties(${TARGET_NAME} PROPERTIES
             MACOSX_BUNDLE                   TRUE
-            MACOSX_BUNDLE_NAME              "${TARGET_NAME}"
-            MACOSX_BUNDLE_VERSION           "${PROJECT_VERSION}"
+            MACOSX_BUNDLE_BUNDLE_NAME       "${TARGET_NAME}"
+            MACOSX_BUNDLE_BUNDLE_VERSION    "${TARGET_VERSION}"
             MACOSX_BUNDLE_ICON_FILE         "${ARG_ICON_FILE}"
             MACOSX_BUNDLE_GUI_IDENTIFIER    "org.${TARGET_NAME}.gui"
             # MACOSX_BUNDLE_INFO_PLIST       path/to/info.plist.in
@@ -70,6 +68,8 @@ function(add_sdgl_executable TARGET_NAME)
             RESOURCE                        "${RESOURCES}"
             BUNDLE TRUE
             BUILD_RPATH                     "@executable_path/../Frameworks"
+            XCODE_EMBED_RESOURCES           "${CMAKE_CURRENT_SOURCE_DIR}/${ARG_CONTENT_ROOT}"
+            XCODE_EMBED_FRAMEWORKS          ${TARGET_LIBRARIES}
         )
     endif()
 

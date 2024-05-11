@@ -1,7 +1,6 @@
-# Graphics library
+# angle
+set(ANGLES_SYSTEM_PROCESSOR ${SDGL_SYSTEM_PROCESSOR} CACHE STRING "" FORCE)
 add_subdirectory(angles)
-
-
 
 # glaze
 add_subdirectory(glaze)
@@ -10,7 +9,7 @@ if (NOT EMSCRIPTEN)
     set(SDL_TEST OFF CACHE BOOL "" FORCE)
     set(SDL2_DISABLE_UNINSTALL ON CACHE BOOL "" FORCE)
     set(SDL_STATIC ON CACHE BOOL "" FORCE)
-    set(SDL_DYNAMIC OFF CACHE BOOL "" FORCE)
+    set(SDL_SHARED OFF CACHE BOOL "" FORCE)
     add_subdirectory(SDL2)
 endif()
 
