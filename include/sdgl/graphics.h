@@ -9,5 +9,6 @@
 #include <sdgl/graphics/RenderProgram.h>
 #include <sdgl/graphics/Shader.h>
 #include <sdgl/graphics/ShaderAttribs.h>
+#include <sdgl/graphics/SpriteBatchBase2D.h>
 #include <sdgl/graphics/SpriteBatch2D.h>
 #include <sdgl/graphics/Texture2D.h>

@@ -80,6 +80,18 @@ namespace sdgl::mathf {
         return intersects(circle, rect);
     }
 
+    /// Get the resulting intersection of two rectangles
+    template<Arithmetic T>
+    Rect<T> intersection(const Rect<T> &a, const Rect<T> &b)
+    {
+        auto x = std::max(a.left(), b.left());
+        auto y = std::max(a.top(), b.top());
+        auto right = std::min(a.right(), b.right());
+        auto bottom = std::min(a.bottom(), b.bottom());
+
+        return {x, y, std::max(right - x, 0), std::max(bottom - y, 0)};
+    }
+
     /// @return distance between two vectors
     template <Arithmetic U, Arithmetic V>
     [[nodiscard]]

@@ -40,8 +40,8 @@ add_library(sdgl STATIC
         graphics/Shader.cpp
         graphics/ShaderAttribs.cpp
         graphics/ShaderAttribs.h
-        graphics/SpriteBatch2D.cpp
-        graphics/SpriteBatch2D.h
+        graphics/SpriteBatchBase2D.cpp
+        graphics/SpriteBatchBase2D.h
         graphics/spriteBatch2DShader.inl
         graphics/Texture2D.h
         graphics/Texture2D.cpp
@@ -98,6 +98,9 @@ add_library(sdgl STATIC
         Tween.cpp
 
         ${sdgl_backend_SRC}
+
+        graphics/SpriteBatch2D.cpp
+        graphics/SpriteBatch2D.h
 )
 
 target_link_libraries(sdgl PUBLIC ${sdgl_backend_LIBS} glm::glm imgui spdlog::spdlog stb glaze::glaze fmod)

@@ -92,7 +92,7 @@ namespace sdgl {
             return ErrorCode::AppInitError;
         }
 
-        SDGL_LOG("Client app initialized, entering main loop");
+        SDGL_LOG("App initialized, entering main loop");
 
 #ifdef SDGL_PLATFORM_EMSCRIPTEN
         SDGL_EMSCRIPTEN_MAINLOOP_BEGIN
@@ -112,6 +112,7 @@ namespace sdgl {
         be->destroyWindow(window);
         be->shutdown();
 
+        SDGL_LOG("App shutdown complete.");
         return ErrorCode::Ok;
     }
 
