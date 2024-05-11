@@ -6,6 +6,8 @@ namespace sdgl {
     /// Provides some convenience functions in addition to the base class
     class SpriteBatch2D : public SpriteBatchBase2D {
     public:
+        ~SpriteBatch2D() override = default;
+
         void init() override;
 
         void drawRectangle(Rectangle rect, Color tint = Color::White,
@@ -32,5 +34,3 @@ namespace sdgl {
         Texture2D m_pixel;
     };
 }
-
-

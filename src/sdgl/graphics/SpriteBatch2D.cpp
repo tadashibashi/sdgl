@@ -13,11 +13,11 @@ namespace sdgl {
     {
         if (source.w == 0 || source.h == 0) // avoid div by zero
             return;
-        auto scale = Vector2((float)destination.w / source.w,
-                                (float)destination.h / source.h);
+        auto scale = Vector2((float)destination.w / (float)source.w,
+                            (float)destination.h / (float)source.h);
         SpriteBatchBase2D::drawTexture(texture, source,
-                    {(float)destination.x, (float)destination.y}, tint, scale,
-                    anchor, angle, depth);
+            {(float)destination.x, (float)destination.y}, tint, scale,
+            anchor, angle, depth);
     }
 
     void SpriteBatch2D::drawRectangle(Rectangle rect, Color tint, Vector2 scale, Vector2 anchor, float angle, float depth)

@@ -4,11 +4,18 @@
 namespace sdgl::io {
 
     /// Read entire file into a null-terminated buffer string
-    /// @param filepath        path to the file to open
+    /// @param filepath        path to the file to open, if it is a relative path, it stems from the resource directory
     /// @param outBuffer [out] buffer to receive data
     /// @returns file buffer string, or unset std::optional if file failed to load
     bool readFile(const fs::path &filepath, string *outBuffer);
     bool readFile(const fs::path &filepath, vector<ubyte> *outBuffer);
+
+    /// Get path to read-only resource directory
+    const fs::path &getResourcePath();
+
+    /// Get path to the app data path, write / read typically allowed here
+    /// Best to cache this somewhere
+    fs::path getDataPath(const char *org, const char *appName);
 
     struct WriteMode  {
         enum Enum {

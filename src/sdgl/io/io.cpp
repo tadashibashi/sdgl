@@ -1,8 +1,11 @@
 #include "io.h"
-#include <fstream>
 
 #include <sdgl/assert.h>
-#include "../logging.h"
+#include <sdgl/logging.h>
+
+#include <SDL_filesystem.h>
+
+#include <fstream>
 
 namespace sdgl::io {
 
@@ -10,10 +13,12 @@ namespace sdgl::io {
     {
         SDGL_ASSERT(outBuffer, "Out buffer should not be null");
 
-        std::ifstream file(filepath, std::ios::binary | std::ios::in);
+        const auto fullpath = (filepath.is_absolute()) ? filepath : (getResourcePath() / filepath);
+
+        std::ifstream file(fullpath, std::ios::binary | std::ios::in);
         if (!file.is_open())
         {
-            SDGL_ERROR("Failed to open file \"{}\": {}", filepath, std::strerror(errno));
+            SDGL_ERROR("Failed to open file \"{}\": {}", fullpath, std::strerror(errno));
             return false;
         }
 
@@ -42,10 +47,12 @@ namespace sdgl::io {
     {
         SDGL_ASSERT(outBuffer, "Out buffer should not be null");
 
-        std::ifstream file(filepath, std::ios::binary | std::ios::in);
+        const auto fullpath = (filepath.is_absolute()) ? filepath : (getResourcePath() / filepath);
+
+        std::ifstream file(fullpath, std::ios::binary | std::ios::in);
         if (!file.is_open())
         {
-            SDGL_ERROR("Failed to open file \"{}\": {}", filepath, std::strerror(errno));
+            SDGL_ERROR("Failed to open file \"{}\": {}", fullpath, std::strerror(errno));
             return false;
         }
 
@@ -70,9 +77,36 @@ namespace sdgl::io {
         return true;
     }
 
+    const fs::path &getResourcePath()
+    {
+        static fs::path resourcePath;
+        if (resourcePath.empty())
+        {
+            auto basePath = SDL_GetBasePath();
+            if (basePath)
+            {
+                resourcePath.assign(basePath);
+                SDL_free(basePath);
+            }
+        }
+
+        return resourcePath;
+    }
+
+    fs::path getDataPath(const char *org, const char *appName)
+    {
+        fs::path dataPath;
+        auto sdlPath = SDL_GetPrefPath(org, appName);
+        dataPath.assign(sdlPath);
+        SDL_free(sdlPath);
+
+        return dataPath;
+    }
+
     bool writeFile(const fs::path &filepath, const void *data, const long length)
     {
         std::ofstream file;
+
         file.open(filepath.c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file.is_open())
         {

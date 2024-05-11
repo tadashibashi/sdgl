@@ -1,4 +1,5 @@
 #include "AudioEngine.h"
+#include <sdgl/io/io.h>
 #include <sdgl/logging.h>
 #include <sdgl/sdglib.h>
 
@@ -127,7 +128,8 @@ namespace sdgl {
 
     SoundInstance *AudioEngine::createSound(const fs::path &filepath)
     {
-        auto sound = m->loadSound(filepath);
+        auto fullpath = filepath.is_absolute() ? filepath : io::getResourcePath() / filepath;
+        auto sound = m->loadSound(fullpath);
         if (!sound) return nullptr;
 
         auto inst = new SoundInstance(sound, nullptr, true);
