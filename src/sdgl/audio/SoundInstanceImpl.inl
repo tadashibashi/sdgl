@@ -6,9 +6,9 @@
 
 namespace sdgl {
     struct SoundInstance::Impl {
-        Impl(FMOD::Sound *sound, FMOD::ChannelGroup *group, bool paused) : sound(sound), group(group), channel()
+        Impl(FMOD::Sound *sound, FMOD::ChannelGroup *group, bool paused) :
+            sound(sound), group(group), channel()
         {
-            // Only instantiate channel when user demands it to be played
             instantiate(paused);
         }
 
@@ -51,6 +51,7 @@ namespace sdgl {
             return FMOD_OK;
         }
 
+        /// Instantiate sound on a new channel (warning: discards reference to previous channel)
         void instantiate(bool startPaused)
         {
             FMOD::System *sys;
@@ -68,6 +69,7 @@ namespace sdgl {
             this->channel = channel;
         }
 
+        /// Restart sound instance at the 0 position and start playing it
         void play()
         {
             if (channel->setPosition(0, FMOD_TIMEUNIT_PCM) == FMOD_ERR_INVALID_HANDLE)
@@ -79,6 +81,7 @@ namespace sdgl {
             FMOD_CHECK(channel->setPaused(false));
         }
 
+        /// Pause or unpause sound instance
         void pause(bool value)
         {
             if (!channel || channel->setPaused(value) == FMOD_ERR_INVALID_HANDLE)
@@ -87,15 +90,18 @@ namespace sdgl {
             }
         }
 
+        /// Check if sound is paused. Returns `true` if sound ended, or has not been instantiated.
         [[nodiscard]]
         bool isPaused() const
         {
             bool value;
-            if (!channel || channel->getPaused(&value) == FMOD_ERR_INVALID_HANDLE) // sound ended or uninstantiated
+            if (!channel || channel->getPaused(&value) == FMOD_ERR_INVALID_HANDLE)
                 return true;
             return value;
         }
 
+        /// Set the position of the sound instance in seconds
+        /// @param seconds time in seconds to immediately set
         void position(float seconds)
         {
             float frequency;
@@ -108,6 +114,7 @@ namespace sdgl {
             FMOD_CHECK(channel->setPosition(seconds * frequency, FMOD_TIMEUNIT_PCM));
         }
 
+        /// Retrieve the length of the sound in seconds
         [[nodiscard]]
         float length() const
         {
@@ -121,7 +128,7 @@ namespace sdgl {
             return (float)length / frequency;
         }
 
-        /// @return current position, or a value less than 0 if the track is stopped (ended, stopped, not started, etc.)
+        /// Retrieve current position, or a value less than 0 if the track is stopped (ended, stopped, not started, etc.)
         float position() const
         {
             float frequency;
@@ -135,14 +142,6 @@ namespace sdgl {
             unsigned int position;
             FMOD_CHECK(channel->getPosition(&position, FMOD_TIMEUNIT_PCM));
             return (float)position / frequency;
-        }
-
-    private:
-        FMOD::System *getSystem()
-        {
-            FMOD::System *sys;
-            FMOD_CHECK(sound->getSystemObject(&sys));
-            return sys;
         }
     };
 }

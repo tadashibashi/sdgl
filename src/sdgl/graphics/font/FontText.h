@@ -64,12 +64,12 @@ namespace sdgl {
         /// @note make sure to check glyphs().size() instead of text().size(), since invisible characters like
         ///       carriage returns / line feeds get counted as a string character, but is not counted as a glyph.
         [[nodiscard]]
-        size_t textProgress() const { return m_textProgress; }
+        uint textProgress() const { return m_textProgress; }
         /// Set text progress - the number of chars to show when SpriteBatch or some other system renders
         /// this object. This is useful for dialog that is revealed gradually.
         /// @note make sure to check glyphs().size() insteadof text().size(), since invisible characters like
         ///       carriage returns / line feeds get counted as a string character, but is not counted as a glyph.
-        FontText &textProgress(size_t value);
+        FontText &textProgress(uint value);
 
         /// Get the current width of the text, taking textProgress into account
         /// @return

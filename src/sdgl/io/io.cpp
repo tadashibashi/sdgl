@@ -24,7 +24,7 @@ namespace sdgl::io {
 
         // Get the file size
         file.seekg(0, std::ios::end);
-        uint fileSize = file.tellg();
+        auto fileSize = file.tellg();
         file.seekg(0, std::ios::beg);
         //fileSize -= file.tellg(); // disregard file header metadata
 
@@ -58,7 +58,7 @@ namespace sdgl::io {
 
         // Get the file size
         file.seekg(0, std::ios::end);
-        uint fileSize = file.tellg();
+        auto fileSize = file.tellg();
         file.seekg(0, std::ios::beg);
         //fileSize -= file.tellg(); // disregard file header metadata
 

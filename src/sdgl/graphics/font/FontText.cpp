@@ -7,7 +7,7 @@ namespace sdgl {
     {}
 
     FontText::FontText(const Config &config, const string_view text) : m_glyphs(), m_font(config.font), m_text(text),
-        m_maxWidth(config.maxWidth), m_textProgress(text.length()), m_useKerning(config.useKerning),
+        m_maxWidth(config.maxWidth), m_textProgress((uint)text.length()), m_useKerning(config.useKerning),
         m_horSpaceOffset(config.horizSpaceOffset), m_lineHeightOffset(config.lineHeightOffset), m_shouldUpdateSize(false)
     {
         updateGlyphs();
@@ -15,7 +15,7 @@ namespace sdgl {
 
     FontText::FontText(BitmapFont *font, const string_view text, const uint maxWidth, const bool useKerning,
                        const int horSpaceOffset, const int lineHeightOffset) :
-        m_glyphs(), m_font(font), m_text(text), m_maxWidth(maxWidth), m_textProgress(text.length()),
+        m_glyphs(), m_font(font), m_text(text), m_maxWidth(maxWidth), m_textProgress(static_cast<uint>(text.length())),
         m_useKerning(useKerning), m_horSpaceOffset(horSpaceOffset), m_lineHeightOffset(lineHeightOffset)
     {
         updateGlyphs();
@@ -36,7 +36,7 @@ namespace sdgl {
         if (m_text != value)
         {
             m_text = value;
-            m_textProgress = value.length();
+            m_textProgress = static_cast<uint>(value.length());
             updateGlyphs();
         }
         return *this;
@@ -62,7 +62,7 @@ namespace sdgl {
         return *this;
     }
 
-     FontText &FontText::textProgress(size_t value)
+     FontText &FontText::textProgress(uint value)
      {
         if (m_textProgress != value)
         {

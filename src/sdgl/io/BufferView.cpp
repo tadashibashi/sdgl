@@ -32,7 +32,7 @@ namespace sdgl::io {
             }
 
             m_pos = termPos + 1;
-            return outString.size() + 1; // +1 includes the null-terminator
+            return outString.size() + 1u; // +1 includes the null-terminator
         }
         catch(const std::exception &e)
         {
@@ -56,7 +56,7 @@ namespace sdgl::io {
 
         outString = string(m_buf + m_pos, m_buf + m_pos + length);
         m_pos += length + 1; // +1 to move one past null terminator
-        return length + 1;
+        return length + 1u;
     }
 
     uint BufferView::read(char *outBuffer, const size_t maxSize)

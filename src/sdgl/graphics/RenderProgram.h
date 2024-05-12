@@ -83,7 +83,7 @@ namespace sdgl {
                 return *this;
             }
 
-            return setVertices(vertices.data(), vertices.size(), dynamic);
+            return setVertices(vertices.data(), static_cast<int>(vertices.size()), dynamic);
         }
 
         void clearIndices();

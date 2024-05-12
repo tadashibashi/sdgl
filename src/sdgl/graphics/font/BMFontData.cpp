@@ -188,11 +188,11 @@ namespace sdgl {
         // Visit each page
         for (auto pagePtr = 0; pagePtr < pagesBlockSize; pagePtr += pageStrLen)
         {
-            uint index = bmfont.pages.size();
             string pageImagePath;
             view.readFixedString(pageImagePath, pageStrLen - 1);
+
             bmfont.pages.emplace_back(BMFontData::Page{
-                .id = index,
+                .id = static_cast<uint>(bmfont.pages.size()),
                 .file = pageImagePath,
             });
         }
