@@ -1,10 +1,20 @@
 include(copy_assets)
 
 function(add_sdgl_executable TARGET_NAME)
+    # Parse args
+    set(flags "")
     set(oneValueArgs CONTENT_ROOT ICON_FILE)
     set(multiValueArgs SOURCE CONTENT)
-    cmake_parse_arguments(ARG "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    cmake_parse_arguments(ARG "${flags}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
+    # Parse version
+    if (PROJECT_VERSION)
+        set(TARGET_VERSION ${PROJECT_VERSION})
+    else()
+        set(TARGET_VERSION "0.0.1")
+    endif()
+
+    # Detect executable type
     if (WIN32)
         set(EXE_TYPE WIN32)
     elseif(APPLE)
@@ -12,25 +22,25 @@ function(add_sdgl_executable TARGET_NAME)
     endif()
 
     add_executable(${TARGET_NAME} ${EXE_TYPE})
-    get_target_property(TARGET_VERSION ${TARGET_NAME} VERSION)
-    if (NOT TARGET_VERSION)
-        set(TARGET_VERSION 0.0.1)
-    endif()
-
     target_link_libraries(${TARGET_NAME} PRIVATE sdgl)
+
+    get_target_property(BINARY_DIR ${TARGET_NAME} BINARY_DIR)
 
     angles_copy_libs(${TARGET_NAME})
     copy_gamepad_mappings(${TARGET_NAME})
+    fmod_copy_libs(${TARGET_NAME})
 
-    # copy assets to binary root
-    if (ARG_CONTENT_ROOT)
-        copy_assets(TARGET ${TARGET_NAME} FOLDER ${ARG_CONTENT_ROOT} FILES ${ARG_CONTENT} ICON_FILE ${ARG_ICON_FILE})
+    # Copy assets to binary root
+    if (ARG_CONTENT_ROOT AND NOT APPLE)
+        copy_assets(TARGET ${TARGET_NAME} FOLDER ${ARG_CONTENT_ROOT} FILES ${ARG_CONTENT})
+    endif()
+
+    if (ARG_ICON_FILE AND NOT APPLE)
+        copy_assets(TARGET ${TARGET_NAME} FILES ${ARG_ICON_FILE})
     endif()
 
     if (APPLE)
-        get_target_property(BINARY_DIR ${TARGET_NAME} BINARY_DIR)
-
-        # bundle every thing together
+        # bundle everything together
         # icon file
         if (ARG_ICON_FILE)
             list(APPEND ARG_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/${ARG_ICON_FILE}")
@@ -39,9 +49,8 @@ function(add_sdgl_executable TARGET_NAME)
 
         # assets
         foreach(CUR_CONTENT ${ARG_CONTENT})
-            set(CUR_RESOURCE "${BINARY_DIR}/${ARG_CONTENT_ROOT}/${CUR_CONTENT}")
-            list(APPEND ARG_SOURCE ${CUR_RESOURCE})
-            set_source_files_properties("${CUR_RESOURCE}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${ARG_CONTENT_ROOT}")
+            list(APPEND ARG_SOURCE ${CUR_CONTENT})
+            set_source_files_properties("${CUR_CONTENT}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${ARG_CONTENT_ROOT}")
         endforeach()
 
         # dynamic libraries (copied over to binary dir from copy_assets)
@@ -49,7 +58,7 @@ function(add_sdgl_executable TARGET_NAME)
         list(APPEND ARG_SOURCE ${TARGET_LIBRARIES})
         set_source_files_properties(${TARGET_LIBRARIES} PROPERTIES MACOSX_PACKAGE_LOCATION "Frameworks")
 
-        if (CMAKE_BUILD_TYPE MATCHES "Release" OR CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo" OR CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
+        if (CMAKE_BUILD_TYPE MATCHES "Rel")
             set(CODE_SIGN_ID "Apple Development")
         endif()
 
@@ -74,11 +83,16 @@ function(add_sdgl_executable TARGET_NAME)
         install(TARGETS ${TARGET_NAME} BUNDLE DESTINATION ${CMAKE_INSTALL_PREFIX})
 
     elseif(EMSCRIPTEN)
-
         set_target_properties(${TARGET_NAME} PROPERTIES
-            OUTPUT_NAME app
+            OUTPUT_NAME app # TODO: allow project name for file, but use
             SUFFIX .js
         )
+
+        # Copy .html shell and .js driver to the output directory
+        # TODO: make html shell configurable through cmake configure_file
+        copy_file(${SDGL_ROOT_DIR}/src/sdgl/platform/index.html ${BINARY_DIR}/index.html)
+        copy_file(${SDGL_ROOT_DIR}/src/sdgl/platform/main.js ${BINARY_DIR}/main.js)
+
     endif()
 
     target_sources(${TARGET_NAME} PRIVATE ${ARG_SOURCE})
