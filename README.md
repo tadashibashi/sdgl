@@ -6,6 +6,8 @@ A simple, direct game library
 - FMOD sound library integration
 - Cross-platform on Mac, Windows, Linux and HTML5
 
+Example demos can be found [here](https://github.com/tadashibashi/sdgl-examples)
+
 ## Motivation
 
 To build a game engine as a challenge to learn graphics programming.
