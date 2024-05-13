@@ -2,16 +2,17 @@
 
 A simple, direct game library
 
-- 2D features
-- Cross-platform on desktop and web
-
+- 2D: sprites, bitmap fonts, texture atlases, camera
+- FMOD sound library integration
+- Cross-platform on Mac, Windows, Linux and HTML5
 
 ## Technologies
 
-- C++ 20
-- OpenGL ES3 / Angle (desktop builds)
-- Emscripten (web builds)
-- SDL2 (windowing / input)
+- C++
+- CMake
+- OpenGL ES3 (ANGLE)
+- Emscripten (web compiler)
+- SDL2
 
 ## Motivation
 
