@@ -147,8 +147,6 @@ bool sdgl::Keyboard::isReleased(Key::Enum key) const
     return !m_keys.get(key) && m_lastKeys.get(key);
 }
 
-
-
 void sdgl::Keyboard::preProcessInput()
 {
     const auto memSize = m_keys.size() * sizeof(uint32_t);

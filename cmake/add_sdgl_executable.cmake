@@ -19,6 +19,7 @@ function(add_sdgl_executable TARGET_NAME)
         set(EXE_TYPE WIN32)
     elseif(APPLE)
         set(EXE_TYPE MACOSX_BUNDLE)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 12)
     endif()
 
     add_executable(${TARGET_NAME} ${EXE_TYPE})
@@ -47,8 +48,16 @@ function(add_sdgl_executable TARGET_NAME)
             set_source_files_properties(${ARG_ICON_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
         endif()
 
+        # gamepad mapping file
+        set(GAMECONTROLLERDB_PATH "${BINARY_DIR}/gamecontrollerdb.txt")
+        if (EXISTS "${GAMECONTROLLERDB_PATH}")
+            list(APPEND ARG_SOURCE "${GAMECONTROLLERDB_PATH}")
+            set_source_files_properties("${GAMECONTROLLERDB_PATH}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+        endif()
+
         # assets
         foreach(CUR_CONTENT ${ARG_CONTENT})
+            set(CUR_CONTENT "${ARG_CONTENT_ROOT}/${CUR_CONTENT}")
             list(APPEND ARG_SOURCE ${CUR_CONTENT})
             set_source_files_properties("${CUR_CONTENT}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${ARG_CONTENT_ROOT}")
         endforeach()
@@ -69,7 +78,6 @@ function(add_sdgl_executable TARGET_NAME)
             MACOSX_BUNDLE_ICON_FILE         "${ARG_ICON_FILE}"
             MACOSX_BUNDLE_GUI_IDENTIFIER    "org.${TARGET_NAME}.gui"
             MACOSX_BUNDLE_INFO_PLIST        "" # can customize later...
-            MACHO_COMPATIBILITY_VERSION     "13.0.0" # lowest version to support
 
             BUILD_RPATH                     "@executable_path/../Frameworks"
 

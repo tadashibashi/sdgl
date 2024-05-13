@@ -38,10 +38,14 @@ namespace sdgl {
         float m_lastAxes[GamepadAxis::Count];
 
         void *m_controller; // pointer to SDL_GameController
+        int m_id;
 
         void doButtonDown(uint8_t buttonid);
         void doButtonUp(uint8_t buttonid);
         void doAxisSet(uint8_t axisid, float value);
-        void doConnect(void *controller);
+        void doConnect(void *controller, int instanceID);
+        bool tryDisconnect(int instanceID);
+        [[nodiscard]]
+        auto getInstanceID() const { return m_id; }
     };
 }

@@ -1,12 +1,14 @@
 #include "../Backend.h"
 
-#include <iostream>
 #include <sdgl/logging.h>
 #include <sdgl/angles.h>
+#include <sdgl/io/io.h>
+
+#include <SDL.h>
 
 #include <filesystem>
 #include <chrono>
-#include <SDL.h>
+
 
 #include "ImGuiSdl2.h"
 
@@ -36,20 +38,37 @@ namespace sdgl {
         }
 
         // Load game controller mappings
-        if (std::filesystem::exists("gamecontrollerdb.txt"))
+
+        if (const auto mappingPath = (io::getResourcePath() / "gamecontrollerdb.txt");
+            std::filesystem::exists(mappingPath))
         {
-            SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+
+            if (SDL_GameControllerAddMappingsFromFile(mappingPath.c_str()) == -1)
+            {
+                SDGL_ERROR("Failed to initialize game controller mappings: {}", SDL_GetError());
+            }
+            else
+            {
+                SDGL_LOG("Loaded game controller mappings");
+            }
+        }
+        else
+        {
+            SDGL_WARN("Game controller mappings could not be found in the expected location.");
         }
 
         // Load open game controllers
-        for (int i = 0; i < MaxGamepads; ++i)
-        {
-            auto controller = SDL_GameControllerOpen(i);
-            if (controller)
-            {
-                m->gamepads[i].doConnect(controller);
-            }
-        }
+        // const auto maxGamepads = SDL_NumJoysticks() > MaxGamepads ? MaxGamepads : SDL_NumJoysticks();
+        // for (int i = 0; i < maxGamepads; ++i)
+        // {
+        //     if (!SDL_IsGameController(i)) continue;
+
+        //     auto controller = SDL_GameControllerOpen(i);
+        //     if (controller)
+        //     {
+        //         m->gamepads[i].doConnect(controller);
+        //     }
+        // }
 
         m->startTime = high_resolution_clock::now();
         return true;
@@ -142,6 +161,7 @@ namespace sdgl {
         SDL_SetWindowData(win, "w", wrapper);
 
         SDL_ShowWindow(win);
+        SDL_RaiseWindow(win);
         return wrapper;
     }
 
@@ -292,29 +312,43 @@ namespace sdgl {
 
                 case SDL_CONTROLLERBUTTONDOWN:
                 {
-                    const auto id = e.cbutton.which;
-                    if (id == -1 || id > 3) break;
+                    const auto instanceID = e.cbutton.which;
 
-                    auto &gamepad = m->gamepads[id];
-                    gamepad.doButtonDown(e.cbutton.button);
+                    for (auto &gamepad : m->gamepads) // TODO: is there a data structure more suited to getting by instanceID?
+                    {
+                        if (gamepad.getInstanceID() == instanceID)
+                        {
+                            gamepad.doButtonDown(e.cbutton.button);
+                            break;
+                        }
+                    }
                 } break;
 
                 case SDL_CONTROLLERBUTTONUP:
                 {
-                    const auto id = e.cbutton.which;
-                    if (id == -1 || id > 3) break;
+                    const auto instanceID = e.cbutton.which;
 
-                    auto &gamepad = m->gamepads[id];
-                    gamepad.doButtonUp(e.cbutton.button);
+                    for (auto &gamepad : m->gamepads) // TODO: is there a data structure more suited to getting by instanceID?
+                    {
+                        if (gamepad.getInstanceID() == instanceID)
+                        {
+                            gamepad.doButtonUp(e.cbutton.button);
+                            break;
+                        }
+                    }
                 } break;
 
                 case SDL_CONTROLLERDEVICEREMOVED:
                 {
-                    const auto id = e.cdevice.which;
-                    if (id == -1 || id > 3) break;
-
-                    auto &gamepad = m->gamepads[id];
-                    gamepad.close();
+                    const auto instanceID = e.cdevice.which;
+                    for (auto &gamepad : m->gamepads)
+                    {
+                        if (gamepad.tryDisconnect(instanceID))
+                        {
+                            SDGL_LOG("Controller removed with instanceID: {}", instanceID);
+                            break;
+                        }
+                    }
 
                 } break;
 
@@ -323,19 +357,32 @@ namespace sdgl {
                     const auto id = e.cdevice.which;
                     if (id < 0 || id >= MaxGamepads) break; // only allow supported range of controllers
 
-                    // retrieve connected controller
                     auto controller = SDL_GameControllerOpen(id);
                     if (controller)
-                        m->gamepads[id].doConnect(controller);
+                    {
+                        auto instanceID = SDL_JoystickGetDeviceInstanceID(id);
+                        SDGL_LOG("Controller added with instanceID: {}", instanceID);
+                        m->gamepads[id].doConnect(controller, instanceID);
+                    }
+                    else
+                    {
+                        SDGL_ERROR("Controller failed to open at index {}: {}", id, SDL_GetError());
+                    }
 
                 } break;
 
                 case SDL_CONTROLLERAXISMOTION:
                 {
-                    const auto id = e.caxis.which;
-                    if (id < 0 || id >= MaxGamepads) break; // only allow supported range of controllers
+                    const auto instanceID = e.caxis.which;
+                    for (auto &gamepad : m->gamepads) // TODO: is there a data structure more suited to getting by instanceID?
+                    {
+                        if (gamepad.getInstanceID() == instanceID)
+                        {
+                            gamepad.doAxisSet(e.caxis.axis, normalizeS16(e.caxis.value));
+                            break;
+                        }
+                    }
 
-                    m->gamepads[id].doAxisSet(e.caxis.axis, normalizeS16(e.caxis.value));
                 } break;
 
                 default:
