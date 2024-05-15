@@ -1,3 +1,3 @@
 #pragma once
-#include <sdgl/logging.h>
 #include <sdgl/sdglib.h>
+#include <sdgl/logging.h>

@@ -1,108 +1,69 @@
 #include "AudioEngine.h"
-#include <sdgl/io/io.h>
+#include "Sound.h"
+#include "al.h"
+
 #include <sdgl/logging.h>
 #include <sdgl/sdglib.h>
 
-#include "fmod.h"
 
 namespace sdgl {
-
     struct AudioEngine::Impl {
-        Impl() : m_system(), m_sounds(), m_instances()
-        { }
+        Impl() : m_sounds(), m_device(), m_context() { }
+        ~Impl()
+        {
+            close();
+        }
+
+        map<fs::path::string_type, Sound *> m_sounds;
+        ALCdevice *m_device;
+        ALCcontext *m_context;
 
         bool init()
         {
-            FMOD::System *sys;
-            auto result = FMOD::System_Create(&sys);
-            if (result != FMOD_OK)
+            const auto audioDevice = alcOpenDevice(nullptr);
+            if (!alcCheck(nullptr) || !audioDevice)
             {
-                SDGL_ERROR("FMOD failed to create FMOD::System object: {}", FMOD_ErrorString(result));
                 return false;
             }
 
-            int samplerate;
-            result = sys->getDriverInfo(0, nullptr, 0, nullptr, &samplerate, nullptr, nullptr);
-            if (result != FMOD_OK)
+            const auto audioContext = alcCreateContext(audioDevice, nullptr);
+            if (!alcCheck(audioDevice) || !audioContext)
             {
-                SDGL_ERROR("FMOD failed to get driver info: {}", FMOD_ErrorString(result));
+                alcCloseDevice(audioDevice);
                 return false;
             }
+            alcMakeContextCurrent(audioContext); alcCheck(audioDevice);
 
-            result = sys->setSoftwareFormat(samplerate, FMOD_SPEAKERMODE_DEFAULT, 0);
-            if (result != FMOD_OK)
-            {
-                SDGL_ERROR("FMOD failed to set software format: {}", FMOD_ErrorString(result));
-                return false;
-            }
-
-#ifdef SDGL_PLATFORM_EMSCRIPTEN
-            result = sys->setDSPBufferSize(2048, 2); // web browsers tend to perform better with a larger buffer
-            if (result != FMOD_OK)
-            {
-                SDGL_ERROR("FMOD failed to set DSP buffer size: {}", FMOD_ErrorString(result));
-                return false;
-            }
-#endif
-            result = sys->init(1024, FMOD_INIT_NORMAL, nullptr);
-            if (result != FMOD_OK)
-            {
-                SDGL_ERROR("FMOD::System failed to initialize: {}", FMOD_ErrorString(result));
-                return false;
-            }
-
-            m_system = sys;
+            close();
+            m_device = audioDevice;
+            m_context = audioContext;
             return true;
         }
 
-        FMOD::Sound *loadSound(const fs::path &filepath)
+        void close()
         {
-            auto it = m_sounds.find(filepath.native());
-            if (it != m_sounds.end())
+            if (!m_sounds.empty())
             {
-                return it->second;
+                for (auto &[path, sound] : m_sounds)
+                {
+                    delete sound;
+                }
+                m_sounds.clear();
             }
 
-            FMOD::Sound *sound;
-            const auto result = m_system->createSound(filepath.c_str(), 0, nullptr, &sound);
-            if (result != FMOD_OK)
+            if (m_context)
             {
-                return nullptr;
+                alcMakeContextCurrent(nullptr);
+                alcDestroyContext(m_context);
+                m_context = nullptr;
             }
 
-            m_sounds[filepath.native()] = sound;
-            return sound;
-        }
-
-        void update()
-        {
-            FMOD_CHECK(m_system->update());
-        }
-
-        void shutdown()
-        {
-            for (auto &instance : m_instances)
+            if (m_device)
             {
-                delete instance;
-            }
-            m_instances.clear();
-
-            for (auto &[path, sound] : m_sounds)
-            {
-                sound->release();
-            }
-            m_sounds.clear();
-
-            if (m_system)
-            {
-                m_system->release();
-                m_system = nullptr;
+                alcCloseDevice(m_device);
+                m_device = nullptr;
             }
         }
-
-        FMOD::System *m_system;
-        map<fs::path::string_type, FMOD::Sound *> m_sounds;
-        set<SoundInstance *> m_instances;
     };
 
     AudioEngine::AudioEngine() : m(new Impl)
@@ -112,7 +73,6 @@ namespace sdgl {
 
     AudioEngine::~AudioEngine()
     {
-        shutdown();
         delete m;
     }
 
@@ -121,31 +81,37 @@ namespace sdgl {
         return m->init();
     }
 
+    void AudioEngine::update()
+    {
+
+    }
+
     void AudioEngine::shutdown()
     {
-        m->shutdown();
+        m->close();
     }
 
     SoundInstance *AudioEngine::createSound(const fs::path &filepath)
     {
-        auto fullpath = filepath.is_absolute() ? filepath : io::getResourcePath() / filepath;
-        auto sound = m->loadSound(fullpath);
-        if (!sound) return nullptr;
+        auto it = m->m_sounds.find(filepath.native());
+        if (it != m->m_sounds.end())
+        {
+            return new SoundInstance(it->second, true); // TODO: store sound instances in Sound?
+        }
 
-        auto inst = new SoundInstance(sound, nullptr, true);
+        auto sound = new Sound();
+        if (!sound->load(filepath))
+        {
+            delete sound;
+            return nullptr;
+        }
 
-        m->m_instances.emplace(inst);
-        return inst;
+        m->m_sounds[filepath.native()] = sound;
+        return new SoundInstance(sound, true); // TODO: store sound instances in Sound?
     }
 
     void AudioEngine::destroySound(SoundInstance *sound)
     {
-        m->m_instances.erase(sound);
-        delete sound;
-    }
-
-    void AudioEngine::update()
-    {
-        m->update();
+        delete sound; // TODO: remove sound instance from Sound?
     }
 }

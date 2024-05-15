@@ -29,7 +29,6 @@ function(add_sdgl_executable TARGET_NAME)
 
     angles_copy_libs(${TARGET_NAME})
     copy_gamepad_mappings(${TARGET_NAME})
-    fmod_copy_libs(${TARGET_NAME})
 
     # Copy assets to binary root
     if (ARG_CONTENT_ROOT AND NOT APPLE)

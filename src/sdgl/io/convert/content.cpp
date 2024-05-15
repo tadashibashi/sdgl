@@ -2,6 +2,7 @@
 
 #include <stb_image.h>
 #include <sdgl/io/io.h>
+#include <sdgl/logging.h>
 
 bool sdgl::io::convert::writeImageToSbc(const string &imageData, const string &filepath)
 {

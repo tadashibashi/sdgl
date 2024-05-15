@@ -1,11 +1,15 @@
+project (sdgl CXX C)
 add_subdirectory(core/backend)
 
 add_library(sdgl STATIC
+        audio/al.h
+        audio/al.cpp
         audio/AudioEngine.h
         audio/AudioEngine.cpp
         audio/SoundInstance.h
         audio/SoundInstance.cpp
-        audio/fmod.h
+        audio/Sound.h
+        audio/Sound.cpp
 
         core/backend/Backend.h
         core/Gamepad.h
@@ -103,10 +107,15 @@ add_library(sdgl STATIC
         graphics/SpriteBatch2D.h
 )
 
-target_link_libraries(sdgl PUBLIC ${sdgl_backend_LIBS} glm::glm imgui spdlog::spdlog stb glaze::glaze fmod)
+target_link_libraries(sdgl PUBLIC ${sdgl_backend_LIBS} glm::glm imgui spdlog::spdlog stb)
+if (EMSCRIPTEN)
+    target_compile_options(sdgl PRIVATE -lopenal)
+else()
+    mojoal_inject(sdgl) # inject mojoAL source into sdgl
+endif()
 
 target_include_directories(sdgl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ ${SDGL_ROOT_DIR}/include ${sdgl_backend_INCLUDES})
-target_precompile_headers(sdgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/sdgl.pch)
+# target_precompile_headers(sdgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private/sdgl.pch)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" SDGL_BUILD_TYPE)
 if ("${SDGL_BUILD_TYPE}" MATCHES "DEBUG" OR "${SDGL_BUILD_TYPE}" MATCHES "RELWITHDEBINFO")
     target_compile_definitions(sdgl PUBLIC -DSDGL_DEBUG=1)

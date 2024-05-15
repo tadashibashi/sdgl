@@ -2,9 +2,6 @@
 set(ANGLES_SYSTEM_PROCESSOR ${SDGL_SYSTEM_PROCESSOR} CACHE STRING "" FORCE)
 add_subdirectory(angles)
 
-# glaze
-add_subdirectory(glaze)
-
 if (NOT EMSCRIPTEN)
     set(SDL_TEST OFF CACHE BOOL "" FORCE)
     set(SDL2_DISABLE_UNINSTALL ON CACHE BOOL "" FORCE)
@@ -12,9 +9,6 @@ if (NOT EMSCRIPTEN)
     set(SDL_SHARED OFF CACHE BOOL "" FORCE)
     add_subdirectory(SDL2)
 endif()
-
-set(FMOD_VERSION 2.02.21 CACHE STRING "" FORCE)
-add_subdirectory(fmod-cmake)
 
 # glm
 set(GLM_ENABLE_CXX_20    ON  CACHE BOOL "Turn on C++ 20 for GLM" FORCE)
@@ -43,6 +37,6 @@ if (EMSCRIPTEN)
     target_link_options(spdlog PRIVATE -pthread)
 endif()
 
-
+include(mojoAL.cmake)
 include(SDL_GameControllerDB.cmake)
 include(stb.cmake)

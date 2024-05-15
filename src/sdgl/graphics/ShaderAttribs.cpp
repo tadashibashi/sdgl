@@ -1,5 +1,5 @@
 #include "ShaderAttribs.h"
-
+#include <sdgl/sdglib.h>
 #include <sdgl/angles.h>
 
 namespace sdgl {

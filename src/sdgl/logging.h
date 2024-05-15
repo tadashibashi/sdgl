@@ -1,4 +1,5 @@
 #pragma once
+
 #include <sdgl/sdglib.h>
 #include <sdgl/format.h>
 

@@ -1,9 +1,10 @@
 #include "TextureAtlas.h"
+#include "CrunchAtlasData.h"
 
-#include <filesystem>
+#include <sdgl/logging.h>
 #include <sdgl/io/io.h>
 
-#include "CrunchAtlasData.h"
+#include <filesystem>
 
 namespace sdgl {
 

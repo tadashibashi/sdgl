@@ -10,9 +10,6 @@
 [submodule "vendored/stb"]
 	path = lib/stb
 	url = https://github.com/nothings/stb
-[submodule "vendored/glaze"]
-	path = lib/glaze
-	url = https://github.com/stephenberry/glaze
 [submodule "vendored/angles"]
 	path = lib/angles
 	url = https://github.com/tadashibashi/angles
@@ -22,6 +19,6 @@
 [submodule "lib/SDL2"]
 	path = lib/SDL2
 	url = https://github.com/libsdl-org/SDL.git
-[submodule "lib/fmod-cmake"]
-	path = lib/fmod-cmake
-	url = https://github.com/tadashibashi/fmod-cmake.git
+[submodule "lib/mojoAL"]
+	path = lib/mojoAL
+	url = https://github.com/icculus/mojoAL

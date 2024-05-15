@@ -1,8 +1,12 @@
 #pragma once
 #include <sdgl/sdglib.h>
 
-namespace sdgl {
+namespace FMOD {
     class Sound;
+    class ChannelGroup;
+}
+
+namespace sdgl {
 
     class SoundInstance {
     public:
@@ -14,28 +18,18 @@ namespace sdgl {
         /// Start playing sound from beginning
         void play();
 
-        void position(float seconds);
+        void position(double seconds);
 
         [[nodiscard]]
-        float position() const;
+        double position() const;
 
         /// Whether sound is paused / not playing. If sound ended, `true` will be returned.
         [[nodiscard]]
         bool isPaused() const;
 
-        [[nodiscard]]
-        float pitch() const;
-        void pitch(float value);
-        [[nodiscard]]
-        float gain() const;
-        void gain(float value);
-        [[nodiscard]]
-        bool looping() const;
-        void looping(bool value);
-
     private:
         friend class AudioEngine;
-        SoundInstance(Sound *sound, bool paused);
+        SoundInstance(FMOD::Sound *sound, FMOD::ChannelGroup *group, bool paused);
         ~SoundInstance();
 
         struct Impl;

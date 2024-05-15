@@ -1,5 +1,5 @@
 #pragma once
-
+#include <sdgl/sdglib.h>
 
 namespace sdgl::io {
     /// Null-terminated buffer of data used for file io

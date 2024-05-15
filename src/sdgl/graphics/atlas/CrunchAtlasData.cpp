@@ -2,7 +2,8 @@
 
 #include <sdgl/assert.h>
 #include <sdgl/io/BufferView.h>
-
+#include <sdgl/sdglib.h>
+#include <sdgl/logging.h>
 
 /// Helper to read a field from a BufferView for BMFont read functions. Invokes a `return
 /// false` on error, so it should be called in a function with a bool return type.

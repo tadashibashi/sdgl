@@ -1,5 +1,6 @@
-#if SDGL_LOGGING
 #include "logging.h"
+
+#if SDGL_LOGGING
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace sdgl::logging::detail {
@@ -34,10 +35,9 @@ namespace sdgl::logging::detail {
 
 #endif
 
+#include <sdgl/sdglib.h>
 namespace sdgl::logging::detail {
     static string s_lastCoreError;
     void setLastErrorMessage(const string &message) { s_lastCoreError = message; }
     const string &getLastErrorMessage() { return s_lastCoreError; }
 }
-
-
